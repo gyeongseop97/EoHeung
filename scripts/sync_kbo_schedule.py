@@ -203,15 +203,28 @@ def scrape_english_current_month_with_playwright():
     return games
 
 
-def upsert_games(games):
-    url = f"{SUPABASE_URL}/rest/v1/games?on_conflict=source_key"
+def supabase_headers():
+    """
+    Supabase has two key families.
+    - sb_secret_...: send as apikey only. Do not send it as Authorization: Bearer because it is not a JWT.
+    - legacy service_role JWT: send as both apikey and Authorization: Bearer.
+    """
     headers = {
         "apikey": SERVICE_KEY,
-        "Authorization": f"Bearer {SERVICE_KEY}",
         "Content-Type": "application/json",
         "Prefer": "resolution=merge-duplicates",
     }
-    r = requests.post(url, headers=headers, data=json.dumps(games, ensure_ascii=False).encode("utf-8"), timeout=30)
+    if SERVICE_KEY.startswith("sb_secret_"):
+        print("Using Supabase secret key mode: apikey header only.")
+    else:
+        print("Using Supabase legacy JWT mode: apikey + Authorization Bearer headers.")
+        headers["Authorization"] = f"Bearer {SERVICE_KEY}"
+    return headers
+
+
+def upsert_games(games):
+    url = f"{SUPABASE_URL}/rest/v1/games?on_conflict=source_key"
+    r = requests.post(url, headers=supabase_headers(), data=json.dumps(games, ensure_ascii=False).encode("utf-8"), timeout=30)
     if not r.ok:
         raise RuntimeError(f"Supabase upsert failed: {r.status_code} {r.text}")
     return len(games)
