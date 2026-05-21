@@ -30,15 +30,15 @@
         <div class="logo" style="background:var(--blue);color:#fff">SL</div>
         <div><h1>Samsung Lions Watch Party Manager</h1><p>Supabase 연동 버전</p></div>
       </div>
-      <p>Supabase URL과 anon key를 입력한 뒤 로그인해 주세요. 한 번 저장하면 이 브라우저에 보관됩니다.</p>
+      <p>Supabase 연결 정보는 프로그램에 기본값으로 내장되어 있습니다. 이제 이메일과 비밀번호만 입력해 로그인하시면 됩니다.</p>
       <div class="form-grid">
-        <input id="supabaseUrl" class="input full" placeholder="Supabase Project URL 예: https://xxxx.supabase.co" />
-        <input id="supabaseAnonKey" class="input full" placeholder="Supabase anon public key" />
+        <input id="supabaseUrl" type="hidden" value="https://chaddxsntnokjjcrwiyb.supabase.co" />
+        <input id="supabaseAnonKey" type="hidden" value="sb_publishable_NiKj0BxbW3VauGK_kkflbg_OqMXPpCT" />
         <input id="loginEmail" class="input" placeholder="이메일" type="email" />
         <input id="loginPassword" class="input" placeholder="비밀번호" type="password" />
       </div>
       <div class="toolbar" style="margin-top:14px">
-        <button class="btn" id="saveConfigBtn">설정 저장</button>
+        <button class="btn hide" id="saveConfigBtn">설정 저장</button>
         <button class="btn green" id="signInBtn">로그인</button>
         <button class="btn secondary" id="signUpBtn">회원가입</button>
       </div>
@@ -117,7 +117,7 @@
       </section>
 
       <section id="settings" class="section">
-        <div class="card pad"><h3>Supabase 설정</h3><p class="note">URL과 anon key를 바꾼 뒤 저장하면 재접속합니다.</p><div class="form-grid"><input id="settingsUrl" class="input full"/><input id="settingsKey" class="input full"/></div><div class="toolbar" style="margin-top:12px"><button class="btn" id="settingsSaveBtn">설정 저장 후 새로고침</button></div></div>
+        <div class="card pad"><h3>Supabase 설정</h3><p class="note">Supabase 연결 정보는 index.html 코드에 기본값으로 내장되어 있습니다. 일반 사용자는 이메일과 비밀번호만 입력하면 됩니다.</p><div class="form-grid"><input id="settingsUrl" type="hidden" value="https://chaddxsntnokjjcrwiyb.supabase.co"/><input id="settingsKey" type="hidden" value="sb_publishable_NiKj0BxbW3VauGK_kkflbg_OqMXPpCT"/></div><div class="empty">연결 프로젝트: https://chaddxsntnokjjcrwiyb.supabase.co</div><div class="toolbar hide" style="margin-top:12px"><button class="btn" id="settingsSaveBtn">설정 저장 후 새로고침</button></div></div>
         <div class="card pad" style="margin-top:14px"><h3>운영 메모</h3><p class="note">KBO 자동 수집은 클라이언트가 아니라 Supabase Edge Function 또는 GitHub Actions에서 처리하는 구조입니다. 클라이언트는 DB에 저장된 일정만 읽기 때문에 CORS 문제가 줄어듭니다.</p></div>
       </section>
     </main>
@@ -129,6 +129,8 @@
   <div class="toast" id="toast"></div>
 
 <script>
+const SUPABASE_DEFAULT_URL = 'https://chaddxsntnokjjcrwiyb.supabase.co';
+const SUPABASE_DEFAULT_ANON_KEY = 'sb_publishable_NiKj0BxbW3VauGK_kkflbg_OqMXPpCT';
 const TEAM_KO = {SAMSUNG:'삼성', LG:'LG', DOOSAN:'두산', KIWOOM:'키움', SSG:'SSG', LOTTE:'롯데', KIA:'KIA', KT:'KT', HANWHA:'한화', NC:'NC'};
 const state = { client:null, user:null, members:[], games:[], gameMembers:[], links:[], page:'dashboard', year:new Date().getFullYear(), month:new Date().getMonth()+1, selectedDate:toYmd(new Date()) };
 function qs(id){ return document.getElementById(id); }
@@ -136,9 +138,17 @@ function toYmd(d){ const x = new Date(d); return `${x.getFullYear()}-${String(x.
 function toast(msg){ const el=document.createElement('div'); el.textContent=msg; qs('toast').appendChild(el); setTimeout(()=>el.remove(),3200); }
 function money(v){ return (v??'').toString(); }
 function esc(s){ return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
-function getConfig(){ return {url:localStorage.getItem('sl_supabase_url')||'', key:localStorage.getItem('sl_supabase_anon_key')||''}; }
-function setConfig(url,key){ localStorage.setItem('sl_supabase_url',url.trim()); localStorage.setItem('sl_supabase_anon_key',key.trim()); }
-function initClient(){ const {url,key}=getConfig(); if(!url||!key) return null; state.client = supabase.createClient(url,key); return state.client; }
+function getConfig(){
+  return {
+    url: localStorage.getItem('sl_supabase_url') || SUPABASE_DEFAULT_URL,
+    key: localStorage.getItem('sl_supabase_anon_key') || SUPABASE_DEFAULT_ANON_KEY
+  };
+}
+function setConfig(url,key){
+  localStorage.setItem('sl_supabase_url',(url || SUPABASE_DEFAULT_URL).trim());
+  localStorage.setItem('sl_supabase_anon_key',(key || SUPABASE_DEFAULT_ANON_KEY).trim());
+}
+function initClient(){ const {url,key}=getConfig(); state.client = supabase.createClient(url,key); return state.client; }
 async function checkSession(){ const c=initClient(); qs('supabaseUrl').value=getConfig().url; qs('supabaseAnonKey').value=getConfig().key; qs('settingsUrl').value=getConfig().url; qs('settingsKey').value=getConfig().key; if(!c) return showAuth(); const {data}=await c.auth.getSession(); state.user=data.session?.user||null; if(state.user){ showApp(); await loadAll(); } else showAuth(); }
 function showAuth(){ qs('authView').classList.remove('hide'); qs('appView').classList.add('hide'); }
 function showApp(){ qs('authView').classList.add('hide'); qs('appView').classList.remove('hide'); qs('userEmail').textContent=state.user?.email||''; }
@@ -187,8 +197,8 @@ async function callSync(){ const {data:{session}}=await state.client.auth.getSes
 
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>setPage(b.dataset.page)); document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
 qs('saveConfigBtn').onclick=()=>{setConfig(qs('supabaseUrl').value,qs('supabaseAnonKey').value); initClient(); toast('설정 저장 완료');}; qs('settingsSaveBtn').onclick=()=>{setConfig(qs('settingsUrl').value,qs('settingsKey').value); location.reload();};
-qs('signInBtn').onclick=async()=>{ setConfig(qs('supabaseUrl').value,qs('supabaseAnonKey').value); initClient(); const {error}=await state.client.auth.signInWithPassword({email:qs('loginEmail').value,password:qs('loginPassword').value}); if(error) return toast(error.message); await checkSession(); };
-qs('signUpBtn').onclick=async()=>{ setConfig(qs('supabaseUrl').value,qs('supabaseAnonKey').value); initClient(); const {error}=await state.client.auth.signUp({email:qs('loginEmail').value,password:qs('loginPassword').value}); if(error) return toast(error.message); toast('회원가입 요청 완료. 이메일 확인 설정이 켜져 있으면 메일 인증 후 로그인하세요.'); };
+qs('signInBtn').onclick=async()=>{ setConfig(SUPABASE_DEFAULT_URL,SUPABASE_DEFAULT_ANON_KEY); initClient(); const {error}=await state.client.auth.signInWithPassword({email:qs('loginEmail').value,password:qs('loginPassword').value}); if(error) return toast(error.message); await checkSession(); };
+qs('signUpBtn').onclick=async()=>{ setConfig(SUPABASE_DEFAULT_URL,SUPABASE_DEFAULT_ANON_KEY); initClient(); const {error}=await state.client.auth.signUp({email:qs('loginEmail').value,password:qs('loginPassword').value}); if(error) return toast(error.message); toast('회원가입 요청 완료. 이메일 확인 설정이 켜져 있으면 메일 인증 후 로그인하세요.'); };
 qs('signOutBtn').onclick=async()=>{ await state.client.auth.signOut(); location.reload(); }; qs('reloadAllBtn').onclick=loadAll;
 qs('yearSelect').onchange=e=>{state.year=Number(e.target.value); renderAll();}; qs('monthSelect').onchange=e=>{state.month=Number(e.target.value); renderAll();}; qs('prevMonthBtn').onclick=()=>{state.month--; if(state.month<1){state.month=12;state.year--;} renderAll();}; qs('nextMonthBtn').onclick=()=>{state.month++; if(state.month>12){state.month=1;state.year++;} renderAll();}; qs('todayBtn').onclick=()=>{const d=new Date(); state.year=d.getFullYear(); state.month=d.getMonth()+1; state.selectedDate=toYmd(d); renderAll();};
 qs('openMemberModalBtn').onclick=()=>{qs('memberModalTitle').textContent='회원 추가'; ['memberId','memberName','memberDepartment','memberPhone','memberFavorite','memberMemo'].forEach(id=>qs(id).value=''); qs('memberStatus').value='active'; openModal('memberModal');}; qs('saveMemberBtn').onclick=saveMember;
