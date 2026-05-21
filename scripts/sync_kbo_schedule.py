@@ -5,9 +5,8 @@ Writes two tables:
 - public.kbo_all_games: all KBO games parsed from the official KBO English Daily Schedule page
 - public.games: Samsung Lions games only, converted to the app's Samsung-focused schema
 
-The script first tries to move through the English schedule month-by-month for TARGET_YEAR.
-If the KBO page does not expose month navigation in the headless runner, it still syncs the
-currently served month and prints a clear warning instead of silently doing nothing.
+If kbo_all_games has not been created yet, this script now keeps syncing Samsung games
+instead of failing the entire workflow. Run supabase_schema.sql to enable all-team widgets.
 """
 import json
 import os
@@ -240,7 +239,6 @@ def scrape_english_year():
         page = browser.new_page(locale="en-US")
         page.goto(KBO_EN_URL, wait_until="networkidle", timeout=45000)
 
-        # Try to move back to January of TARGET_YEAR if the page exposes previous-month navigation.
         for _ in range(18):
             games, y, m = parse_english_schedule_text(page_body_text(page))
             if y < TARGET_YEAR or (y == TARGET_YEAR and m <= 1):
@@ -249,7 +247,6 @@ def scrape_english_year():
                 break
             time.sleep(0.2)
 
-        # Parse forward through the year. If navigation is unavailable, this loop will sync the current page only.
         for _ in range(18):
             games, y, m = parse_english_schedule_text(page_body_text(page))
             ym = (y, m)
@@ -275,20 +272,19 @@ def supabase_headers():
         "Content-Type": "application/json",
         "Prefer": "resolution=merge-duplicates",
     }
-    # legacy service_role JWT requires Authorization. Current project uses legacy service_role key.
-    if not SERVICE_KEY.startswith("sb_secret_"):
-        headers["Authorization"] = f"Bearer {SERVICE_KEY}"
-    else:
-        headers["Authorization"] = f"Bearer {SERVICE_KEY}"
+    headers["Authorization"] = f"Bearer {SERVICE_KEY}"
     return headers
 
 
-def postgrest_upsert(table: str, rows, conflict_col="source_key"):
+def postgrest_upsert(table: str, rows, conflict_col="source_key", required=True):
     if not rows:
         return 0
     url = f"{SUPABASE_URL}/rest/v1/{table}?on_conflict={conflict_col}"
     r = requests.post(url, headers=supabase_headers(), data=json.dumps(rows, ensure_ascii=False).encode("utf-8"), timeout=60)
     if not r.ok:
+        if (not required) and r.status_code == 404 and "PGRST205" in r.text:
+            print(f"WARNING: table {table} does not exist in Supabase. Skipping this table. Run supabase_schema.sql to create it.")
+            return 0
         raise RuntimeError(f"Supabase upsert failed for {table}: {r.status_code} {r.text}")
     return len(rows)
 
@@ -312,8 +308,8 @@ def main():
     for sample in samsung_games[:5]:
         print("Samsung sample:", sample)
 
-    all_count = postgrest_upsert("kbo_all_games", all_games)
-    samsung_count = postgrest_upsert("games", samsung_games)
+    all_count = postgrest_upsert("kbo_all_games", all_games, required=False)
+    samsung_count = postgrest_upsert("games", samsung_games, required=True)
     print(f"Done. Upserted {all_count} rows into kbo_all_games and {samsung_count} rows into games.")
     if len({g['game_date'][:7] for g in all_games}) < 2:
         print("WARNING: Only one month was synced. KBO English page did not expose navigable month controls in this run.")
