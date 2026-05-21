@@ -1,0 +1,75 @@
+name: Refine Dashboard Game Card Layout
+
+on:
+  push:
+    paths:
+      - '.github/workflows/refine-dashboard-game-card-layout.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Patch dashboard all-game cards
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          # Add larger dashboard all-game card CSS.
+          if '.kbo-game-card' not in text:
+              marker = '.mini-row b{font-weight:900}.weather{display:inline-flex;margin-left:6px;color:#047857;font-weight:800;font-size:12px}'
+              addon = marker + '.kbo-game-card{display:grid;grid-template-columns:78px 1fr;align-items:center;gap:14px;min-height:82px;padding:14px 16px}.kbo-card-meta{display:grid;gap:3px;align-content:center}.kbo-card-time{font-size:16px;font-weight:950;color:#020617}.kbo-card-park{font-size:12px;color:#475569;font-weight:800}.kbo-card-status{font-size:12px;color:#315aa6;font-weight:900}.kbo-card-match{display:flex;align-items:center;justify-content:flex-end;min-width:0}.kbo-card-match .scoreline{font-size:18px;gap:9px}.team-side.card-team{gap:7px}.team-side.card-team span{font-size:18px;font-weight:950}.team-logo.kbo-card-logo{width:34px;height:34px}'
+              text = text.replace(marker, addon)
+          else:
+              text = re.sub(r'\.kbo-game-card\{[^}]*\}', '.kbo-game-card{display:grid;grid-template-columns:78px 1fr;align-items:center;gap:14px;min-height:82px;padding:14px 16px}', text)
+              text = re.sub(r'\.kbo-card-time\{[^}]*\}', '.kbo-card-time{font-size:16px;font-weight:950;color:#020617}', text)
+              text = re.sub(r'\.kbo-card-match \.scoreline\{[^}]*\}', '.kbo-card-match .scoreline{font-size:18px;gap:9px}', text)
+              text = re.sub(r'\.team-logo\.kbo-card-logo\{[^}]*\}', '.team-logo.kbo-card-logo{width:34px;height:34px}', text)
+
+          # Add card rendering helper after allGameLabelHtml.
+          helper = "function allGameCardHtml(g){const time=(g.game_time||'').slice(0,5);const score=g.status==='FINISHED'&&g.away_score!=null&&g.home_score!=null?`<span class=\"score\">${g.away_score}:${g.home_score}</span>`:'<span class=\"score\">:</span>';return `<div class=\"mini-row kbo-game-card\"><div class=\"kbo-card-meta\"><div class=\"kbo-card-time\">${esc(time||'-')}</div><div class=\"kbo-card-park\">${esc(g.stadium||'-')}</div><div class=\"kbo-card-status\">${statusText(g.status)}</div></div><div class=\"kbo-card-match\"><span class=\"scoreline\"><span class=\"team-side away card-team\"><span>${esc(g.away_team||'-')}</span>${teamLogo(g.away_team,'team-logo kbo-card-logo')}</span> ${score} <span class=\"team-side home card-team\">${teamLogo(g.home_team,'team-logo kbo-card-logo')}<span>${esc(g.home_team||'-')}</span></span></span></div></div>`}"
+          if 'function allGameCardHtml' not in text:
+              text = re.sub(r'(function allGameLabelHtml\(g\)\{.*?\})\nfunction homeAwayText', r'\1\n' + helper + '\nfunction homeAwayText', text, count=1, flags=re.S)
+          else:
+              text = re.sub(r'function allGameCardHtml\(g\)\{.*?\}\nfunction homeAwayText', helper + '\nfunction homeAwayText', text, count=1, flags=re.S)
+
+          # Replace today/yesterday all-game list rows with the new split layout.
+          text = re.sub(
+              r"qs\('dashTodayAll'\)\.innerHTML=todayAll\.length\?todayAll\.map\(g=>`<div class=\"mini-row\">\$\{allGameLabelHtml\(g\)\}<br><span class=\"note\">\$\{statusText\(g\.status\)\}</span></div>`\)\.join\(''\):'<div class=\"empty\">오늘 등록된 전체 경기 일정이 없습니다\.</div>';",
+              "qs('dashTodayAll').innerHTML=todayAll.length?todayAll.map(g=>allGameCardHtml(g)).join(''):'<div class=\"empty\">오늘 등록된 전체 경기 일정이 없습니다.</div>';",
+              text,
+              count=1
+          )
+          text = re.sub(
+              r"qs\('dashYesterdayAll'\)\.innerHTML=yAll\.length\?yAll\.map\(g=>`<div class=\"mini-row\">\$\{allGameLabelHtml\(g\)\}<br><span class=\"note\">\$\{statusText\(g\.status\)\}</span></div>`\)\.join\(''\):'<div class=\"empty\">전일 경기 결과가 없습니다\.</div>'",
+              "qs('dashYesterdayAll').innerHTML=yAll.length?yAll.map(g=>allGameCardHtml(g)).join(''):'<div class=\"empty\">전일 경기 결과가 없습니다.</div>'",
+              text,
+              count=1
+          )
+
+          p.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit dashboard card layout
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Enlarge and split dashboard KBO game cards"
+          git push
