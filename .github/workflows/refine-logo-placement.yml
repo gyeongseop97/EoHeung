@@ -1,0 +1,74 @@
+name: Refine Logo Placement
+
+on:
+  push:
+    paths:
+      - '.github/workflows/refine-logo-placement.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Refine logo layout in index.html
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          # 1) Add/normalize CSS for today's game logo and inward-facing all-game logos.
+          if '.team-logo.today-main' not in text:
+              text = text.replace(
+                  '.team-logo.lg{width:42px;height:42px}',
+                  '.team-logo.lg{width:42px;height:42px}.team-logo.today-main{width:46px;height:46px;margin-left:8px}'
+              )
+          else:
+              text = re.sub(r'\.team-logo\.today-main\{[^}]*\}', '.team-logo.today-main{width:46px;height:46px;margin-left:8px}', text)
+
+          if '.today-game-main' not in text:
+              text = text.replace(
+                  '.game-main.logo-right .text{white-space:normal}',
+                  '.game-main.logo-right .text{white-space:normal}.today-game-main{display:inline-flex;align-items:center;gap:8px;line-height:1.1}.today-game-main .text{white-space:nowrap}'
+              )
+          if '.team-side' not in text:
+              text = text.replace(
+                  '.scoreline .score{font-weight:900;color:#111827}',
+                  '.scoreline .score{font-weight:900;color:#111827}.team-side{display:inline-flex;align-items:center;gap:5px;font-weight:900;white-space:nowrap}.team-side.away .team-logo{margin-left:4px}.team-side.home .team-logo{margin-right:4px}'
+              )
+
+          # 2) Today game: put the opponent logo immediately to the right of the team text, larger.
+          today_func = "function gameLabelHtmlLogoRight(g,logoCls='team-logo sm'){const time=(g.game_time||'').slice(0,5);const mark=g.home_away==='AWAY'?'@':'vs';const score=g.status==='FINISHED'&&g.samsung_score!=null&&g.opponent_score!=null?` <span class=\"score\">${g.samsung_score}:${g.opponent_score}</span>`:'';return `<span class=\"today-game-main\"><span class=\"text\">${time?`<b>${esc(time)}</b> `:''}${mark} <b>${esc(g.opponent)}</b>${score}</span>${teamLogo(g.opponent,'team-logo today-main')}</span>`}"
+          if 'function gameLabelHtmlLogoRight' in text:
+              text = re.sub(r"function gameLabelHtmlLogoRight\(g,logoCls='team-logo sm'\)\{.*?\}\nfunction gameChipHtml", today_func + "\nfunction gameChipHtml", text, count=1, flags=re.S)
+          else:
+              text = text.replace('function gameChipHtml', today_func + '\nfunction gameChipHtml')
+
+          # 3) All-team lists: away logo moves inward to the right of away team, home logo remains inward to the left of home team.
+          all_func = "function allGameLabelHtml(g){const time=(g.game_time||'').slice(0,5);const score=g.status==='FINISHED'&&g.away_score!=null&&g.home_score!=null?`<span class=\"score\">${g.away_score}:${g.home_score}</span>`:'<span class=\"score\">:</span>';return `<div class=\"game-main\">${time?`<b>${esc(time)}</b>`:''}<span class=\"scoreline\"><span class=\"team-side away\"><span>${esc(g.away_team||'-')}</span>${teamLogo(g.away_team,'team-logo sm')}</span> ${score} <span class=\"team-side home\">${teamLogo(g.home_team,'team-logo sm')}<span>${esc(g.home_team||'-')}</span></span></span></div>${g.stadium?`<span class=\"muted\">${esc(g.stadium)}</span>`:''}`}"
+          text = re.sub(r'function allGameLabelHtml\(g\)\{.*?\}\nfunction homeAwayText', all_func + '\nfunction homeAwayText', text, count=1, flags=re.S)
+
+          p.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit refined layout
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Refine KBO logo placement in schedule cards"
+          git push
