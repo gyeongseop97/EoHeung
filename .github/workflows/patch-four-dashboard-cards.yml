@@ -1,0 +1,36 @@
+name: Patch Four Dashboard Cards
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/patch_four_dashboard_cards.py'
+      - '.github/workflows/patch-four-dashboard-cards.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Patch dashboard cards CSS
+        run: python scripts/patch_four_dashboard_cards.py
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add eoheung-member-logo-patch.js
+          git commit -m "Force four dashboard cards in one row"
+          git push
