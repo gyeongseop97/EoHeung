@@ -1,0 +1,41 @@
+name: Apply Default Topbar Theme
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Link default topbar stylesheet
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          supabase_script = '  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>'
+          link = '  <link rel="stylesheet" href="default-topbar-theme.css" />'
+          if 'default-topbar-theme.css' not in text:
+              text = text.replace(supabase_script, supabase_script + '\n' + link)
+          p.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Use top navigation in default theme"
+          git push
