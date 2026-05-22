@@ -1,0 +1,63 @@
+/* Excel-like work mode theme */
+body.theme-excel{background:#f3f3f3!important;color:#111827;font-size:13px}
+body.theme-excel .app{display:block!important;min-height:100vh;background:#f3f3f3}
+body.theme-excel .sidebar{position:sticky!important;top:0;z-index:40;height:auto!important;display:grid!important;grid-template-columns:250px 1fr 220px;align-items:center;gap:12px;padding:0!important;background:#217346!important;color:#fff;box-shadow:none!important;border-bottom:1px solid #185c37;overflow:visible!important}
+body.theme-excel .brand{height:42px;margin:0!important;padding:0 12px;gap:8px;background:#217346;border-right:1px solid rgba(255,255,255,.18)}
+body.theme-excel .logo{width:28px!important;height:28px!important;border-radius:2px!important;box-shadow:none!important;background:#fff;color:#217346}
+body.theme-excel .brand h1{font-size:14px!important;font-weight:800;white-space:nowrap}
+body.theme-excel .brand p{display:none}
+body.theme-excel .nav{margin:0!important;display:flex!important;gap:0;align-items:stretch;align-self:stretch;overflow:auto;background:#217346}
+body.theme-excel .nav button{height:42px;border-radius:0!important;background:#217346!important;color:#fff!important;padding:0 14px;border:0;border-left:1px solid rgba(255,255,255,.08);box-shadow:none!important;font-size:13px;white-space:nowrap;transform:none!important}
+body.theme-excel .nav button:hover,body.theme-excel .nav button.active{background:#f3f3f3!important;color:#185c37!important;transform:none!important}
+body.theme-excel .syncbox{margin:0!important;height:42px;border:0;border-left:1px solid rgba(255,255,255,.18);border-radius:0!important;background:#217346!important;color:#eefaf2;padding:5px 10px;font-size:11px;overflow:hidden}
+body.theme-excel .syncbox b,body.theme-excel .syncbox .btn{display:none!important}
+body.theme-excel .main{padding:0!important;background:#f3f3f3}
+body.theme-excel .topbar{height:64px;margin:0!important;padding:8px 18px;border-bottom:1px solid #c9c9c9;background:#fafafa}
+body.theme-excel .topbar h2{font-size:20px!important;color:#111827}
+body.theme-excel .topbar p{font-size:12px;margin-top:2px}
+body.theme-excel .section{padding:16px 18px}
+body.theme-excel .card{border-radius:0!important;box-shadow:none!important;background:#fff!important;border:1px solid #a6a6a6!important}
+body.theme-excel .card.pad{padding:12px!important}
+body.theme-excel .grid4{gap:8px;margin-bottom:10px}
+body.theme-excel .metric{padding:10px!important;background:#fff}
+body.theme-excel .metric .label{font-size:12px;color:#375623}
+body.theme-excel .metric .value{font-size:22px!important;color:#217346}
+body.theme-excel h3{font-size:15px;margin:0 0 10px;color:#111827}
+body.theme-excel .btn{border-radius:0!important;background:#217346!important;border:1px solid #185c37!important;box-shadow:none!important;padding:7px 10px;font-size:12px}
+body.theme-excel .btn.secondary{background:#fff!important;color:#185c37!important;border:1px solid #7f7f7f!important}
+body.theme-excel .btn.green{background:#e2f0d9!important;color:#185c37!important;border:1px solid #70ad47!important}
+body.theme-excel .btn.danger{background:#fff!important;color:#b91c1c!important;border:1px solid #b91c1c!important}
+body.theme-excel .toolbar{gap:6px;margin-bottom:8px}
+body.theme-excel .input,body.theme-excel select,body.theme-excel textarea{border-radius:0!important;border:1px solid #7f7f7f!important;min-height:30px;padding:5px 7px;font-size:12px;box-shadow:none!important}
+body.theme-excel table{border-spacing:0!important;border-collapse:collapse!important;background:#fff}
+body.theme-excel th{background:#d9e2f3!important;color:#111827!important;border:1px solid #a6a6a6!important;padding:6px 8px!important;font-size:12px!important;font-weight:700}
+body.theme-excel td{border:1px solid #d9d9d9!important;border-radius:0!important;background:#fff!important;padding:6px 8px!important;font-size:12px!important}
+body.theme-excel .dashboard-grid{grid-template-columns:1fr 1fr 1fr!important;gap:8px!important}
+body.theme-excel .mini-list{gap:0!important}
+body.theme-excel .mini-row{border-radius:0!important;box-shadow:none!important;background:#fff!important;border:1px solid #d9d9d9!important;border-bottom:0!important;padding:8px 10px!important}
+body.theme-excel .mini-row:last-child{border-bottom:1px solid #d9d9d9!important}
+body.theme-excel .kbo-game-card{min-height:58px!important;padding:7px 8px!important;grid-template-columns:66px 1fr!important}
+body.theme-excel .kbo-card-time{font-size:14px!important}
+body.theme-excel .kbo-card-park,body.theme-excel .kbo-card-status{font-size:11px!important}
+body.theme-excel .kbo-card-match .scoreline{font-size:15px!important;gap:6px!important}
+body.theme-excel .team-side.card-team span{font-size:15px!important}
+body.theme-excel .team-logo.kbo-card-logo{width:28px!important;height:28px!important}
+body.theme-excel .schedule-layout{gap:8px!important}
+body.theme-excel .calendar{gap:0!important;border-top:1px solid #a6a6a6;border-left:1px solid #a6a6a6;background:#fff}
+body.theme-excel .dow{background:#d9e2f3!important;color:#111827!important;border-right:1px solid #a6a6a6;border-bottom:1px solid #a6a6a6;padding:5px 0}
+body.theme-excel .day{border-radius:0!important;border:0!important;border-right:1px solid #d9d9d9!important;border-bottom:1px solid #d9d9d9!important;min-height:95px!important;padding:5px!important;background:#fff!important}
+body.theme-excel .day.selected{outline:2px solid #217346!important;box-shadow:inset 0 0 0 1px #217346!important}
+body.theme-excel .day.today{outline:2px solid #70ad47!important}
+body.theme-excel .day.watch-attended{background:#e2f0d9!important}
+body.theme-excel .game-chip{border-radius:0!important;background:#eef5ea!important;color:#185c37!important;border:1px solid #c6e0b4!important;padding:3px 4px!important;font-size:10px!important}
+body.theme-excel .watch-chip.attended{border-radius:0!important;background:#d9ead3!important;color:#185c37!important}
+body.theme-excel .watch-item,body.theme-excel .empty,body.theme-excel .check-row{border-radius:0!important;box-shadow:none!important;background:#fff!important;border:1px solid #d9d9d9!important}
+body.theme-excel .badge{border-radius:0!important}
+body.theme-excel .modal{border-radius:0!important;box-shadow:0 8px 24px rgba(0,0,0,.18)!important}
+body.theme-excel .theme-setting-box{display:grid;grid-template-columns:minmax(180px,260px) 1fr;gap:12px;align-items:center}
+body.theme-excel .theme-preview{border:1px solid #a6a6a6;background:#fff;border-radius:0;padding:10px;font-size:12px}
+body.theme-excel .theme-preview .excel-ribbon{background:#217346;color:#fff;padding:6px 8px;font-weight:900;margin:-10px -10px 8px}
+body.theme-excel .theme-preview table{width:100%;border-collapse:collapse}
+body.theme-excel .theme-preview td{border:1px solid #d9ead3;padding:4px 6px}
+body.theme-excel .theme-preview .head{background:#e2f0d9;font-weight:900;color:#375623}
+@media(max-width:1200px){body.theme-excel .sidebar{grid-template-columns:1fr}body.theme-excel .brand{border-right:0}body.theme-excel .syncbox{display:none!important}body.theme-excel .dashboard-grid{grid-template-columns:1fr!important}body.theme-excel .nav{flex-wrap:wrap}}
