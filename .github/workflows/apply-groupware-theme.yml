@@ -1,0 +1,65 @@
+name: Apply Groupware Theme
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Link stylesheets and add groupware option
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          supabase_script = '  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>'
+          links = []
+          if 'excel-work-theme.css' not in text:
+              links.append('  <link rel="stylesheet" href="excel-work-theme.css" />')
+          if 'groupware-theme.css' not in text:
+              links.append('  <link rel="stylesheet" href="groupware-theme.css" />')
+          if links:
+              text = text.replace(supabase_script, supabase_script + '\n' + '\n'.join(links))
+
+          if '<option value="groupware">그룹웨어 테마</option>' not in text:
+              text = text.replace('<option value="excel">엑셀 테마</option>', '<option value="excel">엑셀 테마</option><option value="groupware">그룹웨어 테마</option>')
+
+          text = text.replace(
+              '회사에서 볼 때 덜 튀도록 엑셀 느낌의 녹색/표 형식 UI로 바꿉니다. 선택값은 현재 브라우저에 저장됩니다.',
+              '기본 테마, 엑셀 테마, 그룹웨어 테마를 선택할 수 있습니다. 그룹웨어 테마는 회사 포털처럼 상단 메뉴와 흰색 위젯 카드 중심으로 표시됩니다. 선택값은 현재 브라우저에 저장됩니다.'
+          )
+          text = text.replace(
+              '엑셀 테마를 선택하면 좌측 메뉴가 상단 리본 메뉴로 바뀌고, 화면 전체에 엑셀처럼 행렬/눈금선이 표시됩니다. 선택값은 현재 브라우저에 저장됩니다.',
+              '기본 테마, 엑셀 테마, 그룹웨어 테마를 선택할 수 있습니다. 그룹웨어 테마는 회사 포털처럼 상단 메뉴와 흰색 위젯 카드 중심으로 표시됩니다. 선택값은 현재 브라우저에 저장됩니다.'
+          )
+
+          old = "function applyTheme(theme){const t=theme||getSavedTheme();document.body.classList.toggle('theme-excel',t==='excel');localStorage.setItem('watchPartyTheme',t);const sel=document.getElementById('themeSelect');if(sel)sel.value=t}"
+          new = "function applyTheme(theme){const t=theme||getSavedTheme();document.body.classList.toggle('theme-excel',t==='excel');document.body.classList.toggle('theme-groupware',t==='groupware');localStorage.setItem('watchPartyTheme',t);const sel=document.getElementById('themeSelect');if(sel)sel.value=t}"
+          text = text.replace(old, new)
+
+          p.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Add selectable groupware theme"
+          git push
