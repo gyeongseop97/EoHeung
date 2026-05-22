@@ -2,6 +2,25 @@
   function qs(sel){return document.querySelector(sel)}
   function isMobileLike(){return window.innerWidth<=900||window.matchMedia('(hover:none) and (pointer:coarse) and (max-width:920px)').matches}
 
+  function ensureDesktopAccountActions(){
+    let box=qs('#desktopAccountActions');
+    if(!box){
+      box=document.createElement('div');
+      box.id='desktopAccountActions';
+      box.className='desktop-account-actions';
+      box.innerHTML='<span class="desktop-account-email"></span><button type="button" class="desktop-account-logout">로그아웃</button>';
+      document.body.appendChild(box);
+      box.querySelector('.desktop-account-logout').addEventListener('click',function(e){
+        e.preventDefault();
+        const signOut=qs('#signOutBtn');
+        if(signOut)signOut.click();
+      });
+    }
+    const email=box.querySelector('.desktop-account-email');
+    const source=qs('#userEmail');
+    if(email)email.textContent=(source&&source.textContent.trim())?source.textContent.trim():'';
+  }
+
   function injectDesktopHeaderFix(){
     if(qs('#desktopHeaderAuthFixStyle'))return;
     const style=document.createElement('style');
@@ -9,20 +28,22 @@
     style.textContent=`
 @media(min-width:901px){
   .syncbox{display:none!important}
+  .topbar .toolbar{display:none!important}
   .sidebar,body.theme-excel .sidebar,body.theme-groupware .sidebar{padding-right:250px!important;overflow:visible!important}
   body:not(.theme-excel):not(.theme-groupware) .sidebar{grid-template-columns:280px minmax(0,1fr)!important}
   body.theme-excel .sidebar{grid-template-columns:250px minmax(0,1fr)!important}
   body.theme-groupware .sidebar{grid-template-columns:260px minmax(0,1fr)!important}
-  .topbar .toolbar{position:fixed!important;right:16px!important;top:13px!important;z-index:3000!important;margin:0!important;display:flex!important;align-items:center!important;gap:10px!important;padding:7px 10px!important;border-radius:16px!important;background:rgba(255,255,255,.94)!important;border:1px solid rgba(220,229,242,.9)!important;box-shadow:0 8px 22px rgba(4,30,66,.14)!important;backdrop-filter:blur(10px)!important}
-  .topbar .toolbar #userEmail{display:block!important;max-width:175px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;color:#475569!important;font-size:12px!important;line-height:1!important}
-  .topbar .toolbar #signOutBtn{padding:8px 10px!important;border-radius:12px!important;font-size:12px!important;line-height:1!important;box-shadow:none!important}
-  body.theme-excel .topbar .toolbar{top:5px!important;right:10px!important;border-radius:2px!important;background:#fff!important;border:1px solid #b7c9b7!important;box-shadow:none!important;padding:5px 8px!important}
-  body.theme-excel .topbar .toolbar #signOutBtn{border-radius:2px!important;padding:7px 9px!important}
-  body.theme-groupware .topbar .toolbar{top:8px!important;right:14px!important;border-radius:2px!important;background:#fff!important;border:1px solid #c7d8ea!important;box-shadow:0 1px 4px rgba(0,0,0,.12)!important;padding:5px 9px!important}
-  body.theme-groupware .topbar .toolbar #signOutBtn{border-radius:2px!important;padding:7px 9px!important}
+  .desktop-account-actions{position:fixed!important;right:16px!important;top:13px!important;z-index:5000!important;display:flex!important;align-items:center!important;gap:10px!important;padding:7px 10px!important;border-radius:16px!important;background:rgba(255,255,255,.94)!important;border:1px solid rgba(220,229,242,.9)!important;box-shadow:0 8px 22px rgba(4,30,66,.14)!important;backdrop-filter:blur(10px)!important}
+  .desktop-account-email{display:block!important;max-width:175px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;color:#475569!important;font-size:12px!important;line-height:1!important}
+  .desktop-account-logout{border:1px solid #fecdd3!important;background:#fff1f2!important;color:#be123c!important;border-radius:12px!important;padding:8px 10px!important;font-size:12px!important;font-weight:900!important;line-height:1!important;box-shadow:none!important;cursor:pointer!important}
+  body.theme-excel .desktop-account-actions{top:5px!important;right:10px!important;border-radius:2px!important;background:#fff!important;border:1px solid #b7c9b7!important;box-shadow:none!important;padding:5px 8px!important}
+  body.theme-excel .desktop-account-logout{border-radius:2px!important;padding:7px 9px!important}
+  body.theme-groupware .desktop-account-actions{top:8px!important;right:14px!important;border-radius:2px!important;background:#fff!important;border:1px solid #c7d8ea!important;box-shadow:0 1px 4px rgba(0,0,0,.12)!important;padding:5px 9px!important}
+  body.theme-groupware .desktop-account-logout{border-radius:2px!important;padding:7px 9px!important}
 }
 @media(max-width:900px){
   .syncbox{display:none!important}
+  .desktop-account-actions{display:none!important}
   .topbar .toolbar{position:static!important;box-shadow:none!important;background:transparent!important;border:0!important;padding:0!important}
 }`;
     document.head.appendChild(style);
@@ -59,7 +80,6 @@
         btn.setAttribute('aria-expanded',willOpen?'true':'false');
       });
     }
-    /* 항상 sidebar의 직접 자식 마지막에 두고, CSS는 fixed/right로 강제한다 */
     if(btn.parentElement!==sidebar)sidebar.appendChild(btn);
     else sidebar.appendChild(btn);
 
@@ -183,11 +203,12 @@
 
   document.addEventListener('DOMContentLoaded',function(){
     injectDesktopHeaderFix();
+    ensureDesktopAccountActions();
     ensureMobileDrawer();
     enhanceScheduleControls();
     installQuickLinkDelete();
-    setInterval(function(){syncMobileUser();enhanceScheduleControls();ensureMobileDrawer()},1200);
+    setInterval(function(){ensureDesktopAccountActions();syncMobileUser();enhanceScheduleControls();ensureMobileDrawer()},1200);
   });
-  window.addEventListener('resize',function(){injectDesktopHeaderFix();closeOnDesktop();enhanceScheduleControls();ensureMobileDrawer()});
+  window.addEventListener('resize',function(){injectDesktopHeaderFix();ensureDesktopAccountActions();closeOnDesktop();enhanceScheduleControls();ensureMobileDrawer()});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenu()});
 })();
