@@ -1,0 +1,31 @@
+name: Patch Dashboard Next Watch Placement
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Patch dashboard layout
+        run: python scripts/patch_dashboard_next_watch.py
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add eoheung-member-logo-patch.js
+          git commit -m "Move next watch card into dashboard rankings"
+          git push
