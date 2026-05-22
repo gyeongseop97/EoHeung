@@ -1,0 +1,38 @@
+name: Apply EoHeung Member Logo Patch
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'eoheung-member-logo-patch.js'
+      - 'logo/eoheung.b64.txt'
+      - 'scripts/apply_eoheung_member_logo_patch.py'
+      - '.github/workflows/apply-eoheung-member-logo-patch.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Insert patch script tag
+        run: python scripts/apply_eoheung_member_logo_patch.py
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Load EoHeung logo and member management patch"
+          git push
