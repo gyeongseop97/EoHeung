@@ -1,0 +1,41 @@
+name: Apply Excel Work Theme CSS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Link Excel stylesheet in index
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          link = '  <link rel="stylesheet" href="excel-work-theme.css" />'
+          if 'excel-work-theme.css' not in text:
+              text = text.replace('  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>', '  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n' + link)
+          text = text.replace('회사에서 볼 때 덜 튀도록 엑셀 느낌의 녹색/표 형식 UI로 바꿉니다. 선택값은 현재 브라우저에 저장됩니다.', '엑셀 테마를 선택하면 좌측 메뉴가 상단 리본 메뉴로 바뀌고, 화면 전체에 엑셀처럼 행렬/눈금선이 표시됩니다. 선택값은 현재 브라우저에 저장됩니다.')
+          p.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Link Excel work mode stylesheet"
+          git push
