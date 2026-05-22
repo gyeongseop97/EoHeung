@@ -15,6 +15,29 @@ else:
 text = text.replace("await ensureAboutPage();toast?.('모임 소개와 운영 규칙을 저장했습니다.')", "await ensureAboutPage(true);toast?.('모임 소개와 운영 규칙을 저장했습니다.')")
 text = text.replace("localStorage.removeItem(LS_ABOUT);await ensureAboutPage()", "localStorage.removeItem(LS_ABOUT);await ensureAboutPage(true)")
 
+old_record = "async function recordChange(action,detail,target_type='',target_id=''){\n    const actor=(typeof state!=='undefined'&&state.user?.email)||window.currentUserEmail||'';\n    const row={id:Date.now()+'-'+Math.random().toString(16).slice(2),created_at:new Date().toISOString(),actor,action,detail,target_type,target_id:String(target_id||'')};\n    setHist([row,...getHist()]); renderHistoryPanel();\n    try{if(typeof state!=='undefined'&&state.client)await state.client.from('change_logs').insert(row)}catch(e){}\n  }"
+new_record = "async function recordChange(action,detail,target_type='',target_id=''){\n    const actor=(typeof state!=='undefined'&&state.user?.email)||window.currentUserEmail||'';\n    const row={actor,action,detail,target_type,target_id:String(target_id||'')};\n    if(typeof state==='undefined'||!state.client){\n      toast?.('서버 연결 후 변경이력이 기록됩니다.');\n      return;\n    }\n    const {error}=await state.client.from('change_logs').insert(row);\n    if(error){\n      console.warn('change_logs insert failed',error);\n      toast?.('변경이력 서버 기록 실패: '+error.message);\n      return;\n    }\n    await renderHistoryPanel();\n  }"
+if old_record in text:
+    text = text.replace(old_record, new_record)
+else:
+    print('recordChange exact target not found; skipping')
+
+old_history = "function renderHistoryPanel(){ensureHistoryPanel();const list=$('#eoHistoryList');if(!list)return;const rows=getHist().slice(0,80);list.innerHTML=rows.length?rows.map(r=>`<div class=\"eo-history-item\"><time>${new Date(r.created_at).toLocaleString('ko-KR')}</time><div><b>${esc(r.action)}</b><p>${esc(r.detail||'')}<br>${esc(r.actor||'unknown')}</p></div></div>`).join(''):'<div class=\"empty\">변경 이력이 없습니다.</div>'}"
+new_history = "async function renderHistoryPanel(){\n    ensureHistoryPanel();\n    const list=$('#eoHistoryList');\n    if(!list)return;\n    if(typeof state==='undefined'||!state.client){list.innerHTML='<div class=\"empty\">서버 연결 후 변경이력을 불러옵니다.</div>';return}\n    list.innerHTML='<div class=\"empty\">서버 변경이력을 불러오는 중입니다...</div>';\n    const {data,error}=await state.client.from('change_logs').select('*').order('created_at',{ascending:false}).limit(80);\n    if(error){list.innerHTML=`<div class=\"empty\">서버 변경이력 조회 실패<br>${esc(error.message)}</div>`;return}\n    const rows=data||[];\n    list.innerHTML=rows.length?rows.map(r=>`<div class=\"eo-history-item\"><time>${new Date(r.created_at).toLocaleString('ko-KR')}</time><div><b>${esc(r.action)}</b><p>${esc(r.detail||'')}<br>${esc(r.actor||'unknown')}</p></div></div>`).join(''):'<div class=\"empty\">서버에 기록된 변경 이력이 없습니다.</div>';\n  }"
+if old_history in text:
+    text = text.replace(old_history, new_history)
+else:
+    print('renderHistoryPanel exact target not found; skipping')
+
+# Disable local-only delete/export buttons in settings history header and rewrite description.
+text = text.replace("<button class=\"btn secondary\" data-export-history>내보내기</button><button class=\"btn danger\" data-clear-history>로컬 이력 삭제</button>", "<button class=\"btn secondary\" data-refresh-history>새로고침</button>")
+text = text.replace("회원 수정, 직관 체크, 좌석/메모 저장 등 주요 변경 내역을 기록합니다.", "회원 수정, 직관 체크, 좌석/메모 저장 등 주요 변경 내역을 Supabase 서버에 기록합니다.")
+
+# Replace button handler behavior for history refresh and remove local-only actions if present.
+text = text.replace("if(e.target.closest('[data-clear-history]')){e.preventDefault();if(confirm('현재 브라우저에 저장된 로컬 변경 이력을 삭제할까요?')){setHist([]);renderHistoryPanel()}return}if(e.target.closest('[data-export-history]')){e.preventDefault();const blob=new Blob([JSON.stringify(getHist(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='eoheung_change_history.json';a.click();URL.revokeObjectURL(a.href);return}", "if(e.target.closest('[data-refresh-history]')){e.preventDefault();await renderHistoryPanel();toast?.('서버 변경이력을 새로고침했습니다.');return}")
+
+# Make periodic render call async-safe; original code can call async render without await but okay.
+
 marker_start = '/* EOHEUNG_FORCE_FOUR_DASHBOARD_CARDS_START */'
 marker_end = '/* EOHEUNG_FORCE_FOUR_DASHBOARD_CARDS_END */'
 
@@ -160,4 +183,4 @@ else:
     text = text.rstrip() + '\n\n' + css + '\n'
 
 p.write_text(text, encoding='utf-8')
-print('patched dashboard cards and about editor rerender issue')
+print('patched dashboard cards, about editor, and server-based change history')
