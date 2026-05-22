@@ -22,6 +22,12 @@ css = r'''
   #dashboard .rank-grid > #eoNextWatch{
     min-width:0!important;
     width:auto!important;
+    height:100%!important;
+    min-height:192px!important;
+  }
+  #dashboard .rank-grid > .card{
+    display:flex!important;
+    flex-direction:column!important;
   }
   #dashboard .rank-grid .card.pad{
     padding:13px!important;
@@ -37,6 +43,7 @@ css = r'''
   }
   #dashboard .rank-grid .rank-list{
     margin-top:6px!important;
+    flex:1 1 auto!important;
   }
   #dashboard .rank-grid .rank-list li{
     font-size:12px!important;
@@ -56,12 +63,16 @@ css = r'''
   }
   #dashboard #eoNextWatch .eo-next-hero{
     height:100%!important;
-    min-height:0!important;
+    min-height:192px!important;
     padding:13px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:flex-start!important;
   }
   #dashboard #eoNextWatch .eo-next-hero h3{
     font-size:15px!important;
     margin:0 0 8px!important;
+    flex:0 0 auto!important;
   }
   #dashboard #eoNextWatch .eo-next-hero p{
     font-size:12px!important;
@@ -73,8 +84,11 @@ css = r'''
     line-height:1.32!important;
   }
   #dashboard #eoNextWatch .eo-next-meta{
-    gap:4px!important;
-    margin:7px 0!important;
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:5px!important;
+    margin:8px 0!important;
+    align-items:flex-start!important;
   }
   #dashboard #eoNextWatch .eo-pill{
     font-size:10.5px!important;
@@ -83,6 +97,16 @@ css = r'''
     overflow:hidden!important;
     text-overflow:ellipsis!important;
     white-space:nowrap!important;
+  }
+  #dashboard #eoNextWatch .eo-seat{
+    flex-basis:100%!important;
+    width:fit-content!important;
+    max-width:100%!important;
+    white-space:normal!important;
+    line-height:1.25!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    margin-top:2px!important;
   }
   #dashboard #eoNextWatch .eo-next-hero::after{
     font-size:42px!important;
@@ -99,6 +123,11 @@ css = r'''
 }
 @media (max-width:900px){
   #dashboard .rank-grid{grid-template-columns:1fr!important;}
+  #dashboard #eoNextWatch .eo-seat{
+    flex-basis:100%!important;
+    white-space:normal!important;
+    line-height:1.25!important;
+  }
 }`;
   let style = document.getElementById(styleId);
   if(!style){
@@ -116,8 +145,7 @@ if marker_start in text and marker_end in text:
     after = text.split(marker_end, 1)[1]
     text = before + css + after
 else:
-    # append just before the final IIFE close if present; otherwise append at end
     text = text.rstrip() + '\n\n' + css + '\n'
 
 p.write_text(text, encoding='utf-8')
-print('forced four dashboard cards css appended')
+print('forced four dashboard cards css with equal height and seat wrap')
