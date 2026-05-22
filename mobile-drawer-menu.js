@@ -1,5 +1,6 @@
 (function(){
   function qs(sel){return document.querySelector(sel)}
+
   function ensureMobileDrawer(){
     const sidebar=qs('.sidebar');
     const nav=qs('.nav');
@@ -25,15 +26,37 @@
       btn.addEventListener('click',function(e){
         e.preventDefault();
         e.stopPropagation();
-        sidebar.classList.toggle('mobile-menu-open');
-        document.body.classList.toggle('mobile-menu-open',sidebar.classList.contains('mobile-menu-open'));
-        btn.setAttribute('aria-expanded',sidebar.classList.contains('mobile-menu-open')?'true':'false');
+        const willOpen=!sidebar.classList.contains('mobile-menu-open');
+        sidebar.classList.toggle('mobile-menu-open',willOpen);
+        document.body.classList.toggle('mobile-menu-open',willOpen);
+        btn.setAttribute('aria-expanded',willOpen?'true':'false');
       });
     }
 
-    nav.querySelectorAll('button').forEach(function(button){
+    if(!qs('#mobileDrawerFooter')){
+      const footer=document.createElement('div');
+      footer.id='mobileDrawerFooter';
+      footer.className='mobile-drawer-footer';
+      footer.innerHTML='<div class="mobile-drawer-user">로그인 계정</div><button type="button" class="mobile-logout-btn">로그아웃</button>';
+      nav.appendChild(footer);
+      footer.querySelector('.mobile-logout-btn').addEventListener('click',function(e){
+        e.preventDefault();
+        closeMenu();
+        const signOut=qs('#signOutBtn');
+        if(signOut)signOut.click();
+      });
+    }
+
+    syncMobileUser();
+    nav.querySelectorAll('button[data-page]').forEach(function(button){
       button.addEventListener('click',closeMenu);
     });
+  }
+
+  function syncMobileUser(){
+    const target=qs('#mobileDrawerFooter .mobile-drawer-user');
+    const source=qs('#userEmail');
+    if(target)target.textContent=(source&&source.textContent.trim())?source.textContent.trim():'로그인 계정';
   }
 
   function closeMenu(){
@@ -50,7 +73,10 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded',ensureMobileDrawer);
+  document.addEventListener('DOMContentLoaded',function(){
+    ensureMobileDrawer();
+    setInterval(syncMobileUser,1500);
+  });
   window.addEventListener('resize',closeOnDesktop);
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenu()});
 })();
