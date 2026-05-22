@@ -53,6 +53,33 @@
     });
   }
 
+  function enhanceScheduleControls(){
+    const manual=qs('#openGameModalBtn');
+    const sync=qs('#callSyncBtn');
+    if(manual)manual.classList.add('schedule-hidden-action');
+    if(sync)sync.classList.add('schedule-hidden-action');
+
+    const head=qs('#schedule .calendar-head');
+    const prev=qs('#prevMonthBtn');
+    const today=qs('#todayBtn');
+    const next=qs('#nextMonthBtn');
+    if(!head||!prev||!today||!next)return;
+
+    let controls=qs('#calendarNavControls');
+    if(!controls){
+      controls=document.createElement('div');
+      controls.id='calendarNavControls';
+      controls.className='calendar-nav-controls';
+      head.appendChild(controls);
+    }
+    prev.classList.add('calendar-nav-btn');
+    today.classList.add('calendar-nav-btn','calendar-today-btn');
+    next.classList.add('calendar-nav-btn');
+    controls.appendChild(prev);
+    controls.appendChild(today);
+    controls.appendChild(next);
+  }
+
   function syncMobileUser(){
     const target=qs('#mobileDrawerFooter .mobile-drawer-user');
     const source=qs('#userEmail');
@@ -75,8 +102,9 @@
 
   document.addEventListener('DOMContentLoaded',function(){
     ensureMobileDrawer();
-    setInterval(syncMobileUser,1500);
+    enhanceScheduleControls();
+    setInterval(function(){syncMobileUser();enhanceScheduleControls()},1500);
   });
-  window.addEventListener('resize',closeOnDesktop);
+  window.addEventListener('resize',function(){closeOnDesktop();enhanceScheduleControls()});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenu()});
 })();
