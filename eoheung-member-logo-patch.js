@@ -95,3 +95,108 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
   setInterval(()=>{try{injectStyle();applyLogo();installOverrides();ensureAboutPage();ensureHistoryPanel();renderHistoryPanel();renderNextWatchPanel()}catch(e){}},1800);
 })();
+
+
+/* EOHEUNG_FORCE_FOUR_DASHBOARD_CARDS_START */
+(function(){
+  const styleId = 'eoheungForceFourDashboardCardsStyle';
+  const css = `
+@media (min-width: 901px){
+  #dashboard .rank-grid{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:10px!important;
+    align-items:stretch!important;
+  }
+  #dashboard .rank-grid > .card,
+  #dashboard .rank-grid > #eoNextWatch{
+    min-width:0!important;
+    width:auto!important;
+  }
+  #dashboard .rank-grid .card.pad{
+    padding:13px!important;
+  }
+  #dashboard .rank-grid h3{
+    font-size:15px!important;
+    line-height:1.25!important;
+    margin:0 0 8px!important;
+    letter-spacing:-.03em!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  #dashboard .rank-grid .rank-list{
+    margin-top:6px!important;
+  }
+  #dashboard .rank-grid .rank-list li{
+    font-size:12px!important;
+    line-height:1.25!important;
+    padding:6px 0!important;
+    gap:6px!important;
+  }
+  #dashboard .rank-grid .rank-list li b{
+    min-width:0!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+  #dashboard #eoNextWatch{
+    display:block!important;
+    margin:0!important;
+  }
+  #dashboard #eoNextWatch .eo-next-hero{
+    height:100%!important;
+    min-height:0!important;
+    padding:13px!important;
+  }
+  #dashboard #eoNextWatch .eo-next-hero h3{
+    font-size:15px!important;
+    margin:0 0 8px!important;
+  }
+  #dashboard #eoNextWatch .eo-next-hero p{
+    font-size:12px!important;
+    line-height:1.35!important;
+    margin:4px 0!important;
+  }
+  #dashboard #eoNextWatch .eo-next-hero p[style]{
+    font-size:13px!important;
+    line-height:1.32!important;
+  }
+  #dashboard #eoNextWatch .eo-next-meta{
+    gap:4px!important;
+    margin:7px 0!important;
+  }
+  #dashboard #eoNextWatch .eo-pill{
+    font-size:10.5px!important;
+    padding:3px 6px!important;
+    max-width:100%!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+  #dashboard #eoNextWatch .eo-next-hero::after{
+    font-size:42px!important;
+    right:-7px!important;
+    bottom:-10px!important;
+  }
+}
+@media (min-width:901px) and (max-width:1280px){
+  #dashboard .rank-grid{gap:8px!important;}
+  #dashboard .rank-grid .card.pad{padding:11px!important;}
+  #dashboard .rank-grid h3{font-size:13.5px!important;}
+  #dashboard .rank-grid .rank-list li{font-size:11px!important;}
+  #dashboard #eoNextWatch .eo-next-hero p[style]{font-size:12px!important;}
+}
+@media (max-width:900px){
+  #dashboard .rank-grid{grid-template-columns:1fr!important;}
+}`;
+  let style = document.getElementById(styleId);
+  if(!style){
+    style = document.createElement('style');
+    style.id = styleId;
+    document.head.appendChild(style);
+  }
+  style.textContent = css;
+})();
+/* EOHEUNG_FORCE_FOUR_DASHBOARD_CARDS_END */
+
