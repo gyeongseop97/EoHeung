@@ -1,0 +1,68 @@
+/* Sewon groupware-like theme */
+body.theme-groupware{
+  --gw-blue:#174ea6;
+  --gw-light-blue:#dceeff;
+  --gw-bg:#d9ebfb;
+  --gw-panel:#ffffff;
+  --gw-border:#c7d8ea;
+  --gw-text:#111827;
+  background:#d9ebfb!important;
+  color:#111827;
+  font-size:13px;
+}
+body.theme-groupware .app{display:block!important;min-height:100vh;background:#d9ebfb;background-image:linear-gradient(135deg,rgba(255,255,255,.45) 0,rgba(255,255,255,.18) 32%,transparent 32%),linear-gradient(135deg,transparent 58%,rgba(32,96,168,.12) 58%,rgba(32,96,168,.12) 76%,transparent 76%)}
+body.theme-groupware .sidebar{position:sticky!important;top:0;z-index:40;height:auto!important;display:grid!important;grid-template-columns:260px 1fr 250px;align-items:center;gap:0;padding:0!important;background:#fff!important;color:#111827;box-shadow:0 1px 4px rgba(0,0,0,.15)!important;border-bottom:1px solid #b7c8da;overflow:visible!important}
+body.theme-groupware .brand{height:50px;margin:0!important;padding:0 26px;gap:10px;background:#fff;border-top:5px solid #174ea6;border-right:1px solid #e5e7eb}
+body.theme-groupware .brand h1{font-size:18px!important;font-weight:900;letter-spacing:-.04em;color:#111827;white-space:nowrap}
+body.theme-groupware .brand h1::before{content:'SEWON ';font-weight:900;margin-right:4px;color:#111827}
+body.theme-groupware .brand p{display:none}
+body.theme-groupware .logo{display:none!important}
+body.theme-groupware .nav{height:50px;margin:0!important;display:flex!important;gap:0;align-items:center;justify-content:center;align-self:stretch;overflow:auto;background:#fff!important}
+body.theme-groupware .nav button{height:50px;border-radius:0!important;background:#fff!important;color:#111827!important;padding:0 18px;border:0;box-shadow:none!important;font-size:15px;font-weight:800;white-space:nowrap;transform:none!important;letter-spacing:-.03em}
+body.theme-groupware .nav button:hover,body.theme-groupware .nav button.active{background:#f5f8fc!important;color:#174ea6!important;border-bottom:3px solid #174ea6;transform:none!important}
+body.theme-groupware .syncbox{height:50px;margin:0!important;padding:7px 14px;background:#fff!important;border:0;border-left:1px solid #e5e7eb;border-radius:0!important;color:#4b5563;font-size:11px;overflow:hidden}
+body.theme-groupware .syncbox b{display:inline;color:#174ea6;margin-right:6px}.theme-groupware .syncbox .btn{display:none!important}
+body.theme-groupware .main{padding:0!important;background:transparent}
+body.theme-groupware .topbar{height:54px;margin:0!important;padding:8px 42px;border-bottom:1px solid #b7c8da;background:#d9ebfb}
+body.theme-groupware .topbar h2{font-size:22px!important;color:#111827;letter-spacing:-.04em}
+body.theme-groupware .topbar p{font-size:12px;color:#4b5563;margin-top:2px}
+body.theme-groupware .topbar .btn.danger{background:#fff!important;color:#174ea6!important;border:1px solid #b7c8da!important;border-radius:2px!important;box-shadow:none!important}
+body.theme-groupware .section{padding:18px 42px 26px}
+body.theme-groupware .card{background:#fff!important;border:1px solid #c7d8ea!important;border-radius:0!important;box-shadow:0 1px 3px rgba(0,0,0,.08)!important}
+body.theme-groupware .card.pad{padding:14px!important}
+body.theme-groupware .grid4{gap:12px;margin-bottom:14px}
+body.theme-groupware .metric{padding:14px!important;min-height:110px;background:#fff!important}
+body.theme-groupware .metric .label{font-size:13px;color:#111827;font-weight:900;border-bottom:1px solid #d9e5f2;padding-bottom:7px;margin-bottom:8px}
+body.theme-groupware .metric .value{font-size:24px!important;color:#174ea6;letter-spacing:-.04em}
+body.theme-groupware .metric .sub{color:#6b7280;font-size:12px}
+body.theme-groupware h3{font-size:15px;margin:0 0 10px;color:#111827;font-weight:900;letter-spacing:-.03em}
+body.theme-groupware .btn{border-radius:2px!important;background:#174ea6!important;border:1px solid #174ea6!important;box-shadow:none!important;padding:7px 12px;font-size:12px;font-weight:800}
+body.theme-groupware .btn.secondary{background:#fff!important;color:#174ea6!important;border:1px solid #b7c8da!important}
+body.theme-groupware .btn.green{background:#eaf5ff!important;color:#174ea6!important;border:1px solid #9ac1ee!important}
+body.theme-groupware .btn.danger{background:#fff!important;color:#b91c1c!important;border:1px solid #efb1b1!important}
+body.theme-groupware .input,body.theme-groupware select,body.theme-groupware textarea{border-radius:0!important;border:1px solid #c7d8ea!important;min-height:32px;padding:6px 8px;font-size:12px;box-shadow:none!important;background:#fff!important}
+body.theme-groupware .toolbar{gap:7px;margin-bottom:10px}
+body.theme-groupware table{border-spacing:0!important;border-collapse:collapse!important;background:#fff}
+body.theme-groupware th{background:#eef5fc!important;color:#111827!important;border:1px solid #c7d8ea!important;padding:7px 8px!important;font-size:12px!important;font-weight:900}
+body.theme-groupware td{border:1px solid #e1ebf5!important;border-radius:0!important;background:#fff!important;padding:7px 8px!important;font-size:12px!important}
+body.theme-groupware .dashboard-grid{grid-template-columns:1.05fr 1fr 1fr!important;gap:12px!important}
+body.theme-groupware .mini-list{gap:0!important}
+body.theme-groupware .mini-row{border-radius:0!important;box-shadow:none!important;background:#fff!important;border:1px solid #d9e5f2!important;border-bottom:0!important;padding:10px 12px!important}
+body.theme-groupware .mini-row:last-child{border-bottom:1px solid #d9e5f2!important}
+body.theme-groupware .kbo-game-card{min-height:66px!important;padding:9px 10px!important;grid-template-columns:72px 1fr!important}
+body.theme-groupware .kbo-card-time{font-size:15px!important;color:#111827}
+body.theme-groupware .kbo-card-park,body.theme-groupware .kbo-card-status{font-size:11px!important;color:#4b5563}
+body.theme-groupware .kbo-card-match .scoreline{font-size:16px!important;gap:7px!important}
+body.theme-groupware .team-side.card-team span{font-size:16px!important}.theme-groupware .team-logo.kbo-card-logo{width:30px!important;height:30px!important}
+body.theme-groupware .schedule-layout{gap:12px!important}
+body.theme-groupware .calendar-head{margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #d9e5f2}.theme-groupware .calendar-title{font-size:17px;color:#111827}
+body.theme-groupware .calendar{gap:0!important;border-top:1px solid #c7d8ea;border-left:1px solid #c7d8ea;background:#fff}
+body.theme-groupware .dow{background:#eef5fc!important;color:#111827!important;border-right:1px solid #c7d8ea;border-bottom:1px solid #c7d8ea;padding:6px 0;font-size:12px}
+body.theme-groupware .day{border-radius:0!important;border:0!important;border-right:1px solid #e1ebf5!important;border-bottom:1px solid #e1ebf5!important;min-height:100px!important;padding:6px!important;background:#fff!important;box-shadow:none!important}
+body.theme-groupware .day.selected{outline:2px solid #174ea6!important;box-shadow:inset 0 0 0 1px #174ea6!important}.theme-groupware .day.today{outline:2px solid #ef4444!important}.theme-groupware .day.watch-attended{background:#edf7ff!important}
+body.theme-groupware .game-chip{border-radius:2px!important;background:#eef5fc!important;color:#174ea6!important;border:1px solid #c7d8ea!important;padding:4px 5px!important;font-size:10px!important}.theme-groupware .watch-chip.attended{border-radius:2px!important;background:#eaf5ff!important;color:#174ea6!important}
+body.theme-groupware .watch-item,body.theme-groupware .empty,body.theme-groupware .check-row{border-radius:0!important;box-shadow:none!important;background:#fff!important;border:1px solid #d9e5f2!important}
+body.theme-groupware .badge{border-radius:2px!important}.theme-groupware .modal{border-radius:0!important;box-shadow:0 8px 24px rgba(0,0,0,.18)!important}
+body.theme-groupware .rank-list li{border-bottom:1px solid #e1ebf5}
+body.theme-groupware .theme-setting-box{display:grid;grid-template-columns:minmax(180px,260px) 1fr;gap:12px;align-items:center}.theme-groupware .theme-preview{border:1px solid #c7d8ea;background:#fff;border-radius:0;padding:10px;font-size:12px}.theme-groupware .theme-preview .excel-ribbon{background:#174ea6;color:#fff;padding:6px 8px;font-weight:900;margin:-10px -10px 8px}
+@media(max-width:1200px){body.theme-groupware .sidebar{grid-template-columns:1fr}body.theme-groupware .brand{border-right:0}body.theme-groupware .syncbox{display:none!important}body.theme-groupware .dashboard-grid{grid-template-columns:1fr!important}body.theme-groupware .nav{justify-content:flex-start;flex-wrap:wrap;height:auto}body.theme-groupware .nav button{height:40px}body.theme-groupware .section{padding:14px}}
