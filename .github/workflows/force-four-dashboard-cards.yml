@@ -1,0 +1,36 @@
+name: Force Four Dashboard Cards
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/force_four_dashboard_cards.py'
+      - '.github/workflows/force-four-dashboard-cards.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Apply robust four-card dashboard patch
+        run: python scripts/force_four_dashboard_cards.py
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add eoheung-member-logo-patch.js
+          git commit -m "Force dashboard ranking cards into one row"
+          git push
