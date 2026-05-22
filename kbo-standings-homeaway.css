@@ -46,3 +46,137 @@ body.theme-groupware .game-chip.away-tag:not(.finished):not(.postponed){backgrou
 body.theme-groupware .kbo-standings-wrap{border-radius:0;border:1px solid #c7d8ea}
 body.theme-groupware .kbo-standings-table th{background:#eef5fc!important;color:#111827!important;border-bottom:1px solid #c7d8ea!important}
 body.theme-groupware .kbo-standings-table td{border-bottom:1px solid #e1ebf5!important}
+
+/* Compact dashboard placement: put standings beside the 3 dashboard game cards */
+#dashboard.section.active{
+  display:grid;
+  grid-template-columns:minmax(320px,1.15fr) minmax(260px,.9fr) minmax(260px,.9fr) minmax(270px,.75fr);
+  gap:14px;
+  align-items:start;
+}
+#dashboard > .grid4,
+#dashboard > .rank-grid{
+  grid-column:1 / -1;
+}
+#dashboard > .grid4{order:1}
+#dashboard > .rank-grid{order:2}
+#dashboard > .dashboard-grid{
+  display:contents;
+}
+#dashboard > .dashboard-grid > .card:nth-child(1){order:3}
+#dashboard > .dashboard-grid > .card:nth-child(2){order:4}
+#dashboard > .dashboard-grid > .card:nth-child(3){order:5}
+#dashboard > .kbo-standings-card{
+  order:6;
+  margin:0;
+  min-width:0;
+}
+.kbo-standings-card{
+  padding:14px!important;
+}
+.kbo-standings-head{
+  align-items:center;
+  margin-bottom:8px;
+}
+.kbo-standings-head .note{
+  display:none;
+}
+.kbo-standings-card h3{
+  font-size:17px;
+  letter-spacing:-.04em;
+}
+.kbo-standings-wrap{
+  border-radius:12px;
+  overflow:hidden;
+}
+.kbo-standings-table{
+  min-width:0;
+  table-layout:fixed;
+  font-size:12px;
+}
+.kbo-standings-table th,
+.kbo-standings-table td{
+  padding:6px 4px;
+  font-size:12px;
+}
+.kbo-standings-table th:nth-child(1),
+.kbo-standings-table td:nth-child(1){width:32px}
+.kbo-standings-table th:nth-child(2),
+.kbo-standings-table td:nth-child(2){width:86px}
+.kbo-standings-table th:nth-child(3),
+.kbo-standings-table td:nth-child(3){width:48px}
+.kbo-standings-table th:nth-child(4),
+.kbo-standings-table td:nth-child(4){width:42px}
+.kbo-standings-table th:nth-child(5),
+.kbo-standings-table td:nth-child(5),
+.kbo-standings-table th:nth-child(6),
+.kbo-standings-table td:nth-child(6),
+.kbo-standings-table th:nth-child(7),
+.kbo-standings-table td:nth-child(7){width:30px}
+.kbo-standings-table th:nth-child(8),
+.kbo-standings-table td:nth-child(8),
+.kbo-standings-table th:nth-child(9),
+.kbo-standings-table td:nth-child(9){display:none}
+.kbo-standings-table .team-cell{min-width:0}
+.kbo-standings-table .team-cell-inner{
+  gap:5px;
+  overflow:hidden;
+}
+.kbo-standings-table .team-cell-inner span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.kbo-standings-table .team-logo{
+  width:22px;
+  height:22px;
+}
+.kbo-standings-table .pct{
+  font-size:12px;
+}
+@media(max-width:1500px){
+  #dashboard.section.active{
+    grid-template-columns:1fr 1fr;
+  }
+  #dashboard > .dashboard-grid > .card:nth-child(1),
+  #dashboard > .dashboard-grid > .card:nth-child(2),
+  #dashboard > .dashboard-grid > .card:nth-child(3),
+  #dashboard > .kbo-standings-card{
+    min-width:0;
+  }
+}
+@media(max-width:900px){
+  #dashboard.section.active{
+    display:block;
+  }
+  #dashboard > .dashboard-grid{
+    display:grid;
+  }
+  #dashboard > .kbo-standings-card{
+    margin:16px 0;
+  }
+}
+body.theme-excel #dashboard.section.active,
+body.theme-groupware #dashboard.section.active{
+  grid-template-columns:minmax(320px,1.15fr) minmax(260px,.9fr) minmax(260px,.9fr) minmax(270px,.75fr);
+}
+body.theme-excel .kbo-standings-card,
+body.theme-groupware .kbo-standings-card{
+  margin:0!important;
+}
+body.theme-excel .kbo-standings-wrap,
+body.theme-groupware .kbo-standings-wrap{
+  border-radius:0;
+}
+body.theme-excel .kbo-standings-table th,
+body.theme-excel .kbo-standings-table td,
+body.theme-groupware .kbo-standings-table th,
+body.theme-groupware .kbo-standings-table td{
+  padding:5px 3px!important;
+  font-size:11px!important;
+}
+body.theme-excel .kbo-standings-table .team-logo,
+body.theme-groupware .kbo-standings-table .team-logo{
+  width:20px!important;
+  height:20px!important;
+}
