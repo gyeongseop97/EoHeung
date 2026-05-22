@@ -1,0 +1,368 @@
+/* Schedule layout overrides: wider calendar, narrower watch panel, readable chips */
+
+/* 요청사항: 수동 추가/KBO 동기화 버튼은 PC/모바일 공통 숨김 */
+#openGameModalBtn,
+#callSyncBtn{
+  display:none!important;
+}
+
+/* PC/태블릿 가로 화면: 좌측 직관 패널을 줄이고 캘린더를 넓힘 */
+@media(min-width:901px){
+  #schedule .schedule-layout{
+    grid-template-columns:minmax(300px,380px) minmax(0,1fr)!important;
+    gap:16px!important;
+    align-items:start!important;
+  }
+
+  #schedule .schedule-layout>.card:first-child{
+    min-width:0!important;
+    padding:16px!important;
+  }
+
+  #schedule .schedule-layout>.card:nth-child(2){
+    min-width:0!important;
+    padding:20px!important;
+  }
+
+  #schedule #dateDetail .card.pad{
+    padding:16px!important;
+  }
+
+  #schedule #dateDetail .toolbar{
+    gap:8px!important;
+  }
+
+  #schedule #dateDetail .toolbar>div{
+    min-width:0!important;
+    flex:1 1 auto!important;
+  }
+
+  #schedule #dateDetail h3{
+    font-size:18px!important;
+    line-height:1.35!important;
+  }
+
+  #schedule #dateDetail [data-edit-game]{
+    flex:0 0 auto!important;
+    padding:9px 12px!important;
+  }
+
+  #schedule .check-row{
+    padding:8px 10px!important;
+  }
+
+  #schedule .calendar{
+    gap:8px!important;
+  }
+
+  #schedule .day{
+    min-height:132px!important;
+    padding:9px!important;
+  }
+
+  #schedule .game-chip{
+    width:100%!important;
+    max-width:100%!important;
+    min-height:24px!important;
+    height:auto!important;
+    padding:5px 6px!important;
+    align-items:center!important;
+    overflow:hidden!important;
+    white-space:normal!important;
+  }
+
+  #schedule .game-chip .chip-text{
+    min-width:0!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    line-height:1.22!important;
+    word-break:keep-all!important;
+  }
+
+  #schedule .game-chip .team-logo{
+    width:18px!important;
+    height:18px!important;
+    margin-left:4px!important;
+    flex:0 0 auto!important;
+  }
+
+  #schedule .watch-chip{
+    width:100%!important;
+    min-height:22px!important;
+    height:auto!important;
+    white-space:normal!important;
+    line-height:1.22!important;
+  }
+
+  #schedule .toolbar{
+    margin-bottom:14px!important;
+  }
+}
+
+/* 중간 폭에서는 좌측 패널을 더 좁게 */
+@media(min-width:901px) and (max-width:1400px){
+  #schedule .schedule-layout{
+    grid-template-columns:minmax(280px,340px) minmax(0,1fr)!important;
+  }
+  #schedule .day{
+    min-height:126px!important;
+  }
+}
+
+/* 모바일: 캘린더는 일정 앱처럼 읽히는 형태 유지 */
+@media(max-width:900px){
+  #schedule>.toolbar{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    margin-bottom:10px!important;
+  }
+
+  #schedule>.toolbar #yearSelect,
+  #schedule>.toolbar #monthSelect{
+    width:100%!important;
+    min-width:0!important;
+    height:44px!important;
+  }
+
+  #schedule .schedule-layout{
+    grid-template-columns:1fr!important;
+    gap:14px!important;
+  }
+
+  #schedule .schedule-layout>.card:nth-child(2){
+    order:1!important;
+    padding:20px 14px!important;
+    border-radius:28px!important;
+    background:#fff!important;
+    box-shadow:0 16px 42px rgba(15,23,42,.10)!important;
+  }
+
+  #schedule .schedule-layout>.card:nth-child(1){
+    order:2!important;
+  }
+
+  #schedule .calendar-head{
+    display:grid!important;
+    grid-template-columns:1fr auto!important;
+    align-items:center!important;
+    gap:10px!important;
+    margin:0 0 18px!important;
+    padding:0!important;
+    border:0!important;
+  }
+
+  #schedule .calendar-title{
+    text-align:center!important;
+    font-size:26px!important;
+    font-weight:950!important;
+    letter-spacing:-.05em!important;
+    color:#111827!important;
+  }
+
+  #calendarNavControls{
+    display:grid!important;
+    grid-template-columns:42px 42px 42px!important;
+    gap:6px!important;
+    justify-content:end!important;
+  }
+
+  #calendarNavControls .calendar-nav-btn{
+    width:42px!important;
+    height:42px!important;
+    min-height:42px!important;
+    padding:0!important;
+    border-radius:50%!important;
+    font-size:0!important;
+    background:#f8fafc!important;
+    color:#111827!important;
+    border:1px solid #e2e8f0!important;
+    box-shadow:none!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+
+  #prevMonthBtn::before{content:'‹';font-size:28px;font-weight:500;line-height:1}
+  #nextMonthBtn::before{content:'›';font-size:28px;font-weight:500;line-height:1}
+  #todayBtn::before{content:'오늘';font-size:12px;font-weight:950;line-height:1}
+
+  #schedule .calendar{
+    display:grid!important;
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+    gap:0!important;
+    padding:0 2px 8px!important;
+    background:#fff!important;
+    border:0!important;
+  }
+
+  #schedule .dow{
+    height:30px!important;
+    display:grid!important;
+    place-items:center!important;
+    font-size:15px!important;
+    font-weight:950!important;
+    color:#111827!important;
+    border:0!important;
+    background:transparent!important;
+  }
+
+  #schedule .dow:nth-child(1){color:#ef4444!important}
+  #schedule .dow:nth-child(7){color:#4f6ef7!important}
+
+  #schedule .day{
+    min-height:86px!important;
+    height:86px!important;
+    padding:5px 2px!important;
+    border:0!important;
+    border-radius:0!important;
+    background:#fff!important;
+    box-shadow:none!important;
+    outline:0!important;
+    display:block!important;
+    overflow:hidden!important;
+    position:relative!important;
+  }
+
+  #schedule .day::after{
+    content:'';
+    position:absolute;
+    left:4px;
+    right:4px;
+    bottom:0;
+    height:1px;
+    background:#e5e7eb;
+  }
+
+  #schedule .day:nth-child(7n+1) .day-num{color:#ef4444!important}
+  #schedule .day:nth-child(7n) .day-num{color:#4f6ef7!important}
+  #schedule .day.other{opacity:.32!important}
+
+  #schedule .day-num{
+    display:block!important;
+    height:24px!important;
+    margin:0 0 2px!important;
+    text-align:center!important;
+    font-size:18px!important;
+    font-weight:900!important;
+    line-height:24px!important;
+    color:#111827!important;
+  }
+
+  #schedule .day.selected .day-num{
+    width:28px!important;
+    height:28px!important;
+    margin:0 auto 1px!important;
+    border-radius:50%!important;
+    background:#111827!important;
+    color:#fff!important;
+    line-height:28px!important;
+  }
+
+  #schedule .day.today:not(.selected) .day-num{
+    color:#074ca1!important;
+    text-decoration:underline;
+    text-underline-offset:3px;
+  }
+
+  #schedule .game-chip{
+    width:100%!important;
+    height:18px!important;
+    margin:1px 0 0!important;
+    padding:0 2px!important;
+    border:0!important;
+    border-left:3px solid #d8b4fe!important;
+    border-radius:3px!important;
+    background:#f8f6ff!important;
+    color:#111827!important;
+    font-size:12px!important;
+    line-height:18px!important;
+    font-weight:700!important;
+    display:block!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+  }
+
+  #schedule .game-chip.home-tag:not(.finished):not(.postponed){
+    background:#eef5ff!important;
+    border-left-color:#4f7df3!important;
+    color:#111827!important;
+  }
+
+  #schedule .game-chip.away-tag:not(.finished):not(.postponed){
+    background:#fff7ed!important;
+    border-left-color:#f59e0b!important;
+    color:#111827!important;
+  }
+
+  #schedule .game-chip.finished.win{
+    background:#eefdf5!important;
+    border-left-color:#10b981!important;
+    color:#111827!important;
+  }
+
+  #schedule .game-chip.finished.loss{
+    background:#fff1f2!important;
+    border-left-color:#ef4444!important;
+    color:#111827!important;
+  }
+
+  #schedule .game-chip.finished.draw{
+    background:#f3f4f6!important;
+    border-left-color:#6b7280!important;
+    color:#111827!important;
+  }
+
+  #schedule .game-chip .chip-text{
+    display:block!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    white-space:nowrap!important;
+  }
+
+  #schedule .game-chip .team-logo,
+  #schedule .game-chip::before{
+    display:none!important;
+  }
+
+  #schedule .watch-chip{
+    width:100%!important;
+    height:18px!important;
+    margin:1px 0 0!important;
+    padding:0 3px!important;
+    border-radius:4px!important;
+    background:#ecfdf5!important;
+    color:#047857!important;
+    font-size:11px!important;
+    line-height:18px!important;
+    font-weight:900!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+  }
+}
+
+/* 햄버거 버튼 우측 고정 보강 */
+@media(max-width:768px),(hover:none) and (pointer:coarse) and (max-width:920px){
+  .sidebar,
+  body.theme-excel .sidebar,
+  body.theme-groupware .sidebar{
+    padding-right:72px!important;
+    justify-content:flex-start!important;
+  }
+
+  #mobileMenuToggle.mobile-menu-toggle{
+    position:absolute!important;
+    right:12px!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    margin:0!important;
+    flex:none!important;
+    z-index:1200!important;
+  }
+
+  .sidebar.mobile-menu-open #mobileMenuToggle.mobile-menu-toggle{
+    transform:translateY(-50%)!important;
+  }
+}
