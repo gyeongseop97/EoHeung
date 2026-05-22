@@ -27,9 +27,18 @@
   function setHist(rows){try{localStorage.setItem(LS_HISTORY,JSON.stringify(rows.slice(0,200)))}catch(e){}}
   async function recordChange(action,detail,target_type='',target_id=''){
     const actor=(typeof state!=='undefined'&&state.user?.email)||window.currentUserEmail||'';
-    const row={id:Date.now()+'-'+Math.random().toString(16).slice(2),created_at:new Date().toISOString(),actor,action,detail,target_type,target_id:String(target_id||'')};
-    setHist([row,...getHist()]); renderHistoryPanel();
-    try{if(typeof state!=='undefined'&&state.client)await state.client.from('change_logs').insert(row)}catch(e){}
+    const row={actor,action,detail,target_type,target_id:String(target_id||'')};
+    if(typeof state==='undefined'||!state.client){
+      toast?.('서버 연결 후 변경이력이 기록됩니다.');
+      return;
+    }
+    const {error}=await state.client.from('change_logs').insert(row);
+    if(error){
+      console.warn('change_logs insert failed',error);
+      toast?.('변경이력 서버 기록 실패: '+error.message);
+      return;
+    }
+    await renderHistoryPanel();
   }
   function splitMemberMemo(m){const raw=String(m?.memo||'');const mt=raw.match(/^\[\[POSITION:(.*?)\]\]\n?/);return{position:String(m?.position||(mt?mt[1]:'')||'').trim(),memo:(mt?raw.slice(mt[0].length):raw).trim()}}
   function mergeMemberMemo(pos,memo){pos=String(pos||'').trim();memo=String(memo||'').trim();return pos?`[[POSITION:${pos}]]\n${memo}`:memo}
@@ -81,8 +90,18 @@
   async function weatherHtml(g){try{const c=typeof STADIUM_COORDS!=='undefined'?STADIUM_COORDS[g.stadium]:null;if(!c)return'<span class="eo-weather-badge">날씨 정보 없음</span>';const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${c[0]}&longitude=${c[1]}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=Asia%2FSeoul&start_date=${g.game_date}&end_date=${g.game_date}`);const d=await r.json();const code=d.daily?.weather_code?.[0],max=d.daily?.temperature_2m_max?.[0],min=d.daily?.temperature_2m_min?.[0],pop=d.daily?.precipitation_probability_max?.[0],wind=d.daily?.wind_speed_10m_max?.[0];return`<div class="eo-weather-grid"><div class="eo-weather-item"><b>${W[code]||'예보'}</b><span>하늘 상태</span></div><div class="eo-weather-item"><b>${Math.round(min)}~${Math.round(max)}℃</b><span>최저/최고</span></div><div class="eo-weather-item"><b>${pop??'-'}%</b><span>강수 확률</span></div><div class="eo-weather-item"><b>${Math.round(wind??0)}km/h</b><span>최대 풍속</span></div></div>`}catch(e){return'<span class="eo-weather-badge">날씨 불러오기 실패</span>'}}
   async function renderWeatherCards(){const box=$('#dashSamsungWeek');if(!box||typeof state==='undefined')return;const today=ymd(new Date()),end=typeof addDays==='function'?addDays(today,6):today;const games=(state.games||[]).filter(g=>g.game_date>=today&&g.game_date<=end).sort((a,b)=>(a.game_date+(a.game_time||'')).localeCompare(b.game_date+(b.game_time||'')));if(!games.length){box.innerHTML='<div class="empty">향후 7일 내 등록된 삼성 경기가 없습니다.</div>';return}box.innerHTML=games.map(g=>`<div class="eo-mini-row" data-eo-weather="${g.id}"><b>${esc(g.game_date)} ${(g.game_time||'').slice(0,5)} · ${g.home_away==='AWAY'?'@':'vs'} ${esc(g.opponent)}</b><span class="note">${esc(g.stadium||'-')} · ${typeof statusText==='function'?statusText(g.status):g.status}</span><span class="eo-weather-badge">날씨 불러오는 중...</span></div>`).join('');for(const g of games){const node=$(`[data-eo-weather="${g.id}"] .eo-weather-badge`);if(node)node.outerHTML=await weatherHtml(g)}}
 
-  function ensureHistoryPanel(){const settings=$('#settings');if(!settings||$('#eoHistoryPanel'))return;const card=document.createElement('div');card.id='eoHistoryPanel';card.className='card pad';card.style.marginTop='14px';card.innerHTML='<div class="eo-dashboard-card-title"><h3>변경 이력</h3><div class="toolbar" style="margin:0"><button class="btn secondary" data-export-history>내보내기</button><button class="btn danger" data-clear-history>로컬 이력 삭제</button></div></div><p class="note">회원 수정, 직관 체크, 좌석/메모 저장 등 주요 변경 내역을 기록합니다.</p><div id="eoHistoryList" class="eo-history-list"></div>';settings.appendChild(card)}
-  function renderHistoryPanel(){ensureHistoryPanel();const list=$('#eoHistoryList');if(!list)return;const rows=getHist().slice(0,80);list.innerHTML=rows.length?rows.map(r=>`<div class="eo-history-item"><time>${new Date(r.created_at).toLocaleString('ko-KR')}</time><div><b>${esc(r.action)}</b><p>${esc(r.detail||'')}<br>${esc(r.actor||'unknown')}</p></div></div>`).join(''):'<div class="empty">변경 이력이 없습니다.</div>'}
+  function ensureHistoryPanel(){const settings=$('#settings');if(!settings||$('#eoHistoryPanel'))return;const card=document.createElement('div');card.id='eoHistoryPanel';card.className='card pad';card.style.marginTop='14px';card.innerHTML='<div class="eo-dashboard-card-title"><h3>변경 이력</h3><div class="toolbar" style="margin:0"><button class="btn secondary" data-refresh-history>새로고침</button></div></div><p class="note">회원 수정, 직관 체크, 좌석/메모 저장 등 주요 변경 내역을 Supabase 서버에 기록합니다.</p><div id="eoHistoryList" class="eo-history-list"></div>';settings.appendChild(card)}
+  async function renderHistoryPanel(){
+    ensureHistoryPanel();
+    const list=$('#eoHistoryList');
+    if(!list)return;
+    if(typeof state==='undefined'||!state.client){list.innerHTML='<div class="empty">서버 연결 후 변경이력을 불러옵니다.</div>';return}
+    list.innerHTML='<div class="empty">서버 변경이력을 불러오는 중입니다...</div>';
+    const {data,error}=await state.client.from('change_logs').select('*').order('created_at',{ascending:false}).limit(80);
+    if(error){list.innerHTML=`<div class="empty">서버 변경이력 조회 실패<br>${esc(error.message)}</div>`;return}
+    const rows=data||[];
+    list.innerHTML=rows.length?rows.map(r=>`<div class="eo-history-item"><time>${new Date(r.created_at).toLocaleString('ko-KR')}</time><div><b>${esc(r.action)}</b><p>${esc(r.detail||'')}<br>${esc(r.actor||'unknown')}</p></div></div>`).join(''):'<div class="empty">서버에 기록된 변경 이력이 없습니다.</div>';
+  }
 
   function aboutMarkup(){const cfg=readAbout();return `<div class="card pad eo-about-hero"><div class="eo-about-logo">${logoDataUrl?`<img src="${logoDataUrl}" alt="어흥 로고">`:''}</div><div><h3>어흥</h3><p id="eoAboutIntroText">${esc(cfg.intro)}</p></div></div><div class="eo-about-grid">${cfg.rules.map(r=>`<div class="card pad eo-about-rule"><h4>${esc(r.title).replace('🐯','🦁')}</h4><p class="note">${esc(r.body)}</p></div>`).join('')}</div><div class="card pad eo-about-edit"><div class="eo-dashboard-card-title"><h3>모임 소개 / 운영 규칙 수정</h3><button class="btn secondary" data-reset-about>기본값 복원</button></div><div class="form-grid"><textarea id="eoAboutIntro" class="full" placeholder="모임 소개말">${esc(cfg.intro)}</textarea></div><div class="eo-about-edit-grid" style="margin-top:10px">${cfg.rules.map((r,i)=>`<div><input class="input" id="eoRuleTitle${i}" value="${esc(r.title).replace('🐯','🦁')}" placeholder="규칙 제목"><textarea id="eoRuleBody${i}" placeholder="규칙 내용">${esc(r.body)}</textarea></div>`).join('')}</div><div class="toolbar" style="margin-top:12px"><button class="btn green" data-save-about>소개/규칙 저장</button></div></div>`}
   async function ensureAboutPage(force=false){const main=$('.main'),nav=$('.nav');if(!main||!nav)return;let sec=$('#about');if(!sec){sec=document.createElement('section');sec.id='about';sec.className='section';main.appendChild(sec)}const editing=document.activeElement&&document.activeElement.closest&&document.activeElement.closest('.eo-about-edit');if(force||sec.dataset.eoAboutRendered!=='1'){if(!editing||force){sec.innerHTML=aboutMarkup();sec.dataset.eoAboutRendered='1'}}let btn=nav.querySelector('[data-page="about"]');if(!btn){btn=document.createElement('button');btn.dataset.page='about';nav.appendChild(btn)}btn.textContent='🦁 모임 소개';btn.onclick=()=>showPage('about');$$('.nav button').forEach(b=>{if(b.textContent.includes('🐯'))b.textContent=b.textContent.replace('🐯','🦁')})}
@@ -90,11 +109,12 @@
   async function saveAbout(){const cfg={intro:$('#eoAboutIntro')?.value.trim()||DEFAULT_ABOUT.intro,rules:[0,1,2].map(i=>({title:($('#eoRuleTitle'+i)?.value||DEFAULT_ABOUT.rules[i].title).replace('🐯','🦁'),body:$('#eoRuleBody'+i)?.value||DEFAULT_ABOUT.rules[i].body}))};saveAboutConfig(cfg);await recordChange('모임 소개 수정','모임 소개말 및 운영 규칙 수정','about','about');await ensureAboutPage(true);toast?.('모임 소개와 운영 규칙을 저장했습니다.')}
 
   function installOverrides(){ensureMemberForm();try{window.renderMembers=renderMembers=renderMembersPatched}catch(e){window.renderMembers=renderMembersPatched}try{window.clearMemberForm=clearMemberForm=clearMemberFormPatched}catch(e){window.clearMemberForm=clearMemberFormPatched}try{window.editMember=editMember=editMemberPatched}catch(e){window.editMember=editMemberPatched}try{window.saveMember=saveMember=saveMemberPatched}catch(e){window.saveMember=saveMemberPatched}try{window.renderDateDetail=renderDateDetail=renderDateDetailPatched}catch(e){window.renderDateDetail=renderDateDetailPatched}const save=$('#saveMemberBtn');if(save)save.onclick=saveMemberPatched;const add=$('#openMemberModalBtn');if(add)add.onclick=()=>{clearMemberFormPatched();openModal?.('memberModal')};renderMembersPatched()}
-  function bindOnce(){if(window.__eoheungFinalFixBound)return;window.__eoheungFinalFixBound=true;document.body.addEventListener('click',async e=>{const seat=e.target.closest('[data-save-seat]');if(seat){e.preventDefault();await saveGameSeat(seat.dataset.saveSeat);return}if(e.target.closest('[data-save-about]')){e.preventDefault();await saveAbout();return}if(e.target.closest('[data-reset-about]')){e.preventDefault();if(confirm('모임 소개와 운영 규칙을 기본값으로 되돌릴까요?')){localStorage.removeItem(LS_ABOUT);await ensureAboutPage(true)}return}if(e.target.closest('[data-clear-history]')){e.preventDefault();if(confirm('현재 브라우저에 저장된 로컬 변경 이력을 삭제할까요?')){setHist([]);renderHistoryPanel()}return}if(e.target.closest('[data-export-history]')){e.preventDefault();const blob=new Blob([JSON.stringify(getHist(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='eoheung_change_history.json';a.click();URL.revokeObjectURL(a.href);return}},true);document.body.addEventListener('change',e=>{if(e.target.matches('input[type="checkbox"][data-game]'))setTimeout(()=>recordChange('직관 체크 변경',`경기 ID ${e.target.dataset.game} / 회원 ID ${e.target.dataset.member} / ${e.target.checked?'체크':'해제'}`,'attendance',e.target.dataset.game),120)})}
+  function bindOnce(){if(window.__eoheungFinalFixBound)return;window.__eoheungFinalFixBound=true;document.body.addEventListener('click',async e=>{const seat=e.target.closest('[data-save-seat]');if(seat){e.preventDefault();await saveGameSeat(seat.dataset.saveSeat);return}if(e.target.closest('[data-save-about]')){e.preventDefault();await saveAbout();return}if(e.target.closest('[data-reset-about]')){e.preventDefault();if(confirm('모임 소개와 운영 규칙을 기본값으로 되돌릴까요?')){localStorage.removeItem(LS_ABOUT);await ensureAboutPage(true)}return}if(e.target.closest('[data-refresh-history]')){e.preventDefault();await renderHistoryPanel();toast?.('서버 변경이력을 새로고침했습니다.');return}},true);document.body.addEventListener('change',e=>{if(e.target.matches('input[type="checkbox"][data-game]'))setTimeout(()=>recordChange('직관 체크 변경',`경기 ID ${e.target.dataset.game} / 회원 ID ${e.target.dataset.member} / ${e.target.checked?'체크':'해제'}`,'attendance',e.target.dataset.game),120)})}
   async function run(){injectStyle();await applyLogo();installOverrides();await ensureAboutPage();ensureHistoryPanel();renderHistoryPanel();renderNextWatchPanel();renderWeatherCards();bindOnce();$$('*').forEach(el=>{if(el.childNodes.length===1&&el.textContent.includes('🐯'))el.textContent=el.textContent.replaceAll('🐯','🦁')})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
   setInterval(()=>{try{injectStyle();applyLogo();installOverrides();ensureAboutPage();ensureHistoryPanel();renderHistoryPanel();renderNextWatchPanel()}catch(e){}},1800);
 })();
+
 
 
 
@@ -233,6 +253,7 @@
   style.textContent = css;
 })();
 /* EOHEUNG_FORCE_FOUR_DASHBOARD_CARDS_END */
+
 
 
 
