@@ -3,6 +3,18 @@ from pathlib import Path
 p = Path('eoheung-member-logo-patch.js')
 text = p.read_text(encoding='utf-8')
 
+# Fix: the interval repeatedly called ensureAboutPage(), which rebuilt the about editor
+# every 1.8 seconds and made editing impossible. Render once, and only force-render after save/reset.
+old_ensure = "async function ensureAboutPage(){const main=$('.main'),nav=$('.nav');if(!main||!nav)return;let sec=$('#about');if(!sec){sec=document.createElement('section');sec.id='about';sec.className='section';main.appendChild(sec)}sec.innerHTML=aboutMarkup();let btn=nav.querySelector('[data-page=\"about\"]');if(!btn){btn=document.createElement('button');btn.dataset.page='about';nav.appendChild(btn)}btn.textContent='🦁 모임 소개';btn.onclick=()=>showPage('about');$$('.nav button').forEach(b=>{if(b.textContent.includes('🐯'))b.textContent=b.textContent.replace('🐯','🦁')})}"
+new_ensure = "async function ensureAboutPage(force=false){const main=$('.main'),nav=$('.nav');if(!main||!nav)return;let sec=$('#about');if(!sec){sec=document.createElement('section');sec.id='about';sec.className='section';main.appendChild(sec)}const editing=document.activeElement&&document.activeElement.closest&&document.activeElement.closest('.eo-about-edit');if(force||sec.dataset.eoAboutRendered!=='1'){if(!editing||force){sec.innerHTML=aboutMarkup();sec.dataset.eoAboutRendered='1'}}let btn=nav.querySelector('[data-page=\"about\"]');if(!btn){btn=document.createElement('button');btn.dataset.page='about';nav.appendChild(btn)}btn.textContent='🦁 모임 소개';btn.onclick=()=>showPage('about');$$('.nav button').forEach(b=>{if(b.textContent.includes('🐯'))b.textContent=b.textContent.replace('🐯','🦁')})}"
+if old_ensure in text:
+    text = text.replace(old_ensure, new_ensure)
+else:
+    print('ensureAboutPage exact target not found; skipping')
+
+text = text.replace("await ensureAboutPage();toast?.('모임 소개와 운영 규칙을 저장했습니다.')", "await ensureAboutPage(true);toast?.('모임 소개와 운영 규칙을 저장했습니다.')")
+text = text.replace("localStorage.removeItem(LS_ABOUT);await ensureAboutPage()", "localStorage.removeItem(LS_ABOUT);await ensureAboutPage(true)")
+
 marker_start = '/* EOHEUNG_FORCE_FOUR_DASHBOARD_CARDS_START */'
 marker_end = '/* EOHEUNG_FORCE_FOUR_DASHBOARD_CARDS_END */'
 
@@ -148,4 +160,4 @@ else:
     text = text.rstrip() + '\n\n' + css + '\n'
 
 p.write_text(text, encoding='utf-8')
-print('forced four dashboard cards css with equal height and seat wrap')
+print('patched dashboard cards and about editor rerender issue')
