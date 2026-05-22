@@ -1,0 +1,48 @@
+/* Home/away calendar tag colors and KBO standings */
+.game-chip.home-tag:not(.finished):not(.postponed){
+  background:#eaf3ff;
+  color:#074ca1;
+  border:1px solid #b9d8ff;
+}
+.game-chip.away-tag:not(.finished):not(.postponed){
+  background:#fff4e6;
+  color:#b45309;
+  border:1px solid #fed7aa;
+}
+.game-chip.home-tag:not(.finished):not(.postponed)::before,
+.game-chip.away-tag:not(.finished):not(.postponed)::before{
+  flex:0 0 auto;
+  font-size:10px;
+  font-weight:900;
+  padding:1px 5px;
+  border-radius:999px;
+  margin-right:2px;
+}
+.game-chip.home-tag:not(.finished):not(.postponed)::before{content:'홈';background:#dbeafe;color:#074ca1}
+.game-chip.away-tag:not(.finished):not(.postponed)::before{content:'원정';background:#ffedd5;color:#9a3412}
+.kbo-standings-card{margin-top:16px;margin-bottom:16px}
+.kbo-standings-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}
+.kbo-standings-head h3{margin:0}
+.kbo-standings-head .note{margin:0;text-align:right}
+.kbo-standings-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#fff}
+.kbo-standings-table{width:100%;border-collapse:collapse;border-spacing:0;min-width:720px}
+.kbo-standings-table th{background:#f3f7fc;color:#64748b;font-size:12px;font-weight:900;padding:10px 10px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+.kbo-standings-table td{border:0;border-bottom:1px solid var(--line);border-radius:0!important;padding:9px 10px;text-align:center;background:#fff;white-space:nowrap}
+.kbo-standings-table tr:last-child td{border-bottom:0}
+.kbo-standings-table .team-cell{text-align:left;min-width:150px}
+.kbo-standings-table .team-cell-inner{display:flex;align-items:center;gap:8px;font-weight:900}
+.kbo-standings-table .team-logo{width:28px;height:28px}
+.kbo-standings-table .rank-num{font-weight:900;color:#64748b}
+.kbo-standings-table .pct{font-weight:950;color:#2563eb}
+.kbo-standings-table .samsung-row td{background:#f0f7ff}
+body.theme-excel .game-chip.home-tag:not(.finished):not(.postponed){background:#e2f0d9!important;color:#185c37!important;border:1px solid #70ad47!important}
+body.theme-excel .game-chip.away-tag:not(.finished):not(.postponed){background:#fff2cc!important;color:#7f6000!important;border:1px solid #d6b656!important}
+body.theme-excel .kbo-standings-wrap{border-radius:0;border:1px solid #a6a6a6}
+body.theme-excel .kbo-standings-table{border-collapse:collapse}
+body.theme-excel .kbo-standings-table th{background:#d9e2f3!important;color:#111827!important;border:1px solid #a6a6a6!important}
+body.theme-excel .kbo-standings-table td{border:1px solid #d9d9d9!important}
+body.theme-groupware .game-chip.home-tag:not(.finished):not(.postponed){background:#eef5fc!important;color:#174ea6!important;border:1px solid #c7d8ea!important}
+body.theme-groupware .game-chip.away-tag:not(.finished):not(.postponed){background:#fff7ed!important;color:#b45309!important;border:1px solid #fed7aa!important}
+body.theme-groupware .kbo-standings-wrap{border-radius:0;border:1px solid #c7d8ea}
+body.theme-groupware .kbo-standings-table th{background:#eef5fc!important;color:#111827!important;border-bottom:1px solid #c7d8ea!important}
+body.theme-groupware .kbo-standings-table td{border-bottom:1px solid #e1ebf5!important}
