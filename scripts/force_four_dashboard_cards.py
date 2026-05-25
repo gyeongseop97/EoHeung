@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 p = Path('eoheung-member-logo-patch.js')
 text = p.read_text(encoding='utf-8')
@@ -36,7 +37,55 @@ text = text.replace("회원 수정, 직관 체크, 좌석/메모 저장 등 주�
 # Replace button handler behavior for history refresh and remove local-only actions if present.
 text = text.replace("if(e.target.closest('[data-clear-history]')){e.preventDefault();if(confirm('현재 브라우저에 저장된 로컬 변경 이력을 삭제할까요?')){setHist([]);renderHistoryPanel()}return}if(e.target.closest('[data-export-history]')){e.preventDefault();const blob=new Blob([JSON.stringify(getHist(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='eoheung_change_history.json';a.click();URL.revokeObjectURL(a.href);return}", "if(e.target.closest('[data-refresh-history]')){e.preventDefault();await renderHistoryPanel();toast?.('서버 변경이력을 새로고침했습니다.');return}")
 
-# Make periodic render call async-safe; original code can call async render without await but okay.
+# Next-watch carousel: show arrows only when there are previous/next planned watch games.
+carousel_block = r'''
+function plannedWatchGames(){
+    if(typeof state==='undefined')return [];
+    const today=ymd(new Date());
+    const ids=new Set((state.gameMembers||[]).filter(x=>x.attended).map(x=>x.game_id));
+    return (state.games||[])
+      .filter(g=>g.game_date>=today&&g.status==='SCHEDULED'&&ids.has(g.id))
+      .sort((a,b)=>(a.game_date+(a.game_time||'')).localeCompare(b.game_date+(b.game_time||'')));
+  }
+  function nextWatchGame(){
+    const games=plannedWatchGames();
+    if(!games.length)return null;
+    window.__eoNextWatchIndex=Math.max(0,Math.min(games.length-1,Number(window.__eoNextWatchIndex||0)));
+    return games[window.__eoNextWatchIndex];
+  }
+  function renderNextWatchPanel(){
+    const dash=$('#dashboard');if(!dash||typeof state==='undefined')return;
+    let wrap=$('#eoNextWatch');const grid=$('#dashboard .rank-grid');
+    if(grid)grid.classList.add('eo-rank-grid-enhanced');
+    if(!wrap){wrap=document.createElement('div');wrap.id='eoNextWatch';wrap.className='eo-next-watch';if(grid)grid.insertBefore(wrap,grid.firstChild);else $('#dashboard .grid4')?.after(wrap)}
+    else if(grid&&wrap.parentElement!==grid)grid.insertBefore(wrap,grid.firstChild);
+    const games=plannedWatchGames();
+    if(!games.length){
+      window.__eoNextWatchIndex=0;
+      wrap.innerHTML='<div class="card pad eo-next-hero"><h3>다음 직관 일정</h3><p>아직 체크된 직관 예정 경기가 없습니다. 캘린더에서 경기일을 선택하고 참석 회원을 체크해 주세요.</p></div>';
+      return;
+    }
+    window.__eoNextWatchIndex=Math.max(0,Math.min(games.length-1,Number(window.__eoNextWatchIndex||0)));
+    const idx=window.__eoNextWatchIndex;
+    const g=games[idx];
+    const members=(state.gameMembers||[]).filter(x=>x.game_id===g.id&&x.attended).map(x=>typeof memberName==='function'?memberName(x.member_id):'회원');
+    const gm=splitGameMemo(g.memo);
+    const prev=idx>0?'<button class="eo-next-arrow eo-next-prev" data-eo-next-nav="-1" aria-label="이전 직관 일정">‹</button>':'';
+    const next=idx<games.length-1?'<button class="eo-next-arrow eo-next-next" data-eo-next-nav="1" aria-label="다음 직관 일정">›</button>':'';
+    wrap.innerHTML=`<div class="card pad eo-next-hero">${prev}${next}<h3>다음 직관 일정</h3><p style="font-size:18px;font-weight:900">${esc(g.game_date)} ${(g.game_time||'').slice(0,5)} · 삼성 ${g.home_away==='AWAY'?'@':'vs'} ${esc(g.opponent)}</p><div class="eo-next-meta"><span class="eo-pill">📍 ${esc(g.stadium||'-')}</span><span class="eo-pill">👥 ${members.length}명</span>${gm.seat?`<span class="eo-pill eo-seat">🪑 ${esc(gm.seat)}</span>`:''}</div><p>${members.length?esc(members.join(', ')):'참석 회원 미등록'}</p>${gm.memo?`<p style="margin-top:8px;color:#dbeafe">${esc(gm.memo)}</p>`:''}</div>`;
+  }
+'''
+text, n = re.subn(r"function nextWatchGame\(\)\{.*?\n\n  async function saveGameSeat", carousel_block + "\n  async function saveGameSeat", text, flags=re.S)
+if n == 0:
+    print('nextWatchGame/renderNextWatchPanel regex target not found; skipping')
+
+# Bind arrow buttons inside the existing delegated click handler.
+old_click = "document.body.addEventListener('click',async e=>{const seat=e.target.closest('[data-save-seat]');"
+new_click = "document.body.addEventListener('click',async e=>{const nav=e.target.closest('[data-eo-next-nav]');if(nav){e.preventDefault();const games=plannedWatchGames();const dir=Number(nav.dataset.eoNextNav||0);window.__eoNextWatchIndex=Math.max(0,Math.min(games.length-1,Number(window.__eoNextWatchIndex||0)+dir));renderNextWatchPanel();return}const seat=e.target.closest('[data-save-seat]');"
+if old_click in text:
+    text = text.replace(old_click, new_click)
+else:
+    print('click handler target not found; skipping')
 
 marker_start = '/* EOHEUNG_FORCE_FOUR_DASHBOARD_CARDS_START */'
 marker_end = '/* EOHEUNG_FORCE_FOUR_DASHBOARD_CARDS_END */'
@@ -99,10 +148,11 @@ css = r'''
   #dashboard #eoNextWatch .eo-next-hero{
     height:100%!important;
     min-height:192px!important;
-    padding:13px!important;
+    padding:13px 22px!important;
     display:flex!important;
     flex-direction:column!important;
     justify-content:flex-start!important;
+    position:relative!important;
   }
   #dashboard #eoNextWatch .eo-next-hero h3{
     font-size:15px!important;
@@ -149,12 +199,36 @@ css = r'''
     bottom:-10px!important;
   }
 }
+#dashboard #eoNextWatch .eo-next-arrow{
+  position:absolute!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:34px!important;
+  height:34px!important;
+  border-radius:999px!important;
+  border:1px solid rgba(255,255,255,.45)!important;
+  background:#5aa0dc!important;
+  color:#fff!important;
+  display:grid!important;
+  place-items:center!important;
+  font-size:28px!important;
+  line-height:1!important;
+  font-weight:400!important;
+  z-index:5!important;
+  box-shadow:0 6px 14px rgba(0,0,0,.16)!important;
+}
+#dashboard #eoNextWatch .eo-next-prev{left:-12px!important;}
+#dashboard #eoNextWatch .eo-next-next{right:-12px!important;}
+#dashboard #eoNextWatch .eo-next-arrow:hover{filter:brightness(.95)!important;}
+body.theme-excel #dashboard #eoNextWatch .eo-next-arrow{background:#217346!important;border-color:#70ad47!important;}
+body.theme-groupware #dashboard #eoNextWatch .eo-next-arrow{background:#5b9bd5!important;border-color:#c7d8ea!important;}
 @media (min-width:901px) and (max-width:1280px){
   #dashboard .rank-grid{gap:8px!important;}
   #dashboard .rank-grid .card.pad{padding:11px!important;}
   #dashboard .rank-grid h3{font-size:13.5px!important;}
   #dashboard .rank-grid .rank-list li{font-size:11px!important;}
   #dashboard #eoNextWatch .eo-next-hero p[style]{font-size:12px!important;}
+  #dashboard #eoNextWatch .eo-next-hero{padding-left:20px!important;padding-right:20px!important;}
 }
 @media (max-width:900px){
   #dashboard .rank-grid{grid-template-columns:1fr!important;}
@@ -163,6 +237,9 @@ css = r'''
     white-space:normal!important;
     line-height:1.25!important;
   }
+  #dashboard #eoNextWatch .eo-next-arrow{width:36px!important;height:36px!important;font-size:30px!important;}
+  #dashboard #eoNextWatch .eo-next-prev{left:-10px!important;}
+  #dashboard #eoNextWatch .eo-next-next{right:-10px!important;}
 }`;
   let style = document.getElementById(styleId);
   if(!style){
@@ -183,4 +260,4 @@ else:
     text = text.rstrip() + '\n\n' + css + '\n'
 
 p.write_text(text, encoding='utf-8')
-print('patched dashboard cards, about editor, and server-based change history')
+print('patched dashboard cards, about editor, server history, and next-watch carousel')
