@@ -80,8 +80,42 @@
   function editMemberPatched(id){ensureMemberForm();const m=state.members.find(x=>String(x.id)===String(id));if(!m)return;const ex=splitMemberMemo(m);$('#memberModalTitle').textContent='회원 수정';$('#memberId').value=m.id;$('#memberPosition').value=ex.position||'';$('#memberName').value=m.name||'';$('#memberDepartment').value=m.department||'';$('#memberPhone').value=m.phone||'';$('#memberMemo').value=ex.memo||'';if(typeof openModal==='function')openModal('memberModal')}
   async function saveMemberPatched(){ensureMemberForm();const id=$('#memberId').value;const old=state.members.find(x=>String(x.id)===String(id));const payload={name:$('#memberName').value.trim(),department:$('#memberDepartment').value.trim(),phone:$('#memberPhone').value.trim(),favorite_player:'',status:old?.status||'active',memo:mergeMemberMemo($('#memberPosition').value,$('#memberMemo').value)};if(!payload.name){toast?.('이름을 입력해 주세요.');return}const res=id?await state.client.from('members').update(payload).eq('id',id):await state.client.from('members').insert(payload);if(res.error){toast?.('회원 저장 오류: '+res.error.message);return}await recordChange(id?'회원 수정':'회원 추가',`${payload.name} / ${$('#memberPosition').value||'-'}`,'member',id||payload.name);closeModal?.('memberModal');await loadAll?.()}
 
-  function nextWatchGame(){if(typeof state==='undefined')return null;const today=ymd(new Date());const ids=new Set((state.gameMembers||[]).filter(x=>x.attended).map(x=>x.game_id));return (state.games||[]).filter(g=>g.game_date>=today&&g.status==='SCHEDULED'&&ids.has(g.id)).sort((a,b)=>(a.game_date+(a.game_time||'')).localeCompare(b.game_date+(b.game_time||'')))[0]||null}
-  function renderNextWatchPanel(){const dash=$('#dashboard');if(!dash||typeof state==='undefined')return;let wrap=$('#eoNextWatch');const grid=$('#dashboard .rank-grid');if(grid)grid.classList.add('eo-rank-grid-enhanced');if(!wrap){wrap=document.createElement('div');wrap.id='eoNextWatch';wrap.className='eo-next-watch';if(grid)grid.insertBefore(wrap,grid.firstChild);else $('#dashboard .grid4')?.after(wrap)}else if(grid&&wrap.parentElement!==grid)grid.insertBefore(wrap,grid.firstChild);const g=nextWatchGame();if(!g){wrap.innerHTML='<div class="card pad eo-next-hero"><h3>다음 직관 일정</h3><p>아직 체크된 직관 예정 경기가 없습니다. 캘린더에서 경기일을 선택하고 참석 회원을 체크해 주세요.</p></div>';return}const members=(state.gameMembers||[]).filter(x=>x.game_id===g.id&&x.attended).map(x=>typeof memberName==='function'?memberName(x.member_id):'회원');const gm=splitGameMemo(g.memo);wrap.innerHTML=`<div class="card pad eo-next-hero"><h3>다음 직관 일정</h3><p style="font-size:18px;font-weight:900">${esc(g.game_date)} ${(g.game_time||'').slice(0,5)} · 삼성 ${g.home_away==='AWAY'?'@':'vs'} ${esc(g.opponent)}</p><div class="eo-next-meta"><span class="eo-pill">📍 ${esc(g.stadium||'-')}</span><span class="eo-pill">👥 ${members.length}명</span>${gm.seat?`<span class="eo-pill eo-seat">🪑 ${esc(gm.seat)}</span>`:''}</div><p>${members.length?esc(members.join(', ')):'참석 회원 미등록'}</p>${gm.memo?`<p style="margin-top:8px;color:#dbeafe">${esc(gm.memo)}</p>`:''}</div>`}
+  
+function plannedWatchGames(){
+    if(typeof state==='undefined')return [];
+    const today=ymd(new Date());
+    const ids=new Set((state.gameMembers||[]).filter(x=>x.attended).map(x=>x.game_id));
+    return (state.games||[])
+      .filter(g=>g.game_date>=today&&g.status==='SCHEDULED'&&ids.has(g.id))
+      .sort((a,b)=>(a.game_date+(a.game_time||'')).localeCompare(b.game_date+(b.game_time||'')));
+  }
+  function nextWatchGame(){
+    const games=plannedWatchGames();
+    if(!games.length)return null;
+    window.__eoNextWatchIndex=Math.max(0,Math.min(games.length-1,Number(window.__eoNextWatchIndex||0)));
+    return games[window.__eoNextWatchIndex];
+  }
+  function renderNextWatchPanel(){
+    const dash=$('#dashboard');if(!dash||typeof state==='undefined')return;
+    let wrap=$('#eoNextWatch');const grid=$('#dashboard .rank-grid');
+    if(grid)grid.classList.add('eo-rank-grid-enhanced');
+    if(!wrap){wrap=document.createElement('div');wrap.id='eoNextWatch';wrap.className='eo-next-watch';if(grid)grid.insertBefore(wrap,grid.firstChild);else $('#dashboard .grid4')?.after(wrap)}
+    else if(grid&&wrap.parentElement!==grid)grid.insertBefore(wrap,grid.firstChild);
+    const games=plannedWatchGames();
+    if(!games.length){
+      window.__eoNextWatchIndex=0;
+      wrap.innerHTML='<div class="card pad eo-next-hero"><h3>다음 직관 일정</h3><p>아직 체크된 직관 예정 경기가 없습니다. 캘린더에서 경기일을 선택하고 참석 회원을 체크해 주세요.</p></div>';
+      return;
+    }
+    window.__eoNextWatchIndex=Math.max(0,Math.min(games.length-1,Number(window.__eoNextWatchIndex||0)));
+    const idx=window.__eoNextWatchIndex;
+    const g=games[idx];
+    const members=(state.gameMembers||[]).filter(x=>x.game_id===g.id&&x.attended).map(x=>typeof memberName==='function'?memberName(x.member_id):'회원');
+    const gm=splitGameMemo(g.memo);
+    const prev=idx>0?'<button class="eo-next-arrow eo-next-prev" data-eo-next-nav="-1" aria-label="이전 직관 일정">‹</button>':'';
+    const next=idx<games.length-1?'<button class="eo-next-arrow eo-next-next" data-eo-next-nav="1" aria-label="다음 직관 일정">›</button>':'';
+    wrap.innerHTML=`<div class="card pad eo-next-hero">${prev}${next}<h3>다음 직관 일정</h3><p style="font-size:18px;font-weight:900">${esc(g.game_date)} ${(g.game_time||'').slice(0,5)} · 삼성 ${g.home_away==='AWAY'?'@':'vs'} ${esc(g.opponent)}</p><div class="eo-next-meta"><span class="eo-pill">📍 ${esc(g.stadium||'-')}</span><span class="eo-pill">👥 ${members.length}명</span>${gm.seat?`<span class="eo-pill eo-seat">🪑 ${esc(gm.seat)}</span>`:''}</div><p>${members.length?esc(members.join(', ')):'참석 회원 미등록'}</p>${gm.memo?`<p style="margin-top:8px;color:#dbeafe">${esc(gm.memo)}</p>`:''}</div>`;
+  }
 
   async function saveGameSeat(gameId){const g=state.games.find(x=>String(x.id)===String(gameId));if(!g)return;const seat=$(`#seat-${gameId}`)?.value||'',memo=$(`#seatmemo-${gameId}`)?.value||'';const payload={memo:mergeGameMemo(seat,memo)};const {error}=await state.client.from('games').update(payload).eq('id',gameId);if(error){toast?.('좌석 저장 오류: '+error.message);return}g.memo=payload.memo;await recordChange('좌석/메모 저장',`${g.game_date} ${g.opponent} / 좌석: ${seat||'-'}`,'game',gameId);toast?.('좌석/메모를 저장했습니다.');renderNextWatchPanel();renderCalendar?.()}
   function renderDateDetailPatched(){if(typeof state==='undefined'||typeof gamesOnDate!=='function')return;const root=$('#dateDetail');if(!root)return;const games=gamesOnDate(state.selectedDate);if(!games.length){root.innerHTML=`<div class="empty"><b>${state.selectedDate}</b><br>등록된 경기가 없습니다.</div>`;return}if(!state.members.length){root.innerHTML=`<div class="empty"><b>${state.selectedDate}</b><br>회원 관리에서 회원을 먼저 등록해 주세요.</div>`;return}const active=state.members.filter(m=>m.status!=='dormant');root.innerHTML=games.map(g=>{const entries=typeof gameEntries==='function'?gameEntries(g.id):[];const rows=active.map(m=>{const e=entries.find(x=>x.member_id===m.id);return`<div class="check-row"><label>${esc(m.name)}</label><input type="checkbox" data-game="${g.id}" data-member="${m.id}" ${e?.attended?'checked':''}></div>`}).join('');const gm=splitGameMemo(g.memo);return `<div class="card pad" style="margin-bottom:12px"><div class="toolbar" style="justify-content:space-between"><div><h3 style="margin:0">${typeof gameLabelHtml==='function'?gameLabelHtml(g,'team-logo'):esc(g.opponent)} ${typeof resultBadge==='function'?resultBadge(g):''}</h3><p class="note" style="margin:6px 0 0">${esc(state.selectedDate)} · ${typeof homeAwayText==='function'?homeAwayText(g.home_away):esc(g.home_away)} · ${esc(g.stadium||'-')}</p></div><button class="btn secondary" data-edit-game="${g.id}">경기 수정</button></div><div class="eo-seat-editor"><label>좌석 / 직관 메모</label><div class="row"><input id="seat-${g.id}" class="input" placeholder="예: 1루 블루존 204구역 7열" value="${esc(gm.seat)}"><textarea id="seatmemo-${g.id}" class="input" placeholder="예: 티켓 4매, 치킨 예약, 집결 장소 등">${esc(gm.memo)}</textarea><button class="btn green" data-save-seat="${g.id}">저장</button></div></div><h4>직관 회원</h4><div class="member-checks">${rows}</div></div>`}).join('')}
@@ -109,11 +143,12 @@
   async function saveAbout(){const cfg={intro:$('#eoAboutIntro')?.value.trim()||DEFAULT_ABOUT.intro,rules:[0,1,2].map(i=>({title:($('#eoRuleTitle'+i)?.value||DEFAULT_ABOUT.rules[i].title).replace('🐯','🦁'),body:$('#eoRuleBody'+i)?.value||DEFAULT_ABOUT.rules[i].body}))};saveAboutConfig(cfg);await recordChange('모임 소개 수정','모임 소개말 및 운영 규칙 수정','about','about');await ensureAboutPage(true);toast?.('모임 소개와 운영 규칙을 저장했습니다.')}
 
   function installOverrides(){ensureMemberForm();try{window.renderMembers=renderMembers=renderMembersPatched}catch(e){window.renderMembers=renderMembersPatched}try{window.clearMemberForm=clearMemberForm=clearMemberFormPatched}catch(e){window.clearMemberForm=clearMemberFormPatched}try{window.editMember=editMember=editMemberPatched}catch(e){window.editMember=editMemberPatched}try{window.saveMember=saveMember=saveMemberPatched}catch(e){window.saveMember=saveMemberPatched}try{window.renderDateDetail=renderDateDetail=renderDateDetailPatched}catch(e){window.renderDateDetail=renderDateDetailPatched}const save=$('#saveMemberBtn');if(save)save.onclick=saveMemberPatched;const add=$('#openMemberModalBtn');if(add)add.onclick=()=>{clearMemberFormPatched();openModal?.('memberModal')};renderMembersPatched()}
-  function bindOnce(){if(window.__eoheungFinalFixBound)return;window.__eoheungFinalFixBound=true;document.body.addEventListener('click',async e=>{const seat=e.target.closest('[data-save-seat]');if(seat){e.preventDefault();await saveGameSeat(seat.dataset.saveSeat);return}if(e.target.closest('[data-save-about]')){e.preventDefault();await saveAbout();return}if(e.target.closest('[data-reset-about]')){e.preventDefault();if(confirm('모임 소개와 운영 규칙을 기본값으로 되돌릴까요?')){localStorage.removeItem(LS_ABOUT);await ensureAboutPage(true)}return}if(e.target.closest('[data-refresh-history]')){e.preventDefault();await renderHistoryPanel();toast?.('서버 변경이력을 새로고침했습니다.');return}},true);document.body.addEventListener('change',e=>{if(e.target.matches('input[type="checkbox"][data-game]'))setTimeout(()=>recordChange('직관 체크 변경',`경기 ID ${e.target.dataset.game} / 회원 ID ${e.target.dataset.member} / ${e.target.checked?'체크':'해제'}`,'attendance',e.target.dataset.game),120)})}
+  function bindOnce(){if(window.__eoheungFinalFixBound)return;window.__eoheungFinalFixBound=true;document.body.addEventListener('click',async e=>{const nav=e.target.closest('[data-eo-next-nav]');if(nav){e.preventDefault();const games=plannedWatchGames();const dir=Number(nav.dataset.eoNextNav||0);window.__eoNextWatchIndex=Math.max(0,Math.min(games.length-1,Number(window.__eoNextWatchIndex||0)+dir));renderNextWatchPanel();return}const seat=e.target.closest('[data-save-seat]');if(seat){e.preventDefault();await saveGameSeat(seat.dataset.saveSeat);return}if(e.target.closest('[data-save-about]')){e.preventDefault();await saveAbout();return}if(e.target.closest('[data-reset-about]')){e.preventDefault();if(confirm('모임 소개와 운영 규칙을 기본값으로 되돌릴까요?')){localStorage.removeItem(LS_ABOUT);await ensureAboutPage(true)}return}if(e.target.closest('[data-refresh-history]')){e.preventDefault();await renderHistoryPanel();toast?.('서버 변경이력을 새로고침했습니다.');return}},true);document.body.addEventListener('change',e=>{if(e.target.matches('input[type="checkbox"][data-game]'))setTimeout(()=>recordChange('직관 체크 변경',`경기 ID ${e.target.dataset.game} / 회원 ID ${e.target.dataset.member} / ${e.target.checked?'체크':'해제'}`,'attendance',e.target.dataset.game),120)})}
   async function run(){injectStyle();await applyLogo();installOverrides();await ensureAboutPage();ensureHistoryPanel();renderHistoryPanel();renderNextWatchPanel();renderWeatherCards();bindOnce();$$('*').forEach(el=>{if(el.childNodes.length===1&&el.textContent.includes('🐯'))el.textContent=el.textContent.replaceAll('🐯','🦁')})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
   setInterval(()=>{try{injectStyle();applyLogo();installOverrides();ensureAboutPage();ensureHistoryPanel();renderHistoryPanel();renderNextWatchPanel()}catch(e){}},1800);
 })();
+
 
 
 
@@ -180,10 +215,11 @@
   #dashboard #eoNextWatch .eo-next-hero{
     height:100%!important;
     min-height:192px!important;
-    padding:13px!important;
+    padding:13px 22px!important;
     display:flex!important;
     flex-direction:column!important;
     justify-content:flex-start!important;
+    position:relative!important;
   }
   #dashboard #eoNextWatch .eo-next-hero h3{
     font-size:15px!important;
@@ -230,12 +266,36 @@
     bottom:-10px!important;
   }
 }
+#dashboard #eoNextWatch .eo-next-arrow{
+  position:absolute!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:34px!important;
+  height:34px!important;
+  border-radius:999px!important;
+  border:1px solid rgba(255,255,255,.45)!important;
+  background:#5aa0dc!important;
+  color:#fff!important;
+  display:grid!important;
+  place-items:center!important;
+  font-size:28px!important;
+  line-height:1!important;
+  font-weight:400!important;
+  z-index:5!important;
+  box-shadow:0 6px 14px rgba(0,0,0,.16)!important;
+}
+#dashboard #eoNextWatch .eo-next-prev{left:-12px!important;}
+#dashboard #eoNextWatch .eo-next-next{right:-12px!important;}
+#dashboard #eoNextWatch .eo-next-arrow:hover{filter:brightness(.95)!important;}
+body.theme-excel #dashboard #eoNextWatch .eo-next-arrow{background:#217346!important;border-color:#70ad47!important;}
+body.theme-groupware #dashboard #eoNextWatch .eo-next-arrow{background:#5b9bd5!important;border-color:#c7d8ea!important;}
 @media (min-width:901px) and (max-width:1280px){
   #dashboard .rank-grid{gap:8px!important;}
   #dashboard .rank-grid .card.pad{padding:11px!important;}
   #dashboard .rank-grid h3{font-size:13.5px!important;}
   #dashboard .rank-grid .rank-list li{font-size:11px!important;}
   #dashboard #eoNextWatch .eo-next-hero p[style]{font-size:12px!important;}
+  #dashboard #eoNextWatch .eo-next-hero{padding-left:20px!important;padding-right:20px!important;}
 }
 @media (max-width:900px){
   #dashboard .rank-grid{grid-template-columns:1fr!important;}
@@ -244,6 +304,9 @@
     white-space:normal!important;
     line-height:1.25!important;
   }
+  #dashboard #eoNextWatch .eo-next-arrow{width:36px!important;height:36px!important;font-size:30px!important;}
+  #dashboard #eoNextWatch .eo-next-prev{left:-10px!important;}
+  #dashboard #eoNextWatch .eo-next-next{right:-10px!important;}
 }`;
   let style = document.getElementById(styleId);
   if(!style){
@@ -254,6 +317,7 @@
   style.textContent = css;
 })();
 /* EOHEUNG_FORCE_FOUR_DASHBOARD_CARDS_END */
+
 
 
 
