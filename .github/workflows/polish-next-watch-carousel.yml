@@ -1,0 +1,36 @@
+name: Polish Next Watch Carousel
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/polish_next_watch_carousel.py'
+      - '.github/workflows/polish-next-watch-carousel.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Apply polished next-watch carousel design
+        run: python scripts/polish_next_watch_carousel.py
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add eoheung-member-logo-patch.js
+          git commit -m "Polish next watch carousel arrows"
+          git push
