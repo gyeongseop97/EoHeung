@@ -320,107 +320,134 @@ body.theme-groupware #dashboard #eoNextWatch .eo-next-arrow{background:#5b9bd5!i
 
 
 
+
 /* EOHEUNG_NEXT_WATCH_POLISH_START */
 (function(){
   const styleId='eoheungNextWatchPolishStyle';
   const css=`
+/* 다음 직관 카드: 기존 카드/태그 색상은 유지하고 화살표만 정리 */
 #dashboard #eoNextWatch .eo-next-hero{
   overflow:hidden!important;
-  isolation:isolate!important;
-  border:1px solid rgba(255,255,255,.24)!important;
-  background:
-    radial-gradient(circle at 92% 15%,rgba(255,255,255,.20),transparent 26%),
-    radial-gradient(circle at 12% 100%,rgba(246,195,67,.20),transparent 34%),
-    linear-gradient(135deg,#0757b8 0%,#073f8f 45%,#041e42 100%)!important;
-  box-shadow:0 14px 34px rgba(4,30,66,.22)!important;
+  isolation:auto!important;
+  background:linear-gradient(135deg,#074ca1,#041e42)!important;
+  box-shadow:0 14px 34px rgba(4,30,66,.18)!important;
 }
 #dashboard #eoNextWatch .eo-next-hero::before{
-  content:''!important;
-  position:absolute!important;
-  inset:0!important;
-  background:linear-gradient(90deg,rgba(255,255,255,.10),transparent 30%,rgba(255,255,255,.06))!important;
-  pointer-events:none!important;
-  z-index:0!important;
+  content:none!important;
+  display:none!important;
 }
-#dashboard #eoNextWatch .eo-next-hero>*:not(.eo-next-arrow){position:relative!important;z-index:2!important}
-#dashboard #eoNextWatch .eo-next-hero h3{
-  display:flex!important;
-  align-items:center!important;
-  gap:6px!important;
-  color:#eaf4ff!important;
-  text-shadow:0 1px 1px rgba(0,0,0,.20)!important;
+#dashboard #eoNextWatch .eo-next-hero::after{
+  content:''!important;
+  display:none!important;
 }
 #dashboard #eoNextWatch .eo-next-hero h3::before{
-  content:'🦁'!important;
-  font-size:14px!important;
-  filter:drop-shadow(0 1px 1px rgba(0,0,0,.20))!important;
+  content:none!important;
+  display:none!important;
 }
+#dashboard #eoNextWatch .eo-next-hero h3,
+#dashboard #eoNextWatch .eo-next-hero p,
 #dashboard #eoNextWatch .eo-next-hero p[style]{
-  color:#fff!important;
-  letter-spacing:-.03em!important;
-  text-shadow:0 1px 2px rgba(0,0,0,.22)!important;
-}
-#dashboard #eoNextWatch .eo-next-hero p:last-child{
-  color:rgba(255,255,255,.92)!important;
+  text-shadow:none!important;
 }
 #dashboard #eoNextWatch .eo-next-meta{
-  padding-right:2px!important;
+  padding-right:0!important;
 }
 #dashboard #eoNextWatch .eo-pill{
-  border:1px solid rgba(255,255,255,.18)!important;
+  border:0!important;
   background:rgba(255,255,255,.14)!important;
   color:#fff!important;
-  backdrop-filter:blur(10px)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16)!important;
-}
-#dashboard #eoNextWatch .eo-seat{
-  background:linear-gradient(135deg,#fff8ed,#ffe8c2)!important;
-  color:#9a3412!important;
-  border:1px solid rgba(251,191,36,.65)!important;
-  box-shadow:0 5px 14px rgba(120,53,15,.16)!important;
-}
-#dashboard #eoNextWatch .eo-next-arrow{
-  width:32px!important;
-  height:54px!important;
-  border-radius:999px!important;
-  border:1px solid rgba(255,255,255,.46)!important;
-  background:rgba(255,255,255,.22)!important;
-  color:#fff!important;
-  backdrop-filter:blur(12px)!important;
-  box-shadow:0 10px 22px rgba(4,30,66,.24),inset 0 1px 0 rgba(255,255,255,.22)!important;
-  transition:transform .16s ease,background .16s ease,box-shadow .16s ease!important;
-  z-index:8!important;
-}
-#dashboard #eoNextWatch .eo-next-arrow:hover{
-  background:rgba(255,255,255,.34)!important;
-  box-shadow:0 12px 26px rgba(4,30,66,.30),inset 0 1px 0 rgba(255,255,255,.30)!important;
-}
-#dashboard #eoNextWatch .eo-next-prev{left:8px!important;}
-#dashboard #eoNextWatch .eo-next-next{right:8px!important;}
-#dashboard #eoNextWatch .eo-next-prev:hover{transform:translateY(-50%) translateX(-2px)!important;}
-#dashboard #eoNextWatch .eo-next-next:hover{transform:translateY(-50%) translateX(2px)!important;}
-body.theme-excel #dashboard #eoNextWatch .eo-next-hero{
-  background:linear-gradient(135deg,#217346,#185c37)!important;
-  border-color:#70ad47!important;
+  backdrop-filter:none!important;
   box-shadow:none!important;
 }
-body.theme-excel #dashboard #eoNextWatch .eo-next-arrow{background:rgba(255,255,255,.22)!important;border-color:rgba(255,255,255,.50)!important;}
+#dashboard #eoNextWatch .eo-seat{
+  background:#fff7ed!important;
+  color:#c2410c!important;
+  border:1px solid #fed7aa!important;
+  box-shadow:none!important;
+}
+#dashboard #eoNextWatch .eo-next-arrow{
+  position:absolute!important;
+  top:10px!important;
+  transform:none!important;
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  min-height:24px!important;
+  border-radius:999px!important;
+  border:1px solid rgba(255,255,255,.38)!important;
+  background:rgba(255,255,255,.18)!important;
+  color:#ffffff!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+  font-size:18px!important;
+  line-height:20px!important;
+  font-weight:800!important;
+  z-index:8!important;
+  backdrop-filter:blur(8px)!important;
+  box-shadow:0 4px 12px rgba(4,30,66,.16), inset 0 1px 0 rgba(255,255,255,.18)!important;
+  transition:background .15s ease, transform .15s ease, box-shadow .15s ease!important;
+}
+#dashboard #eoNextWatch .eo-next-prev{right:38px!important;left:auto!important;}
+#dashboard #eoNextWatch .eo-next-next{right:10px!important;left:auto!important;}
+#dashboard #eoNextWatch .eo-next-arrow:hover{
+  background:rgba(255,255,255,.30)!important;
+  transform:translateY(-1px)!important;
+  box-shadow:0 6px 14px rgba(4,30,66,.22), inset 0 1px 0 rgba(255,255,255,.24)!important;
+}
+body.theme-excel #dashboard #eoNextWatch .eo-next-hero{
+  background:#217346!important;
+  border-color:#185c37!important;
+  box-shadow:none!important;
+}
+body.theme-excel #dashboard #eoNextWatch .eo-next-arrow{
+  background:rgba(255,255,255,.20)!important;
+  border-color:rgba(255,255,255,.42)!important;
+  color:#fff!important;
+}
 body.theme-groupware #dashboard #eoNextWatch .eo-next-hero{
-  background:linear-gradient(135deg,#ffffff,#eef6ff)!important;
+  background:#fff!important;
   color:#111827!important;
   border-color:#c7d8ea!important;
-  box-shadow:0 2px 8px rgba(0,0,0,.10)!important;
+  box-shadow:0 1px 4px rgba(0,0,0,.12)!important;
 }
 body.theme-groupware #dashboard #eoNextWatch .eo-next-hero h3,
 body.theme-groupware #dashboard #eoNextWatch .eo-next-hero p[style],
-body.theme-groupware #dashboard #eoNextWatch .eo-next-hero p:last-child{color:#174ea6!important;text-shadow:none!important;}
-body.theme-groupware #dashboard #eoNextWatch .eo-pill{background:#eaf3ff!important;color:#174ea6!important;border-color:#c7d8ea!important;box-shadow:none!important;}
-body.theme-groupware #dashboard #eoNextWatch .eo-next-arrow{background:#5b9bd5!important;border-color:#3479bd!important;color:#fff!important;}
+body.theme-groupware #dashboard #eoNextWatch .eo-next-hero p:last-child{
+  color:#174ea6!important;
+  text-shadow:none!important;
+}
+body.theme-groupware #dashboard #eoNextWatch .eo-pill{
+  background:#eaf3ff!important;
+  color:#174ea6!important;
+  border-radius:2px!important;
+}
+body.theme-groupware #dashboard #eoNextWatch .eo-seat{
+  background:#fff7ed!important;
+  color:#c2410c!important;
+  border:1px solid #fed7aa!important;
+}
+body.theme-groupware #dashboard #eoNextWatch .eo-next-arrow{
+  background:#eaf3ff!important;
+  border-color:#c7d8ea!important;
+  color:#174ea6!important;
+  box-shadow:none!important;
+}
 @media(max-width:900px){
-  #dashboard #eoNextWatch .eo-next-hero{padding-left:46px!important;padding-right:46px!important;}
-  #dashboard #eoNextWatch .eo-next-arrow{width:34px!important;height:56px!important;}
-  #dashboard #eoNextWatch .eo-next-prev{left:7px!important;}
-  #dashboard #eoNextWatch .eo-next-next{right:7px!important;}
+  #dashboard #eoNextWatch .eo-next-hero{
+    padding-left:13px!important;
+    padding-right:48px!important;
+  }
+  #dashboard #eoNextWatch .eo-next-arrow{
+    top:12px!important;
+    width:26px!important;
+    height:26px!important;
+    min-width:26px!important;
+    min-height:26px!important;
+    font-size:19px!important;
+  }
+  #dashboard #eoNextWatch .eo-next-prev{right:42px!important;left:auto!important;}
+  #dashboard #eoNextWatch .eo-next-next{right:12px!important;left:auto!important;}
 }`;
   function apply(){
     let style=document.getElementById(styleId);
@@ -431,5 +458,6 @@ body.theme-groupware #dashboard #eoNextWatch .eo-next-arrow{background:#5b9bd5!i
   setInterval(apply,2200);
 })();
 /* EOHEUNG_NEXT_WATCH_POLISH_END */
+
 
 
