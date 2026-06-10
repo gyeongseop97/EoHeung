@@ -10,14 +10,15 @@
   function getState(){try{return state}catch(e){return null}}
   function getLinksDefault(){try{return DEFAULT_LINKS}catch(e){return []}}
   function fn(name){try{return eval(name)}catch(e){return null}}
+  function toastMsg(msg){const t=fn('toast'); if(typeof t==='function')t(msg); else console.warn(msg)}
 
   function css(){
     if($('#memberPermStyle'))return;
     const s=document.createElement('style');s.id='memberPermStyle';
-    s.textContent=`.perm-pill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:900}.perm-pill.associate{background:#f3f4f6;color:#4b5563}.perm-pill.regular{background:#e8fff6;color:#047857}.perm-pill.admin{background:#eef4ff;color:#074ca1}.member-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.link-card-admin{position:relative}.link-actions{position:absolute;right:12px;bottom:12px;display:flex;gap:6px}.link-card-admin a{display:block;padding-bottom:42px}.auth-extra-note{margin-top:8px}.member-self-row{background:#fbfdff}.permission-banner{border:1px solid #dbeafe;background:#eff6ff;color:#1e3a8a;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:800;margin-bottom:12px}.permission-banner.warn{border-color:#fed7aa;background:#fff7ed;color:#9a3412}.disabled-by-role{opacity:.45}.disabled-by-role input{pointer-events:none}.role-locked{opacity:.55;pointer-events:none}`;
+    s.textContent=`.perm-pill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:900}.perm-pill.associate{background:#f3f4f6;color:#4b5563}.perm-pill.regular{background:#e8fff6;color:#047857}.perm-pill.admin{background:#eef4ff;color:#074ca1}.member-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.link-card-admin{position:relative}.link-actions{position:absolute;right:12px;bottom:12px;display:flex;gap:6px}.link-card-admin a{display:block;padding-bottom:42px}.auth-extra-note{margin-top:8px}.member-self-row{background:#fbfdff}.permission-banner{border:1px solid #dbeafe;background:#eff6ff;color:#1e3a8a;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:800;margin-bottom:12px}.permission-banner.warn{border-color:#fed7aa;background:#fff7ed;color:#9a3412}.disabled-by-role{opacity:.45}.disabled-by-role input{pointer-events:none}.role-locked{opacity:.55;pointer-events:none}.member-account-cell{font-size:12px;color:#64748b;line-height:1.4}.member-account-cell b{color:#0f172a}.signup-required{border-color:#f59e0b!important;background:#fffbeb!important}`;
     document.head.appendChild(s);
   }
-  function toastMsg(msg){const t=fn('toast'); if(typeof t==='function')t(msg); else console.warn(msg)}
+
   function memberRole(m){return m?.member_role||m?.role||m?.permission_role||(m?.is_admin?'admin':'associate')}
   function currentMember(){
     const st=getState();const u=st?.user;if(!u)return null;
@@ -26,47 +27,63 @@
   }
   function hasRoleSchema(){const st=getState();return (st?.members||[]).some(m=>'member_role'in m||'auth_user_id'in m||'email'in m)}
   function hasAnyAdmin(){const st=getState();return (st?.members||[]).some(m=>memberRole(m)===ROLE.ADMIN)}
-  function isAdmin(){
-    const m=currentMember();
-    if(m&&memberRole(m)===ROLE.ADMIN)return true;
-    if(!hasRoleSchema())return true;
-    if(!hasAnyAdmin())return true;
-    return false;
-  }
+  function isAdmin(){const m=currentMember();if(m&&memberRole(m)===ROLE.ADMIN)return true;if(!hasRoleSchema())return true;if(!hasAnyAdmin())return true;return false}
   function isRegular(){const m=currentMember();return isAdmin()||(m&&memberRole(m)===ROLE.REGULAR)}
   function canEditMember(m){return isAdmin()||(currentMember()?.id===m?.id)}
   function canCheckMember(memberId){return isAdmin()||(isRegular()&&currentMember()?.id===memberId)}
   window.eoAuthz={currentMember,isAdmin,isRegular,canEditMember,canCheckMember,memberRole};
 
+  function signupDraft(){
+    try{return JSON.parse(localStorage.getItem('eoheung_signup_profile')||'{}')}catch(e){return {}}
+  }
+  function saveSignupDraft(){
+    const draft={name:$('#signupName')?.value.trim()||'',phone:$('#signupPhone')?.value.trim()||''};
+    localStorage.setItem('eoheung_signup_profile',JSON.stringify(draft));
+    localStorage.setItem('eoheung_signup_name',draft.name);
+    localStorage.setItem('eoheung_signup_phone',draft.phone);
+    return draft;
+  }
   async function ensureMemberProfile(){
     const st=getState(); if(ensuring||!st?.client||!st?.user)return;
     ensuring=true;
     try{
       const u=st.user,email=lower(u.email); if(!email)return;
       let m=currentMember();
-      if(m&&m.auth_user_id)return;
-      if(m&&lower(m.email)===email&&!m.auth_user_id){
-        const {error}=await st.client.from('members').update({auth_user_id:u.id}).eq('id',m.id);
-        if(!error){m.auth_user_id=u.id;return;}
+      const draft=signupDraft();
+      const draftName=(draft.name||localStorage.getItem('eoheung_signup_name')||email.split('@')[0]||'신규회원').trim();
+      const draftPhone=(draft.phone||localStorage.getItem('eoheung_signup_phone')||'').trim();
+      if(m){
+        const patch={};
+        if(!m.auth_user_id)patch.auth_user_id=u.id;
+        if(!m.email)patch.email=email;
+        if(!m.phone&&draftPhone)patch.phone=draftPhone;
+        if(Object.keys(patch).length){const {error}=await st.client.from('members').update(patch).eq('id',m.id);if(!error)Object.assign(m,patch)}
+        return;
       }
-      if(!m){
-        const name=(localStorage.getItem('eoheung_signup_name')||email.split('@')[0]||'신규회원').trim();
-        let payload={name,email,auth_user_id:u.id,member_role:ROLE.ASSOC,status:'active',memo:'회원가입으로 자동 생성된 준회원'};
-        let {data,error}=await st.client.from('members').insert(payload).select().single();
-        if(error){payload={name,status:'active',memo:`회원가입 계정: ${email}`};const r=await st.client.from('members').insert(payload).select().single();data=r.data;error=r.error;}
-        if(!error&&data){st.members.push(data);toastMsg('준회원으로 회원 명단에 추가되었습니다. 관리자 승인 후 직관 체크가 가능합니다.');}
+      const payload={name:draftName,phone:draftPhone,email,auth_user_id:u.id,member_role:ROLE.ASSOC,status:'active',memo:'회원가입으로 자동 생성된 준회원'};
+      let {data,error}=await st.client.from('members').insert(payload).select().single();
+      if(error){
+        const fallback={name:draftName,phone:draftPhone,status:'active',memo:`회원가입 계정: ${email}`};
+        const r=await st.client.from('members').insert(fallback).select().single();data=r.data;error=r.error;
       }
+      if(!error&&data){st.members.push(data);toastMsg('준회원으로 회원 명단에 추가되었습니다. 관리자 승인 후 직관 체크가 가능합니다.');}
     }catch(e){console.warn('ensureMemberProfile failed',e)}finally{ensuring=false;}
   }
 
   function enhanceAuth(){
-    const pass=$('#loginPassword');if(!pass||$('#signupName'))return;
-    const input=document.createElement('input');input.id='signupName';input.className='input';input.placeholder='회원가입 이름';
-    pass.insertAdjacentElement('afterend',input);
-    const note=document.createElement('p');note.className='note auth-extra-note';note.textContent='회원가입 시 준회원으로 등록되며, 관리자가 정회원으로 변경하면 직관 체크 권한이 부여됩니다.';
-    pass.closest('.auth-card')?.appendChild(note);
-    const sign=$('#signUpBtn');const old=sign?.onclick;
-    if(sign)sign.onclick=async()=>{localStorage.setItem('eoheung_signup_name',$('#signupName')?.value.trim()||'');if(old)return old();};
+    const pass=$('#loginPassword');if(!pass)return;
+    if(!$('#signupName')){const input=document.createElement('input');input.id='signupName';input.className='input';input.placeholder='회원가입 이름';pass.insertAdjacentElement('afterend',input)}
+    if(!$('#signupPhone')){const input=document.createElement('input');input.id='signupPhone';input.className='input';input.placeholder='회원가입 연락처';$('#signupName').insertAdjacentElement('afterend',input)}
+    if(!$('#signupProfileNote')){const note=document.createElement('p');note.id='signupProfileNote';note.className='note auth-extra-note';note.textContent='회원가입 시 이름과 연락처를 함께 받아 준회원으로 등록합니다. 관리자가 정회원으로 변경하면 직관 체크 권한이 부여됩니다.';pass.closest('.auth-card')?.appendChild(note)}
+    const sign=$('#signUpBtn');if(sign&&!sign.dataset.memberProfileBound){
+      sign.dataset.memberProfileBound='1';
+      sign.addEventListener('click',e=>{
+        const draft=saveSignupDraft();
+        $('#signupName')?.classList.toggle('signup-required',!draft.name);
+        $('#signupPhone')?.classList.toggle('signup-required',!draft.phone);
+        if(!draft.name||!draft.phone){e.preventDefault();e.stopImmediatePropagation();toastMsg('회원가입 이름과 연락처를 입력해 주세요.');}
+      },true);
+    }
   }
 
   function enhanceMemberModal(){
@@ -74,7 +91,7 @@
     if(!$('#memberPosition')){const pos=document.createElement('input');pos.id='memberPosition';pos.className='input';pos.placeholder='직책';grid.insertBefore(pos,$('#memberName'));}
     if(!$('#memberRoleWrap')){const wrap=document.createElement('div');wrap.id='memberRoleWrap';wrap.innerHTML='<label class="note">회원 권한</label><select id="memberRole" class="input"><option value="associate">준회원</option><option value="regular">정회원</option><option value="admin">관리자</option></select>';grid.appendChild(wrap);}
     if(!$('#memberEmail')){const email=document.createElement('input');email.id='memberEmail';email.className='input';email.placeholder='계정 이메일';grid.appendChild(email);}
-    if(!$('#memberAuthUserId')){const uid=document.createElement('input');uid.id='memberAuthUserId';uid.className='input full';uid.placeholder='Auth User ID(선택, 이메일 자동연동 가능)';grid.appendChild(uid);}
+    if(!$('#memberAuthUserId')){const uid=document.createElement('input');uid.id='memberAuthUserId';uid.className='input full';uid.placeholder='가입 계정 ID(Auth User ID, 자동연동 가능)';grid.appendChild(uid);}
     const bar=$('#memberModal .toolbar');
     if(bar&&!$('#deleteMemberBtn')){const b=document.createElement('button');b.type='button';b.id='deleteMemberBtn';b.className='btn danger';b.textContent='회원삭제';b.onclick=deleteMember;bar.appendChild(b)}
   }
@@ -96,38 +113,44 @@
     applyPermissionChrome();
     const cm=currentMember();
     root.innerHTML=(st.members||[]).length?st.members.map(m=>{
-      const role=memberRole(m), linked=m.auth_user_id?'Auth 연결':m.email?'이메일 대기':'미연동', self=cm?.id===m.id;
+      const role=memberRole(m), linked=m.auth_user_id?'연동 완료':m.email?'이메일 대기':'미연동', self=cm?.id===m.id;
+      const account=`<div class="member-account-cell"><b>${esc(m.email||'-')}</b><br>${esc(linked)}</div>`;
       const action=canEditMember(m)?`<button class="btn secondary" data-edit-member="${m.id}">수정</button>`:'';
-      return `<tr class="${self?'member-self-row':''}"><td>${esc(m.position||'')}</td><td><b>${esc(m.name)}</b>${self?' <span class="note">나</span>':''}</td><td>${esc(m.phone||'')}</td><td><span class="perm-pill ${role}">${ROLE_LABEL[role]||role}</span></td><td>${esc(linked)}</td><td>${esc(m.memo||'')}</td><td><div class="member-actions">${action}</div></td></tr>`;
+      return `<tr class="${self?'member-self-row':''}"><td>${esc(m.position||'')}</td><td><b>${esc(m.name)}</b>${self?' <span class="note">나</span>':''}</td><td>${esc(m.phone||'')}</td><td><span class="perm-pill ${role}">${ROLE_LABEL[role]||role}</span></td><td>${account}</td><td>${esc(m.memo||'')}</td><td><div class="member-actions">${action}</div></td></tr>`;
     }).join(''):'<tr><td colspan="7" class="empty">등록된 회원이 없습니다.</td></tr>';
-    const head=root.closest('table')?.querySelector('thead tr');if(head)head.innerHTML='<th>직책</th><th>이름</th><th>연락처</th><th>권한</th><th>계정연동</th><th>메모</th><th></th>';
+    const head=root.closest('table')?.querySelector('thead tr');if(head)head.innerHTML='<th>직책</th><th>이름</th><th>연락처</th><th>권한</th><th>가입 계정</th><th>메모</th><th></th>';
   };
 
+  function setModalMemberId(id){const modal=$('#memberModal');if(modal)modal.dataset.memberId=id||'';const hidden=$('#memberId');if(hidden)hidden.value=id||'';}
+  function getModalMemberId(){return $('#memberModal')?.dataset.memberId||$('#memberId')?.value||''}
   window.editMember=function(id){
-    const st=getState();enhanceMemberModal();const m=(st?.members||[]).find(x=>x.id===id);if(!m)return;
+    const st=getState();enhanceMemberModal();const m=(st?.members||[]).find(x=>String(x.id)===String(id));if(!m)return;
     if(!canEditMember(m))return toastMsg('본인 정보만 수정할 수 있습니다.');
-    $('#memberModalTitle').textContent=isAdmin()?'회원 수정':'내 정보 수정';
-    $('#memberId').value=m.id;$('#memberName').value=m.name||'';$('#memberDepartment').value=m.department||'';$('#memberPhone').value=m.phone||'';$('#memberFavorite').value=m.favorite_player||'';$('#memberStatus').value=m.status||'active';$('#memberMemo').value=m.memo||'';
+    $('#memberModalTitle').textContent=isAdmin()?'회원 수정':'내 정보 수정';setModalMemberId(m.id);
+    $('#memberName').value=m.name||'';$('#memberDepartment').value=m.department||'';$('#memberPhone').value=m.phone||'';$('#memberFavorite').value=m.favorite_player||'';$('#memberStatus').value=m.status||'active';$('#memberMemo').value=m.memo||'';
     $('#memberPosition').value=m.position||'';$('#memberEmail').value=m.email||'';$('#memberAuthUserId').value=m.auth_user_id||'';$('#memberRole').value=memberRole(m);
-    const admin=isAdmin();['memberRoleWrap','memberAuthUserId'].forEach(id=>{const el=$('#'+id);if(el)el.style.display=admin?'block':'none'});['memberEmail','memberStatus'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=!admin});const del=$('#deleteMemberBtn');if(del)del.style.display=admin?'inline-flex':'none';
+    const admin=isAdmin();['memberRoleWrap','memberAuthUserId'].forEach(id=>{const el=$('#'+id);if(el)el.style.display=admin?'block':'none'});['memberEmail','memberStatus','memberRole','memberAuthUserId'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=!admin});const del=$('#deleteMemberBtn');if(del)del.style.display=admin?'inline-flex':'none';
     const open=fn('openModal');if(open)open('memberModal');
   };
   window.clearMemberForm=function(){
-    enhanceMemberModal();['memberId','memberName','memberDepartment','memberPhone','memberFavorite','memberMemo','memberPosition','memberEmail','memberAuthUserId'].forEach(id=>{const el=$('#'+id);if(el)el.value=''});$('#memberStatus').value='active';$('#memberRole').value=ROLE.ASSOC;$('#memberModalTitle').textContent='회원 추가';['memberRoleWrap','memberAuthUserId'].forEach(id=>{const el=$('#'+id);if(el)el.style.display='block'});const del=$('#deleteMemberBtn');if(del)del.style.display='none';
+    enhanceMemberModal();setModalMemberId('');['memberName','memberDepartment','memberPhone','memberFavorite','memberMemo','memberPosition','memberEmail','memberAuthUserId'].forEach(id=>{const el=$('#'+id);if(el)el.value=''});$('#memberStatus').value='active';$('#memberRole').value=ROLE.ASSOC;$('#memberModalTitle').textContent='회원 추가';['memberRoleWrap','memberAuthUserId'].forEach(id=>{const el=$('#'+id);if(el)el.style.display='block'});['memberEmail','memberStatus','memberRole','memberAuthUserId'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=false});const del=$('#deleteMemberBtn');if(del)del.style.display='none';
   };
   window.saveMember=async function(){
-    const st=getState(),id=$('#memberId').value,existing=(st?.members||[]).find(m=>m.id===id),admin=isAdmin();
+    const st=getState(),id=getModalMemberId(),existing=(st?.members||[]).find(m=>String(m.id)===String(id)),admin=isAdmin();
+    if(id&&!existing)return toastMsg('수정할 회원을 찾지 못했습니다. 새로고침 후 다시 시도해 주세요.');
     if(id&&existing&&!canEditMember(existing))return toastMsg('본인 정보만 수정할 수 있습니다.');
     if(!admin&&!id)return toastMsg('회원 추가는 관리자만 가능합니다.');
     const payload={name:$('#memberName').value.trim(),department:$('#memberDepartment').value.trim(),phone:$('#memberPhone').value.trim(),favorite_player:$('#memberFavorite').value.trim(),memo:$('#memberMemo').value.trim(),position:$('#memberPosition').value.trim()};
     if(admin){payload.status=$('#memberStatus').value;payload.member_role=$('#memberRole').value||ROLE.ASSOC;payload.email=lower($('#memberEmail').value);payload.auth_user_id=$('#memberAuthUserId').value.trim()||null;}
     if(!payload.name)return toastMsg('이름을 입력해 주세요.');
+    if(admin&&payload.auth_user_id){const dup=(st.members||[]).find(m=>m.auth_user_id===payload.auth_user_id&&String(m.id)!==String(id));if(dup)return toastMsg('이미 다른 회원과 연결된 가입 계정입니다: '+dup.name)}
+    if(admin&&payload.email){const dup=(st.members||[]).find(m=>lower(m.email)===payload.email&&String(m.id)!==String(id));if(dup)return toastMsg('이미 다른 회원과 연결된 이메일입니다: '+dup.name)}
     const res=id?await st.client.from('members').update(payload).eq('id',id):await st.client.from('members').insert(payload);
     if(res.error)return toastMsg('회원 저장 오류: '+res.error.message+' / Supabase members 권한 컬럼 적용 여부를 확인해 주세요.');
     const close=fn('closeModal');if(close)close('memberModal');const load=fn('loadAll');if(load)await load();
   };
   async function deleteMember(){
-    const st=getState();if(!isAdmin())return toastMsg('회원삭제는 관리자만 가능합니다.');const id=$('#memberId')?.value;if(!id)return;if(!confirm('이 회원과 관련 직관 기록을 삭제할까요?'))return;
+    const st=getState();if(!isAdmin())return toastMsg('회원삭제는 관리자만 가능합니다.');const id=getModalMemberId();if(!id)return;if(!confirm('이 회원과 관련 직관 기록을 삭제할까요?'))return;
     await st.client.from('game_members').delete().eq('member_id',id);const {error}=await st.client.from('members').delete().eq('id',id);if(error)return toastMsg('회원삭제 오류: '+error.message);const close=fn('closeModal');if(close)close('memberModal');const load=fn('loadAll');if(load)await load();
   }
 
