@@ -1,22 +1,43 @@
-name: Link KBO Standings Fix
+name: Update KBO Standings
 
 on:
   workflow_dispatch:
+  schedule:
+    # KST 21:10, 22:10, 23:10, 00:10, 01:10 - 경기 종료 후 순위 갱신용
+    - cron: "10 12-16 * * *"
+    # KST 09:10 - 전일 경기 반영 재확인용
+    - cron: "10 0 * * *"
 
 permissions:
   contents: write
 
 jobs:
-  patch:
+  update-standings:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ github.token }}
-      - run: python scripts/link_kbo_standings_fix.py
-      - run: |
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Ensure standings renderer is linked
+        run: python scripts/link_kbo_standings_fix.py
+
+      - name: Sync Naver KBO standings data
+        run: python scripts/sync_naver_kbo_standings.py
+
+      - name: Commit updated standings
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git commit -m "Link corrected KBO standings renderer" || exit 0
+          git add index.html data/kbo-standings.json
+          git commit -m "Update KBO standings data" || exit 0
           git push
