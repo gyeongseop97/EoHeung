@@ -1,11 +1,6 @@
-/* Corrected KBO standings table and dashboard balance */
-#dashboard.section.active{
-  grid-template-columns:minmax(220px,.55fr) minmax(220px,.62fr) minmax(220px,.62fr) minmax(620px,1.55fr)!important;
-  gap:12px!important;
-  align-items:start!important;
-}
+/* KBO standings table compact layout without changing dashboard section flow */
 .kbo-standings-card{
-  min-width:620px!important;
+  min-width:0!important;
   overflow:hidden!important;
 }
 .kbo-standings-wrap{
@@ -83,25 +78,11 @@
 #dashSamsungWeek .eo-weather-item{padding:4px!important;}
 #dashSamsungWeek .eo-weather-item b{font-size:10px!important;}
 #dashSamsungWeek .eo-weather-item span{font-size:9px!important;}
-#dashTodayGames .game-card,
-#dashYesterdayGames .game-card{
-  padding:9px 10px!important;
-}
-@media(max-width:1700px){
-  #dashboard.section.active{
-    grid-template-columns:minmax(210px,.52fr) minmax(210px,.58fr) minmax(210px,.58fr) minmax(600px,1.65fr)!important;
-  }
-  .kbo-standings-card{min-width:600px!important;}
-}
 @media(max-width:1500px){
-  #dashboard.section.active{grid-template-columns:1fr 1fr!important;}
-  .kbo-standings-card{min-width:0!important;}
   .kbo-standings-wrap{overflow-x:auto!important;}
   .kbo-standings-table.eo-standings-full{min-width:620px!important;}
 }
 @media(max-width:900px){
-  #dashboard.section.active{display:block!important;}
-  .kbo-standings-card{min-width:0!important;}
   .kbo-standings-wrap{overflow-x:auto!important;}
   .kbo-standings-table.eo-standings-full{min-width:640px!important;}
 }
