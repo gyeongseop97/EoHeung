@@ -1,13 +1,14 @@
 (function(){
   const TEAMS=['삼성','LG','KT','SSG','KIA','두산','한화','롯데','키움','NC'];
+  const REGULAR_SEASON_START={2025:'2025-03-22',2026:'2026-03-28'};
   const norm=(name)=>{const raw=String(name||'').trim();const map={'SAMSUNG':'삼성','LIONS':'삼성','삼성':'삼성','LG':'LG','엘지':'LG','KT':'KT','SSG':'SSG','KIA':'KIA','두산':'두산','DOOSAN':'두산','한화':'한화','HANWHA':'한화','롯데':'롯데','LOTTE':'롯데','키움':'키움','KIWOOM':'키움','HEROES':'키움','NC':'NC'};return map[raw]||map[raw.toUpperCase()]||raw};
   const esc2=(s)=>String(s??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
   const logo=(team)=>typeof teamLogo==='function'?teamLogo(team,'team-logo') : '';
   const resultLabel=(v)=>v==='W'?'승':v==='L'?'패':v==='D'?'무':'-';
 
   function seasonStart(){
-    const y=(typeof state!=='undefined'&&state.year)||new Date().getFullYear();
-    return `${y}-03-01`;
+    const y=String((typeof state!=='undefined'&&state.year)||new Date().getFullYear());
+    return REGULAR_SEASON_START[y]||`${y}-03-22`;
   }
   function gameDateKey(g){return `${String(g.game_date||'')} ${String(g.game_time||'')}`;}
   function toAllGameFromSamsung(g){
@@ -29,6 +30,7 @@
     if(typeof state==='undefined')return [];
     const src=(state.allGames&&state.allGames.length)?state.allGames:(state.games||[]).map(toAllGameFromSamsung);
     const seen=new Set();
+    const start=seasonStart();
     return (src||[]).filter(Boolean).map(g=>({
       ...g,
       away_team:norm(g.away_team),
@@ -36,7 +38,10 @@
       away_score:g.away_score===''||g.away_score==null?null:Number(g.away_score),
       home_score:g.home_score===''||g.home_score==null?null:Number(g.home_score)
     })).filter(g=>{
-      if(!g.game_date||String(g.game_date)<seasonStart())return false;
+      if(!g.game_date||String(g.game_date)<start)return false;
+      const statusText=String(g.status||'').toUpperCase();
+      const sourceText=String(g.source||'')+' '+String(g.raw_status||'')+' '+String(g.note||'');
+      if(/PRESEASON|EXHIBITION|시범/.test(statusText+' '+sourceText.toUpperCase()))return false;
       const key=[g.game_date,g.game_time||'',g.away_team,g.home_team,g.away_score,g.home_score,g.status].join('|');
       if(seen.has(key))return false;
       seen.add(key);
@@ -98,13 +103,13 @@
     const rows=buildRows();
     const totalGames=finishedGames().length;
     if(!rows.some(r=>r.g>0))return '<div class="empty">순위 계산에 필요한 전체 경기 결과가 아직 없습니다. KBO 일정 동기화를 먼저 실행해 주세요.</div>';
-    return `<table class="kbo-standings-table eo-standings-full eo-game-standings"><thead><tr><th>순위</th><th>팀명</th><th>승률</th><th>게임차</th><th>승</th><th>무</th><th>패</th><th>경기</th><th>연속</th><th>타율</th><th>평균자책</th><th>최근5경기</th><th>다음경기</th></tr></thead><tbody>${rows.map(r=>`<tr class="${r.team==='삼성'?'samsung-row':''}"><td class="rank-num">${r.rank}</td><td class="team-cell"><div class="team-cell-inner">${logo(r.team)}<span>${esc2(r.team)}</span></div></td><td class="pct">${r.pct.toFixed(3)}</td><td>${r.gb===0?'0.0':r.gb.toFixed(1)}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.g}</td><td>${esc2(r.streak)}</td><td>-</td><td>-</td><td>${esc2(r.recent5)}</td><td class="next-cell">${r.nextOpponent?`${logo(r.nextOpponent)}<span>${esc2(r.nextOpponent)}</span>`:'-'}</td></tr>`).join('')}</tbody></table><div class="eo-standings-foot"><span>KBO 전체 경기 결과 기반 자동 계산 · 반영 경기 ${totalGames}건</span><a href="https://sports.news.naver.com/kbaseball/record/index" target="_blank" rel="noopener">전체보기</a></div>`;
+    return `<table class="kbo-standings-table eo-standings-full eo-game-standings"><thead><tr><th>순위</th><th>팀명</th><th>승률</th><th>게임차</th><th>승</th><th>무</th><th>패</th><th>경기</th><th>연속</th><th>타율</th><th>평균자책</th><th>최근5경기</th><th>다음경기</th></tr></thead><tbody>${rows.map(r=>`<tr class="${r.team==='삼성'?'samsung-row':''}"><td class="rank-num">${r.rank}</td><td class="team-cell"><div class="team-cell-inner">${logo(r.team)}<span>${esc2(r.team)}</span></div></td><td class="pct">${r.pct.toFixed(3)}</td><td>${r.gb===0?'0.0':r.gb.toFixed(1)}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.g}</td><td>${esc2(r.streak)}</td><td>-</td><td>-</td><td>${esc2(r.recent5)}</td><td class="next-cell">${r.nextOpponent?`${logo(r.nextOpponent)}<span>${esc2(r.nextOpponent)}</span>`:'-'}</td></tr>`).join('')}</tbody></table><div class="eo-standings-foot"><span>KBO 정규리그 경기 결과 기반 자동 계산 · 반영 경기 ${totalGames}건 · 시작일 ${seasonStart()}</span><a href="https://sports.news.naver.com/kbaseball/record/index" target="_blank" rel="noopener">전체보기</a></div>`;
   }
   function render(){
     const root=document.getElementById('kboStandings');if(!root)return;
     root.innerHTML=renderGameBased();
     const note=document.querySelector('.kbo-standings-head .note');
-    if(note)note.textContent='KBO 전체 경기 결과 기반 자동 계산';
+    if(note)note.textContent='KBO 정규리그 경기 결과 기반 자동 계산';
   }
   function install(){
     window.buildKboStandings=buildRows;
