@@ -1,0 +1,38 @@
+name: Layout Hotfix
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('layout-restore.js')
+          p.write_text("""(function(){
+            function apply(){
+              var s=document.getElementById('eoEmergencyLayoutFix');
+              if(s) s.remove();
+              var st=document.getElementById('eoLayoutRestoreStyle');
+              if(st) st.remove();
+            }
+            if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', apply); else apply();
+          })();
+          """, encoding='utf-8')
+          css=Path('kbo-standings-fix.css')
+          txt=css.read_text(encoding='utf-8')
+          marker='#dashboard .dashboard-grid'
+          if marker in txt:
+              txt=txt[:txt.index(marker)]
+              txt+='\n@media(max-width:1500px){.kbo-standings-wrap{overflow-x:auto!important}.kbo-standings-table.eo-standings-full{min-width:620px!important}}\n'
+              txt+='@media(max-width:900px){.kbo-standings-wrap{overflow-x:auto!important}.kbo-standings-table.eo-standings-full{min-width:640px!important}}\n'
+              css.write_text(txt, encoding='utf-8')
+          PY
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add layout-restore.js kbo-standings-fix.css
+          git commit -m layout-hotfix || exit 0
+          git push
