@@ -1,31 +1,9 @@
+// Disabled broken layout overrides. Permissions are handled by member-permission-control.js.
 (function(){
-  const $=(s,r=document)=>r.querySelector(s);
-  const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
-  const low=s=>String(s||'').trim().toLowerCase();
-  let user=null,members=[],patched=false;
-  function msg(t){const el=document.getElementById('toast');if(el){const d=document.createElement('div');d.textContent=t;el.appendChild(d);setTimeout(()=>d.remove(),2600)}else console.warn(t)}
-  function role(m){return m?.member_role||'associate'}
-  function me(){const uid=String(user?.id||''),email=low(user?.email);return members.find(m=>String(m.auth_user_id||'')===uid)||members.find(m=>low(m.email)===email)||null}
-  function admin(){const m=me();if(m&&role(m)==='admin')return true;return !members.some(x=>role(x)==='admin')}
-  function regular(){const m=me();return !!m&&role(m)==='regular'}
-  function byId(id){return members.find(m=>String(m.id)===String(id))}
-  function canCheck(id){const m=byId(id);if(admin())return !!m&&role(m)==='regular';const mine=me();return regular()&&mine&&String(mine.id)===String(id)}
-  function injectLayoutCss(){if($('#eoEmergencyLayoutFix'))return;const s=document.createElement('style');s.id='eoEmergencyLayoutFix';s.textContent='#dashboard.section.active{display:block!important}#dashboard .grid4{display:grid!important;grid-template-columns:repeat(4,minmax(160px,1fr))!important;gap:14px!important;margin-bottom:18px!important}#dashboard .dashboard-grid{display:grid!important;grid-template-columns:minmax(260px,1.05fr) minmax(260px,1fr) minmax(260px,1fr) minmax(420px,1.25fr)!important;gap:16px!important;align-items:start!important}#schedule.section.active{display:block!important}#schedule .schedule-layout{display:grid!important;grid-template-columns:minmax(340px,.9fr) minmax(560px,1.35fr)!important;gap:18px!important;align-items:start!important}#schedule #calendar.calendar{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:8px!important;min-height:620px!important}#schedule #calendar .day{min-height:112px!important;display:block!important;background:#fff}@media(max-width:1200px){#dashboard .grid4,#dashboard .dashboard-grid,#schedule .schedule-layout{grid-template-columns:1fr!important}#schedule #calendar.calendar{min-height:0!important}}';document.head.appendChild(s)}
-  function patchCore(){
-    if(patched)return;
-    try{
-      renderRank=function(id,rows,key,suffix){const el=qs(id);if(!el)return;el.innerHTML=rows&&rows.length?rows.slice(0,5).map(r=>`<li><b>${esc(r.name)}</b><span>${r[key]}${suffix}</span></li>`).join(''):'<li><span>기록 없음</span><span>-</span></li>'};
-      renderDashboard=function(){try{const set=(id,val)=>{const el=qs(id);if(el)el.innerHTML=val};const txt=(id,val)=>{const el=qs(id);if(el)el.textContent=val};txt('dashMembers',state.members.filter(m=>m.status!=='dormant').length);const ranks=buildRankings();const total=ranks.rows.reduce((a,b)=>a+b.attended,0),planned=ranks.rows.reduce((a,b)=>a+b.planned,0);txt('dashGames',watchCountText(total,planned));const wins=state.gameMembers.filter(e=>e.attended).reduce((acc,e)=>{const g=state.games.find(x=>x.id===e.game_id);return acc+(isActualWatchGame(g)&&g.result==='W'?1:0)},0);const losses=state.gameMembers.filter(e=>e.attended).reduce((acc,e)=>{const g=state.games.find(x=>x.id===e.game_id);return acc+(isActualWatchGame(g)&&g.result==='L'?1:0)},0);txt('dashRate',(wins+losses)?`${Math.round(wins/(wins+losses)*100)}%`:'-');const upcoming=state.games.filter(g=>g.game_date>=toYmd(new Date())&&g.status!=='FINISHED').sort((a,b)=>(a.game_date+(a.game_time||'')).localeCompare(b.game_date+(b.game_time||'')))[0];set('dashNext',upcoming?`${upcoming.game_time?.slice(0,5)||''} ${upcoming.home_away==='HOME'?'vs':'@'} ${esc(upcoming.opponent)} ${teamLogo(upcoming.opponent,'team-logo')}`:'-');renderRank('dashAttendRank',ranks.byAttend,'attendanceText','');renderRank('dashWinRank',ranks.byWins,'wins','회');renderRank('dashRateRank',ranks.byRate,'rateText','');if(typeof renderDashboardSchedules==='function')renderDashboardSchedules();if(typeof renderKboStandings==='function')renderKboStandings()}catch(e){console.error(e)}};
-      renderAll=function(){try{renderDashboard()}catch(e){console.error(e)}try{renderCalendar()}catch(e){console.error(e)}try{renderWatchList()}catch(e){console.error(e)}try{renderDateDetail()}catch(e){console.error(e)}try{renderMembers()}catch(e){console.error(e)}try{renderRecords()}catch(e){console.error(e)}try{renderLinks()}catch(e){console.error(e)}try{renderSettings()}catch(e){console.error(e)}};
-      patched=true;
-    }catch(e){console.error(e)}
+  function boot(){
+    var bad = document.getElementById('eoEmergencyLayoutFix');
+    if(bad) bad.remove();
   }
-  async function load(){patchCore();injectLayoutCss();if(!state?.client)return;const s=await state.client.auth.getSession();user=s.data.session?.user||null;if(!user)return;const r=await state.client.from('members').select('id,name,email,auth_user_id,member_role').order('name');if(!r.error)members=r.data||[];apply()}
-  function applyAttendance(){const root=$('#dateDetail');if(!root||!members.length)return;$$('.member-checks',root).forEach(box=>{const rows=$$('.check-row',box);if(!rows.length)return;let visible=0;rows.forEach(row=>{const input=row.querySelector('input[data-member]');if(!input)return;const ok=canCheck(input.dataset.member);if(ok){input.disabled=false;row.style.display='';visible++}else{row.style.display='none';input.disabled=true}});let note=box.querySelector('.role-attendance-note');if(!visible){if(!note){note=document.createElement('div');note.className='permission-banner warn role-attendance-note';note.style.cssText='border:1px solid #fed7aa;background:#fff7ed;color:#9a3412;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:800;margin:8px 0';box.appendChild(note)}note.textContent=admin()?'체크 가능한 정회원이 없습니다. 회원관리에서 정회원 권한을 부여해 주세요.':'준회원은 직관 체크 권한이 없습니다. 정회원은 본인 이름만 체크할 수 있습니다.'}else if(note){note.remove()}})}
-  function applyAbout(){const a=admin();const sel='[data-cmd-toggle],[data-cmd-save],[data-cmd-reset],.eo-about-edit button,.eo-about-edit textarea,.eo-about-edit input,.eo-about-edit select,[data-about-edit],[data-about-save]';$$(sel).forEach(el=>{el.style.display=a?'':'none';if('disabled'in el)el.disabled=!a});if(!a)$('#eoCmdEdit')?.classList.remove('show')}
-  function apply(){patchCore();injectLayoutCss();applyAttendance();applyAbout()}
-  document.addEventListener('change',e=>{const cb=e.target.closest('input[type="checkbox"][data-game][data-member]');if(cb&&!canCheck(cb.dataset.member)){e.preventDefault();e.stopImmediatePropagation();cb.checked=!cb.checked;msg(admin()?'관리자는 정회원만 직관 체크할 수 있습니다.':'정회원은 본인 이름만 체크할 수 있고, 준회원은 체크할 수 없습니다.')}},true);
-  document.addEventListener('click',e=>{if(admin())return;if(e.target.closest('[data-cmd-toggle],[data-cmd-save],[data-cmd-reset],.eo-about-edit button,[data-about-edit],[data-about-save]')){e.preventDefault();e.stopImmediatePropagation();msg('모임 소개와 십계명 수정은 관리자만 가능합니다.')}},true);
-  function boot(){patchCore();injectLayoutCss();load();setInterval(apply,400);setInterval(load,30000);setTimeout(()=>{try{renderAll()}catch(e){}},1200)}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();
