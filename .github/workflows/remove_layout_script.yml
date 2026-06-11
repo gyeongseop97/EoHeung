@@ -1,0 +1,27 @@
+name: Remove Layout Script
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('  <script src="layout-restore.js" defer></script>\n','')
+          p.write_text(s, encoding='utf-8')
+          # remove accidental temp file if present
+          tmp=Path('tmp_test.txt')
+          if tmp.exists(): tmp.unlink()
+          PY
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add index.html
+          git rm -f tmp_test.txt 2>/dev/null || true
+          git commit -m "Remove broken layout script reference" || exit 0
+          git push
