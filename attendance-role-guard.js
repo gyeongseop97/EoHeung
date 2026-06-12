@@ -4,7 +4,7 @@
   const $=(s,r=document)=>r.querySelector(s);
   const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   const low=s=>String(s||'').trim().toLowerCase();
-  const esc=s=>String(s??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+  const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
   let client=null,user=null,members=[];
   function c(){if(!client&&window.supabase)client=window.supabase.createClient(URL,KEY);return client}
   function toast(m){const el=$('#toast');if(el){const d=document.createElement('div');d.textContent=m;el.appendChild(d);setTimeout(()=>d.remove(),2800)}else console.warn(m)}
@@ -22,6 +22,7 @@
   async function saveMemo(key){const [gameId,memberId]=String(key).split('|');if(!canAttend(memberId))return toast('직관 메모 권한이 없습니다.');const ta=$(`[data-attendance-memo="${key}"]`), cb=$(`input[data-game="${gameId}"][data-member="${memberId}"]`);if(!ta||!cb)return;if(!cb.checked)return toast('직관 체크 후 메모를 저장해 주세요.');const old=entry(gameId,memberId);const payload={game_id:gameId,member_id:memberId,planned:true,attended:true,memo:ta.value.trim()};const r=await (window.state?.client||c()).from('game_members').upsert(payload,{onConflict:'game_id,member_id'}).select().single();if(r.error)return toast('메모 저장 오류: '+r.error.message);if(old)Object.assign(old,r.data);else window.state?.gameMembers?.push(r.data);toast('직관 메모를 저장했습니다.')}
   document.addEventListener('change',e=>{const cb=e.target.closest('input[data-game][data-member]');if(!cb)return;if(!canAttend(cb.dataset.member)){e.preventDefault();e.stopImmediatePropagation();cb.checked=!cb.checked;toast('정회원은 본인만, 관리자는 정회원/관리자만 체크할 수 있습니다.')}},true);
   document.addEventListener('click',e=>{const b=e.target.closest('[data-save-attendance-memo]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();saveMemo(b.dataset.saveAttendanceMemo)},true);
-  function boot(){load();setTimeout(apply,800);const root=$('#dateDetail');if(root)new MutationObserver(()=>setTimeout(apply,0)).observe(root,{childList:true,subtree:true});setInterval(load,30000)}
+  function loadLiveChat(){if(document.getElementById('eoLiveChatScript'))return;const s=document.createElement('script');s.id='eoLiveChatScript';s.src='live-chat-widget.js?v=1';s.defer=true;document.head.appendChild(s)}
+  function boot(){loadLiveChat();load();setTimeout(apply,800);const root=$('#dateDetail');if(root)new MutationObserver(()=>setTimeout(apply,0)).observe(root,{childList:true,subtree:true});setInterval(load,30000)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
