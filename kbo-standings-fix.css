@@ -22,9 +22,13 @@
 .eo-standings-foot{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:11px;color:#64748b;padding:8px 2px 0}
 .eo-standings-foot a{color:#64748b;text-decoration:underline}
 
-/* Dashboard lower section width/font hotfix */
-#dashboard .dashboard-grid{display:grid!important;grid-template-columns:245px 225px 225px minmax(880px,1fr)!important;gap:16px!important;align-items:start!important}
+/* Dashboard lower section width/font/order hotfix */
+#dashboard .dashboard-grid{display:grid!important;grid-template-columns:245px 225px 225px minmax(880px,1fr)!important;gap:16px!important;align-items:start!important;grid-auto-flow:row!important}
 #dashboard .dashboard-grid>.card{min-width:0!important;grid-column:auto!important;grid-row:auto!important}
+#dashboard .dashboard-grid>.card:has(#dashSamsungWeek){order:1!important}
+#dashboard .dashboard-grid>.card:has(#dashTodayAll){order:2!important}
+#dashboard .dashboard-grid>.card:has(#dashYesterdayAll){order:3!important}
+#dashboard .dashboard-grid>.card:has(#kboStandings),#dashboard .dashboard-grid>.kbo-standings-card{order:4!important}
 #dashboard .dashboard-grid .schedule-card{padding:16px!important}
 #dashboard .dashboard-grid .schedule-card h3{font-size:19px!important;margin-bottom:12px!important}
 #dashboard .dashboard-grid .mini-row{padding:10px!important;font-size:15px!important;line-height:1.35!important}
