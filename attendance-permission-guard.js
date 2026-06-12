@@ -51,13 +51,13 @@
       #dashboard .dashboard-grid>#kboStandings,.dashboard-grid>#kboStandings{order:4!important;}
       #dashboard .dashboard-grid .schedule-card{padding:14px 16px!important;}
       #dashboard .dashboard-grid .schedule-card h3{font-size:18px!important;line-height:1.2!important;margin:0 0 10px!important;}
-      #dashboard .dashboard-grid .mini-row{font-size:14px!important;line-height:1.22!important;padding:7px 10px!important;min-height:0!important;}
-      #dashboard .dashboard-grid .mini-row b{font-size:15px!important;line-height:1.18!important;}
-      #dashboard .dashboard-grid .mini-row .note,#dashboard .dashboard-grid .mini-row .muted{font-size:12px!important;line-height:1.2!important;margin-top:3px!important;}
-      #dashboard .dashboard-grid .weather{font-size:13px!important;line-height:1.2!important;margin-top:3px!important;}
-      #dashboard .dashboard-grid .team-logo.sm{width:18px!important;height:18px!important;}
-      #dashSamsungWeek,#dashTodayAll,#dashYesterdayAll{max-height:360px!important;overflow:auto!important;}
-      #dashSamsungWeek .mini-row,#dashTodayAll .mini-row,#dashYesterdayAll .mini-row{padding-top:7px!important;padding-bottom:7px!important;}
+      #dashboard .dashboard-grid .mini-row{font-size:13px!important;line-height:1.12!important;padding:4px 9px!important;min-height:0!important;}
+      #dashboard .dashboard-grid .mini-row b{font-size:14px!important;line-height:1.1!important;}
+      #dashboard .dashboard-grid .mini-row .note,#dashboard .dashboard-grid .mini-row .muted{font-size:11px!important;line-height:1.12!important;margin-top:2px!important;}
+      #dashboard .dashboard-grid .weather{font-size:12px!important;line-height:1.12!important;margin-top:2px!important;}
+      #dashboard .dashboard-grid .team-logo.sm{width:16px!important;height:16px!important;}
+      #dashSamsungWeek,#dashTodayAll,#dashYesterdayAll{max-height:none!important;height:auto!important;overflow:visible!important;}
+      #dashSamsungWeek .mini-row,#dashTodayAll .mini-row,#dashYesterdayAll .mini-row{padding-top:4px!important;padding-bottom:4px!important;}
       #dashboard .kbo-standings-card{overflow:visible!important;}
       #dashboard .kbo-standings-wrap{overflow-x:auto!important;width:100%!important;}
       #dashboard .kbo-standings-table.eo-standings-full{min-width:760px!important;width:100%!important;}
