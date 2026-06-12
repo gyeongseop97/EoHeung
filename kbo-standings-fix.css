@@ -1,78 +1,42 @@
 /* KBO standings table compact layout without changing dashboard section flow */
-.kbo-standings-card{
-  min-width:0!important;
-  overflow:hidden!important;
-}
-.kbo-standings-wrap{
-  width:100%!important;
-  overflow:hidden!important;
-}
-.kbo-standings-table.eo-standings-full{
-  width:100%!important;
-  min-width:0!important;
-  font-size:11px!important;
-  table-layout:fixed!important;
-  border-collapse:collapse!important;
-}
-.kbo-standings-table.eo-standings-full th,
-.kbo-standings-table.eo-standings-full td{
-  font-size:11px!important;
-  padding:6px 3px!important;
-  text-align:center!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  vertical-align:middle!important;
-}
-.kbo-standings-table.eo-standings-full .team-cell{
-  text-align:left!important;
-  padding-left:4px!important;
-}
-.kbo-standings-table.eo-standings-full .team-cell-inner{
-  display:flex!important;
-  align-items:center!important;
-  gap:3px!important;
-  min-width:0!important;
-}
-.kbo-standings-table.eo-standings-full .team-cell-inner img,
-.kbo-standings-table.eo-standings-full .team-logo{
-  width:17px!important;
-  height:17px!important;
-  object-fit:contain!important;
-  flex:0 0 17px!important;
-}
-.kbo-standings-table.eo-standings-full .team-cell-inner span{
-  display:block!important;
-  min-width:0!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-}
-.kbo-standings-table.eo-standings-full .next-cell{
-  text-align:left!important;
-}
-.kbo-standings-table.eo-standings-full .next-cell img,
-.kbo-standings-table.eo-standings-full .next-cell .team-logo{
-  width:17px!important;
-  height:17px!important;
-  object-fit:contain!important;
-  vertical-align:middle!important;
-  margin-right:3px!important;
-}
-.kbo-standings-table.eo-standings-full th:nth-child(1),.kbo-standings-table.eo-standings-full td:nth-child(1){width:28px!important;display:table-cell!important;}
-.kbo-standings-table.eo-standings-full th:nth-child(2),.kbo-standings-table.eo-standings-full td:nth-child(2){width:70px!important;display:table-cell!important;}
-.kbo-standings-table.eo-standings-full th:nth-child(3),.kbo-standings-table.eo-standings-full td:nth-child(3){width:42px!important;display:table-cell!important;}
-.kbo-standings-table.eo-standings-full th:nth-child(4),.kbo-standings-table.eo-standings-full td:nth-child(4){width:42px!important;display:table-cell!important;}
-.kbo-standings-table.eo-standings-full th:nth-child(5),.kbo-standings-table.eo-standings-full td:nth-child(5),
-.kbo-standings-table.eo-standings-full th:nth-child(6),.kbo-standings-table.eo-standings-full td:nth-child(6),
-.kbo-standings-table.eo-standings-full th:nth-child(7),.kbo-standings-table.eo-standings-full td:nth-child(7),
-.kbo-standings-table.eo-standings-full th:nth-child(8),.kbo-standings-table.eo-standings-full td:nth-child(8){width:28px!important;display:table-cell!important;}
-.kbo-standings-table.eo-standings-full th:nth-child(9),.kbo-standings-table.eo-standings-full td:nth-child(9){width:38px!important;display:table-cell!important;}
-.kbo-standings-table.eo-standings-full th:nth-child(10),.kbo-standings-table.eo-standings-full td:nth-child(10){width:42px!important;display:table-cell!important;}
-.kbo-standings-table.eo-standings-full th:nth-child(11),.kbo-standings-table.eo-standings-full td:nth-child(11){width:50px!important;display:table-cell!important;}
-.kbo-standings-table.eo-standings-full th:nth-child(12),.kbo-standings-table.eo-standings-full td:nth-child(12){width:70px!important;display:table-cell!important;}
-.kbo-standings-table.eo-standings-full th:nth-child(13),.kbo-standings-table.eo-standings-full td:nth-child(13){width:58px!important;display:table-cell!important;}
-.eo-standings-foot{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:11px;color:#64748b;padding:8px 2px 0;}
-.eo-standings-foot a{color:#64748b;text-decoration:underline;}
+.kbo-standings-card{min-width:0!important;overflow:hidden!important}
+.kbo-standings-wrap{width:100%!important;overflow:hidden!important}
+.kbo-standings-table.eo-standings-full{width:100%!important;min-width:0!important;font-size:11px!important;table-layout:fixed!important;border-collapse:collapse!important}
+.kbo-standings-table.eo-standings-full th,.kbo-standings-table.eo-standings-full td{font-size:11px!important;padding:6px 3px!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;vertical-align:middle!important}
+.kbo-standings-table.eo-standings-full .team-cell{text-align:left!important;padding-left:4px!important}
+.kbo-standings-table.eo-standings-full .team-cell-inner{display:flex!important;align-items:center!important;gap:3px!important;min-width:0!important}
+.kbo-standings-table.eo-standings-full .team-cell-inner img,.kbo-standings-table.eo-standings-full .team-logo{width:17px!important;height:17px!important;object-fit:contain!important;flex:0 0 17px!important}
+.kbo-standings-table.eo-standings-full .team-cell-inner span{display:block!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.kbo-standings-table.eo-standings-full .next-cell{text-align:left!important}
+.kbo-standings-table.eo-standings-full .next-cell img,.kbo-standings-table.eo-standings-full .next-cell .team-logo{width:17px!important;height:17px!important;object-fit:contain!important;vertical-align:middle!important;margin-right:3px!important}
+.kbo-standings-table.eo-standings-full th:nth-child(1),.kbo-standings-table.eo-standings-full td:nth-child(1){width:28px!important;display:table-cell!important}
+.kbo-standings-table.eo-standings-full th:nth-child(2),.kbo-standings-table.eo-standings-full td:nth-child(2){width:70px!important;display:table-cell!important}
+.kbo-standings-table.eo-standings-full th:nth-child(3),.kbo-standings-table.eo-standings-full td:nth-child(3){width:42px!important;display:table-cell!important}
+.kbo-standings-table.eo-standings-full th:nth-child(4),.kbo-standings-table.eo-standings-full td:nth-child(4){width:42px!important;display:table-cell!important}
+.kbo-standings-table.eo-standings-full th:nth-child(5),.kbo-standings-table.eo-standings-full td:nth-child(5),.kbo-standings-table.eo-standings-full th:nth-child(6),.kbo-standings-table.eo-standings-full td:nth-child(6),.kbo-standings-table.eo-standings-full th:nth-child(7),.kbo-standings-table.eo-standings-full td:nth-child(7),.kbo-standings-table.eo-standings-full th:nth-child(8),.kbo-standings-table.eo-standings-full td:nth-child(8){width:28px!important;display:table-cell!important}
+.kbo-standings-table.eo-standings-full th:nth-child(9),.kbo-standings-table.eo-standings-full td:nth-child(9){width:38px!important;display:table-cell!important}
+.kbo-standings-table.eo-standings-full th:nth-child(10),.kbo-standings-table.eo-standings-full td:nth-child(10){width:42px!important;display:table-cell!important}
+.kbo-standings-table.eo-standings-full th:nth-child(11),.kbo-standings-table.eo-standings-full td:nth-child(11){width:50px!important;display:table-cell!important}
+.kbo-standings-table.eo-standings-full th:nth-child(12),.kbo-standings-table.eo-standings-full td:nth-child(12){width:70px!important;display:table-cell!important}
+.kbo-standings-table.eo-standings-full th:nth-child(13),.kbo-standings-table.eo-standings-full td:nth-child(13){width:58px!important;display:table-cell!important}
+.eo-standings-foot{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:11px;color:#64748b;padding:8px 2px 0}
+.eo-standings-foot a{color:#64748b;text-decoration:underline}
 
-@media(max-width:1500px){.kbo-standings-wrap{overflow-x:auto!important}.kbo-standings-table.eo-standings-full{min-width:620px!important}}
-@media(max-width:900px){.kbo-standings-wrap{overflow-x:auto!important}.kbo-standings-table.eo-standings-full{min-width:640px!important}}
+/* Dashboard lower section width/font hotfix */
+#dashboard .dashboard-grid{display:grid!important;grid-template-columns:245px 225px 225px minmax(880px,1fr)!important;gap:16px!important;align-items:start!important}
+#dashboard .dashboard-grid>.card{min-width:0!important;grid-column:auto!important;grid-row:auto!important}
+#dashboard .dashboard-grid .schedule-card{padding:16px!important}
+#dashboard .dashboard-grid .schedule-card h3{font-size:19px!important;margin-bottom:12px!important}
+#dashboard .dashboard-grid .mini-row{padding:10px!important;font-size:15px!important;line-height:1.35!important}
+#dashboard .dashboard-grid .mini-row b{font-size:16px!important}
+#dashboard .dashboard-grid .note{font-size:13px!important}
+#dashboard .dashboard-grid .weather{font-size:14px!important}
+#dashboard .dashboard-grid .team-logo.sm{width:21px!important;height:21px!important}
+#dashSamsungWeek,#dashTodayAll,#dashYesterdayAll{max-height:500px!important;overflow:auto!important}
+#dashboard .kbo-standings-card{overflow:visible!important}
+#dashboard .kbo-standings-wrap{overflow-x:hidden!important;width:100%!important;max-width:none!important}
+#dashboard .kbo-standings-table.eo-standings-full{min-width:0!important;width:100%!important;table-layout:fixed!important}
+#dashboard .kbo-standings-table.eo-standings-full th,#dashboard .kbo-standings-table.eo-standings-full td{font-size:12px!important;padding:7px 4px!important;line-height:1.25!important}
+#dashboard .kbo-standings-table.eo-standings-full img,#dashboard .kbo-standings-table.eo-standings-full .team-logo{width:18px!important;height:18px!important;object-fit:contain!important}
+@media(max-width:1700px){#dashboard .dashboard-grid{grid-template-columns:220px 210px 210px minmax(760px,1fr)!important}}
+@media(max-width:1300px){#dashboard .dashboard-grid{grid-template-columns:1fr!important}}
