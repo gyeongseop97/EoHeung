@@ -3,6 +3,7 @@
   function makeCard(id,title,ul){var c=document.getElementById(id);if(!c){c=document.createElement('div');c.id=id;c.className='card pad rank-card';c.innerHTML='<h3>'+title+'</h3><ul id="'+ul+'" class="rank-list"></ul>'}return c}
   function cardFor(sel){var el=$(sel);return el&&el.closest('.card')}
   function after(a,b){if(a&&b&&b.previousElementSibling!==a)a.insertAdjacentElement('afterend',b)}
+  var didRenderAll=false;
   function ensure(){
     var d=$('#dashboard'), g=$('#dashboard .grid4'), board=$('#dashboard .dashboard-grid'); if(!d||!g||!board)return;
     var row=$('#eoDashboardRankRow')||document.createElement('div'); row.id='eoDashboardRankRow'; row.className='rank-grid';
@@ -23,25 +24,31 @@
 #dashboard>#eoDashboardRankRow{order:2!important;display:grid!important;grid-template-columns:1.15fr 1fr 1fr 1fr!important;gap:14px!important;margin:0 0 18px!important;width:100%!important}
 #dashboard>.dashboard-grid{order:3!important;display:grid!important;grid-template-columns:minmax(300px,.62fr) minmax(250px,.5fr) minmax(250px,.5fr) minmax(820px,1.75fr)!important;gap:16px!important;align-items:start!important;width:100%!important;margin:0!important}
 #dashboard .dashboard-grid>.card{min-width:0!important;grid-column:auto!important;grid-row:auto!important;height:auto!important;max-height:none!important;overflow:visible!important}
-#dashboard .dashboard-grid .schedule-card{padding:14px 16px!important;height:auto!important;min-height:660px!important;max-height:none!important;overflow:visible!important}
+#dashboard .dashboard-grid .schedule-card{padding:14px 16px!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
 #dashboard .dashboard-grid .schedule-card h3{font-size:18px!important;line-height:1.2!important;margin:0 0 10px!important}
-#dashboard .dashboard-grid .mini-row{font-size:13px!important;line-height:1.12!important;padding:4px 9px!important;min-height:0!important}
-#dashboard .dashboard-grid .mini-row b{font-size:14px!important;line-height:1.1!important}
-#dashboard .dashboard-grid .note,#dashboard .dashboard-grid .muted{font-size:11px!important;line-height:1.12!important;margin-top:2px!important}
-#dashboard .dashboard-grid .weather{font-size:12px!important;line-height:1.12!important;margin-top:2px!important}
-#dashboard .dashboard-grid .team-logo.sm{width:16px!important;height:16px!important}
-#dashSamsungWeek,#dashTodayAll,#dashYesterdayAll{max-height:none!important;min-height:560px!important;height:auto!important;overflow:visible!important}
+#dashboard .dashboard-grid .mini-row{font-size:13px!important;line-height:1.1!important;padding:3px 9px!important;min-height:0!important}
+#dashboard .dashboard-grid .mini-row b{font-size:14px!important;line-height:1.08!important}
+#dashboard .dashboard-grid .note,#dashboard .dashboard-grid .muted{font-size:11px!important;line-height:1.1!important;margin-top:1px!important}
+#dashboard .dashboard-grid .weather{font-size:12px!important;line-height:1.1!important;margin-top:1px!important}
+#dashboard .dashboard-grid .team-logo.sm{width:15px!important;height:15px!important}
+#dashSamsungWeek,#dashTodayAll,#dashYesterdayAll{max-height:none!important;min-height:0!important;height:auto!important;overflow:visible!important}
 #dashboard .kbo-standings-wrap{overflow-x:auto!important;width:100%!important}
 #dashboard .kbo-standings-table.eo-standings-full{min-width:760px!important;width:100%!important}
 #eoDashboardRankRow>.card,#eoDashboardRankRow>#eoNextWatch{min-width:0!important;width:100%!important}
 #eoDashboardRankRow .card.pad{padding:14px!important}
 #eoDashboardRankRow h3{font-size:16px!important;margin:0 0 10px!important}
 #eoDashboardRankRow .rank-list li{font-size:12px!important;padding:7px 0!important}
-@media(max-width:1400px){#dashboard>#eoDashboardRankRow,#dashboard>.dashboard-grid{grid-template-columns:1fr!important}#dashboard .dashboard-grid .schedule-card{min-height:0!important}#dashSamsungWeek,#dashTodayAll,#dashYesterdayAll{min-height:0!important}}
+@media(max-width:1400px){#dashboard>#eoDashboardRankRow,#dashboard>.dashboard-grid{grid-template-columns:1fr!important}}
 @media(max-width:900px){#dashboard>.grid4{grid-template-columns:1fr!important}}
 `;
-    ['dashSamsungWeek','dashTodayAll','dashYesterdayAll'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.maxHeight='none';el.style.minHeight='560px';el.style.height='auto';el.style.overflow='visible';var card=el.closest('.card');if(card){card.style.maxHeight='none';card.style.minHeight='660px';card.style.height='auto';card.style.overflow='visible'}}});
+    ['dashSamsungWeek','dashTodayAll','dashYesterdayAll'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.maxHeight='none';el.style.minHeight='0';el.style.height='auto';el.style.overflow='visible';var card=el.closest('.card');if(card){card.style.maxHeight='none';card.style.minHeight='0';card.style.height='auto';card.style.overflow='visible'}}});
   }
-  function boot(){ensure();setTimeout(function(){ensure();try{if(typeof renderAll==='function')renderAll()}catch(e){}},800);setInterval(ensure,800)}
+  function boot(){
+    ensure();
+    setTimeout(ensure,300);
+    setTimeout(function(){if(!didRenderAll){didRenderAll=true;try{if(typeof renderAll==='function')renderAll()}catch(e){}}ensure()},900);
+    setTimeout(ensure,1800);
+    setTimeout(ensure,3500);
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
