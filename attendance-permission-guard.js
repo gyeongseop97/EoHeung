@@ -2,6 +2,7 @@
   function $(s,r){return (r||document).querySelector(s)}
   function makeCard(id,title,ul){var c=document.getElementById(id);if(!c){c=document.createElement('div');c.id=id;c.className='card pad rank-card';c.innerHTML='<h3>'+title+'</h3><ul id="'+ul+'" class="rank-list"></ul>'}return c}
   function cardFor(sel){var el=$(sel);return el&&el.closest('.card')}
+  function moveAfter(ref,el){if(ref&&el&&el.previousElementSibling!==ref)ref.insertAdjacentElement('afterend',el)}
   function ensure(){
     var d=document.getElementById('dashboard'); if(!d)return;
     var g=$('.grid4',d), board=$('.dashboard-grid',d); if(!g||!board)return;
@@ -13,15 +14,32 @@
     if(row.parentElement!==d)d.appendChild(row);
     if(board.parentElement!==d)d.appendChild(board);
 
+    // 실제 DOM 순서 자체를 고정: 상단요약 → 개인기록행 → 하단 4개 카드
+    if(d.firstElementChild!==g)d.insertBefore(g,d.firstElementChild);
+    moveAfter(g,row);
+    moveAfter(row,board);
+
     var next=document.getElementById('eoNextWatch');
     if(next)row.appendChild(next);
     row.appendChild(makeCard('dashAttendCard','직관 횟수 순','dashAttendRank'));
     row.appendChild(makeCard('dashWinCard','승리요정 횟수 순','dashWinRank'));
     row.appendChild(makeCard('dashRateCard','승률 순','dashRateRank'));
 
-    ['#dashSamsungWeek','#dashTodayAll','#dashYesterdayAll','#kboStandings'].forEach(function(sel){
-      var card=cardFor(sel);
-      if(card&&card.parentElement===board)board.appendChild(card);
+    var ordered=[
+      ['#dashSamsungWeek','1'],
+      ['#dashTodayAll','2'],
+      ['#dashYesterdayAll','3'],
+      ['#kboStandings','4']
+    ];
+    ordered.forEach(function(pair){
+      var card=cardFor(pair[0]);
+      if(card){
+        if(card.parentElement!==board)board.appendChild(card);
+        card.style.order=pair[1];
+        card.style.gridColumn='auto';
+        card.style.gridRow='auto';
+        board.appendChild(card);
+      }
     });
     style();
   }
@@ -33,6 +51,10 @@
       #dashboard>#eoDashboardRankRow{order:2!important;display:grid!important;grid-template-columns:1.15fr 1fr 1fr 1fr!important;gap:14px!important;margin:0 0 18px!important;width:100%!important;}
       #dashboard>.dashboard-grid{order:3!important;display:grid!important;grid-template-columns:minmax(300px,.62fr) minmax(250px,.5fr) minmax(250px,.5fr) minmax(820px,1.75fr)!important;gap:16px!important;align-items:start!important;width:100%!important;margin:0!important;}
       #dashboard .dashboard-grid>.card{min-width:0!important;grid-column:auto!important;grid-row:auto!important;}
+      #dashboard .dashboard-grid>#dashSamsungWeek,.dashboard-grid>#dashSamsungWeek{order:1!important;}
+      #dashboard .dashboard-grid>#dashTodayAll,.dashboard-grid>#dashTodayAll{order:2!important;}
+      #dashboard .dashboard-grid>#dashYesterdayAll,.dashboard-grid>#dashYesterdayAll{order:3!important;}
+      #dashboard .dashboard-grid>#kboStandings,.dashboard-grid>#kboStandings{order:4!important;}
       #dashboard .dashboard-grid .schedule-card{padding:16px!important;}
       #dashboard .dashboard-grid .schedule-card h3{font-size:18px!important;line-height:1.25!important;margin-bottom:12px!important;}
       #dashboard .dashboard-grid .mini-row{font-size:14px!important;line-height:1.35!important;padding:10px!important;}
