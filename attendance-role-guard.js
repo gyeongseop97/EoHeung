@@ -1,0 +1,27 @@
+(function(){
+  const URL='https://chaddxsntnokjjcrwiyb.supabase.co';
+  const KEY='sb_publishable_NiKj0BxbW3VauGK_kkflbg_OqMXPpCT';
+  const $=(s,r=document)=>r.querySelector(s);
+  const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  const low=s=>String(s||'').trim().toLowerCase();
+  const esc=s=>String(s??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+  let client=null,user=null,members=[];
+  function c(){if(!client&&window.supabase)client=window.supabase.createClient(URL,KEY);return client}
+  function toast(m){const el=$('#toast');if(el){const d=document.createElement('div');d.textContent=m;el.appendChild(d);setTimeout(()=>d.remove(),2800)}else console.warn(m)}
+  function role(m){return m?.member_role||'associate'}
+  function me(){const uid=String(user?.id||''),email=low(user?.email);return members.find(m=>String(m.auth_user_id||'')===uid)||members.find(m=>low(m.email)===email)||null}
+  function isAdmin(){return role(me())==='admin'}
+  function isRegular(){return role(me())==='regular'}
+  function byId(id){return members.find(m=>String(m.id)===String(id))}
+  function canAttend(id){const target=byId(id);if(!target)return false;if(isAdmin())return role(target)==='regular'||role(target)==='admin';return isRegular()&&String(me()?.id)===String(id)}
+  function entry(gameId,memberId){return (window.state?.gameMembers||[]).find(x=>String(x.game_id)===String(gameId)&&String(x.member_id)===String(memberId))}
+  async function load(){try{const cl=window.state?.client||c();if(!cl)return;const s=await cl.auth.getSession();user=s.data.session?.user||null;if(!user)return;const r=await cl.from('members').select('id,name,email,auth_user_id,member_role').order('name');if(!r.error)members=r.data||[];apply()}catch(e){console.warn(e)}}
+  function injectStyle(){if($('#attendanceRoleGuardStyle'))return;const s=document.createElement('style');s.id='attendanceRoleGuardStyle';s.textContent='.check-row.eo-noauth{display:none!important}.attendance-memo-line{display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:8px}.attendance-memo-line textarea{min-height:38px;padding:7px!important;font-size:12px!important}.attendance-role-note{border:1px solid #fed7aa;background:#fff7ed;color:#9a3412;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:800;margin:8px 0}';document.head.appendChild(s)}
+  function addMemo(row,cb){if(row.querySelector('[data-attendance-memo]'))return;const e=entry(cb.dataset.game,cb.dataset.member);const wrap=document.createElement('div');wrap.className='attendance-memo-line';wrap.innerHTML=`<textarea class="input" data-attendance-memo="${cb.dataset.game}|${cb.dataset.member}" placeholder="직관 메모">${esc(e?.memo||'')}</textarea><button class="btn secondary" data-save-attendance-memo="${cb.dataset.game}|${cb.dataset.member}">저장</button>`;row.appendChild(wrap)}
+  function apply(){injectStyle();const root=$('#dateDetail');if(!root||!members.length)return;let visible=0;$$('.check-row',root).forEach(row=>{const cb=row.querySelector('input[data-game][data-member]');if(!cb)return;const ok=canAttend(cb.dataset.member);row.classList.toggle('eo-noauth',!ok);cb.disabled=!ok;if(ok){visible++;addMemo(row,cb)}});root.querySelectorAll('.attendance-role-note').forEach(n=>n.remove());if(!visible&&root.querySelector('.member-checks')){const note=document.createElement('div');note.className='attendance-role-note';note.textContent=isAdmin()?'체크 가능한 정회원/관리자가 없습니다.':'준회원은 직관 체크와 메모 작성 권한이 없습니다.';root.querySelector('.member-checks').appendChild(note)}root.querySelectorAll('[data-edit-game]').forEach(b=>{b.style.display=isAdmin()?'':'none'})}
+  async function saveMemo(key){const [gameId,memberId]=String(key).split('|');if(!canAttend(memberId))return toast('직관 메모 권한이 없습니다.');const ta=$(`[data-attendance-memo="${key}"]`), cb=$(`input[data-game="${gameId}"][data-member="${memberId}"]`);if(!ta||!cb)return;if(!cb.checked)return toast('직관 체크 후 메모를 저장해 주세요.');const old=entry(gameId,memberId);const payload={game_id:gameId,member_id:memberId,planned:true,attended:true,memo:ta.value.trim()};const r=await (window.state?.client||c()).from('game_members').upsert(payload,{onConflict:'game_id,member_id'}).select().single();if(r.error)return toast('메모 저장 오류: '+r.error.message);if(old)Object.assign(old,r.data);else window.state?.gameMembers?.push(r.data);toast('직관 메모를 저장했습니다.')}
+  document.addEventListener('change',e=>{const cb=e.target.closest('input[data-game][data-member]');if(!cb)return;if(!canAttend(cb.dataset.member)){e.preventDefault();e.stopImmediatePropagation();cb.checked=!cb.checked;toast('정회원은 본인만, 관리자는 정회원/관리자만 체크할 수 있습니다.')}},true);
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-save-attendance-memo]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();saveMemo(b.dataset.saveAttendanceMemo)},true);
+  function boot(){load();setTimeout(apply,800);const root=$('#dateDetail');if(root)new MutationObserver(()=>setTimeout(apply,0)).observe(root,{childList:true,subtree:true});setInterval(load,30000)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
