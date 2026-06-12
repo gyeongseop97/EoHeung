@@ -14,7 +14,6 @@
     if(row.parentElement!==d)d.appendChild(row);
     if(board.parentElement!==d)d.appendChild(board);
 
-    // 실제 DOM 순서 자체를 고정: 상단요약 → 개인기록행 → 하단 4개 카드
     if(d.firstElementChild!==g)d.insertBefore(g,d.firstElementChild);
     moveAfter(g,row);
     moveAfter(row,board);
@@ -25,12 +24,7 @@
     row.appendChild(makeCard('dashWinCard','승리요정 횟수 순','dashWinRank'));
     row.appendChild(makeCard('dashRateCard','승률 순','dashRateRank'));
 
-    var ordered=[
-      ['#dashSamsungWeek','1'],
-      ['#dashTodayAll','2'],
-      ['#dashYesterdayAll','3'],
-      ['#kboStandings','4']
-    ];
+    var ordered=[['#dashSamsungWeek','1'],['#dashTodayAll','2'],['#dashYesterdayAll','3'],['#kboStandings','4']];
     ordered.forEach(function(pair){
       var card=cardFor(pair[0]);
       if(card){
@@ -55,12 +49,15 @@
       #dashboard .dashboard-grid>#dashTodayAll,.dashboard-grid>#dashTodayAll{order:2!important;}
       #dashboard .dashboard-grid>#dashYesterdayAll,.dashboard-grid>#dashYesterdayAll{order:3!important;}
       #dashboard .dashboard-grid>#kboStandings,.dashboard-grid>#kboStandings{order:4!important;}
-      #dashboard .dashboard-grid .schedule-card{padding:16px!important;}
-      #dashboard .dashboard-grid .schedule-card h3{font-size:18px!important;line-height:1.25!important;margin-bottom:12px!important;}
-      #dashboard .dashboard-grid .mini-row{font-size:14px!important;line-height:1.35!important;padding:10px!important;}
-      #dashboard .dashboard-grid .mini-row b{font-size:15px!important;}
-      #dashboard .dashboard-grid .team-logo.sm{width:20px!important;height:20px!important;}
-      #dashSamsungWeek,#dashTodayAll,#dashYesterdayAll{max-height:500px!important;overflow:auto!important;}
+      #dashboard .dashboard-grid .schedule-card{padding:14px 16px!important;}
+      #dashboard .dashboard-grid .schedule-card h3{font-size:18px!important;line-height:1.2!important;margin:0 0 10px!important;}
+      #dashboard .dashboard-grid .mini-row{font-size:14px!important;line-height:1.22!important;padding:7px 10px!important;min-height:0!important;}
+      #dashboard .dashboard-grid .mini-row b{font-size:15px!important;line-height:1.18!important;}
+      #dashboard .dashboard-grid .mini-row .note,#dashboard .dashboard-grid .mini-row .muted{font-size:12px!important;line-height:1.2!important;margin-top:3px!important;}
+      #dashboard .dashboard-grid .weather{font-size:13px!important;line-height:1.2!important;margin-top:3px!important;}
+      #dashboard .dashboard-grid .team-logo.sm{width:18px!important;height:18px!important;}
+      #dashSamsungWeek,#dashTodayAll,#dashYesterdayAll{max-height:360px!important;overflow:auto!important;}
+      #dashSamsungWeek .mini-row,#dashTodayAll .mini-row,#dashYesterdayAll .mini-row{padding-top:7px!important;padding-bottom:7px!important;}
       #dashboard .kbo-standings-card{overflow:visible!important;}
       #dashboard .kbo-standings-wrap{overflow-x:auto!important;width:100%!important;}
       #dashboard .kbo-standings-table.eo-standings-full{min-width:760px!important;width:100%!important;}
