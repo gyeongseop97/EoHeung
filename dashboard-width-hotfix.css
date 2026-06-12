@@ -1,1 +1,17 @@
-#dashboard .dashboard-grid{grid-template-columns:250px 230px 230px minmax(850px,1fr)!important}
+#dashboard .dashboard-grid{display:grid!important;grid-template-columns:250px 230px 230px minmax(850px,1fr)!important;gap:16px!important;align-items:start!important}
+#dashboard .dashboard-grid>.card{min-width:0!important;grid-column:auto!important;grid-row:auto!important}
+#dashboard .dashboard-grid .schedule-card{padding:16px!important}
+#dashboard .dashboard-grid .schedule-card h3{font-size:19px!important;margin-bottom:12px!important}
+#dashboard .dashboard-grid .mini-row{padding:10px!important;font-size:15px!important;line-height:1.35!important}
+#dashboard .dashboard-grid .mini-row b{font-size:16px!important}
+#dashboard .dashboard-grid .note{font-size:13px!important}
+#dashboard .dashboard-grid .weather{font-size:14px!important}
+#dashboard .dashboard-grid .team-logo.sm{width:21px!important;height:21px!important}
+#dashSamsungWeek,#dashTodayAll,#dashYesterdayAll{max-height:500px!important;overflow:auto!important}
+#dashboard .kbo-standings-card{overflow:visible!important}
+#dashboard .kbo-standings-wrap{overflow-x:hidden!important;width:100%!important;max-width:none!important}
+#dashboard .kbo-standings-table.eo-standings-full{min-width:0!important;width:100%!important;table-layout:fixed!important}
+#dashboard .kbo-standings-table.eo-standings-full th,#dashboard .kbo-standings-table.eo-standings-full td{font-size:12px!important;padding:7px 4px!important;line-height:1.25!important}
+#dashboard .kbo-standings-table.eo-standings-full img,#dashboard .kbo-standings-table.eo-standings-full .team-logo{width:18px!important;height:18px!important;object-fit:contain!important}
+@media(max-width:1700px){#dashboard .dashboard-grid{grid-template-columns:220px 210px 210px minmax(760px,1fr)!important}}
+@media(max-width:1300px){#dashboard .dashboard-grid{grid-template-columns:1fr!important}}
