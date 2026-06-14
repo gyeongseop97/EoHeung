@@ -4,7 +4,63 @@
   function cardFor(sel){var el=$(sel);return el&&el.closest('.card')}
   function after(a,b){if(a&&b&&b.previousElementSibling!==a)a.insertAdjacentElement('afterend',b)}
   var didRenderAll=false;
+
+  function calcWatchMetrics(){
+    try{
+      if(typeof state==='undefined'||!state.games||!state.gameMembers)return null;
+      var gameMap={},finished={},planned={};
+      state.games.forEach(function(g){gameMap[String(g.id)]=g});
+      state.gameMembers.forEach(function(e){
+        if(!e||!e.attended)return;
+        var g=gameMap[String(e.game_id)];
+        if(!g)return;
+        if(g.status==='FINISHED')finished[String(g.id)]=g;
+        else planned[String(g.id)]=g;
+      });
+      var wins=0,losses=0,draws=0;
+      Object.keys(finished).forEach(function(id){
+        var r=finished[id].result;
+        if(r==='W')wins++;
+        else if(r==='L')losses++;
+        else if(r==='D')draws++;
+      });
+      var done=Object.keys(finished).length;
+      var future=Object.keys(planned).length;
+      var text=wins+'승'+losses+'패';
+      if(draws)text+=draws+'무';
+      text+=' ('+done+'경기)';
+      if(future)text+=' · 예정 '+future+'경기';
+      var denom=wins+losses;
+      return {text:text,rate:denom?Math.round(wins/denom*100)+'%':'-'};
+    }catch(e){return null}
+  }
+  function applyWatchMetrics(){
+    var m=calcWatchMetrics();
+    if(!m)return;
+    var games=document.getElementById('dashGames');
+    if(games)games.textContent=m.text;
+    var gamesSub=games&&games.closest('.metric')&&games.closest('.metric').querySelector('.sub');
+    if(gamesSub)gamesSub.textContent='직관 경기 기준';
+    var rate=document.getElementById('dashRate');
+    if(rate)rate.textContent=m.rate;
+    var rateSub=rate&&rate.closest('.metric')&&rate.closest('.metric').querySelector('.sub');
+    if(rateSub)rateSub.textContent='직관 경기 기준, 무승부 제외';
+  }
+  function patchDashboard(){
+    if(window.__eoDashboardMetricsPatched)return;
+    if(typeof window.renderDashboard==='function'){
+      var old=window.renderDashboard;
+      var wrapped=function(){var r=old.apply(this,arguments);applyWatchMetrics();return r};
+      wrapped.__eoDashboardMetricsPatched=true;
+      window.renderDashboard=wrapped;
+      try{renderDashboard=wrapped}catch(e){}
+      window.__eoDashboardMetricsPatched=true;
+    }
+  }
+
   function ensure(){
+    patchDashboard();
+    applyWatchMetrics();
     var d=$('#dashboard'), g=$('#dashboard .grid4'), board=$('#dashboard .dashboard-grid'); if(!d||!g||!board)return;
     var row=$('#eoDashboardRankRow')||document.createElement('div'); row.id='eoDashboardRankRow'; row.className='rank-grid';
     if(g.parentElement!==d)d.appendChild(g); if(row.parentElement!==d)d.appendChild(row); if(board.parentElement!==d)d.appendChild(board);
@@ -46,9 +102,9 @@
   function boot(){
     ensure();
     setTimeout(ensure,300);
-    setTimeout(function(){if(!didRenderAll){didRenderAll=true;try{if(typeof renderAll==='function')renderAll()}catch(e){}}ensure()},900);
-    setTimeout(ensure,1800);
-    setTimeout(ensure,3500);
+    setTimeout(function(){if(!didRenderAll){didRenderAll=true;try{if(typeof renderAll==='function')renderAll()}catch(e){}}ensure();applyWatchMetrics()},900);
+    setTimeout(function(){ensure();applyWatchMetrics()},1800);
+    setTimeout(function(){ensure();applyWatchMetrics()},3500);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
