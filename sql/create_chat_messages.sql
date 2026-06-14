@@ -9,13 +9,15 @@ create table if not exists public.chat_messages (
 
 alter table public.chat_messages enable row level security;
 
-create policy if not exists "chat_messages_select_all_authenticated"
+drop policy if exists "chat_messages_select_all_authenticated" on public.chat_messages;
+create policy "chat_messages_select_all_authenticated"
   on public.chat_messages
   for select
   to authenticated
   using (true);
 
-create policy if not exists "chat_messages_insert_authenticated"
+drop policy if exists "chat_messages_insert_authenticated" on public.chat_messages;
+create policy "chat_messages_insert_authenticated"
   on public.chat_messages
   for insert
   to authenticated
@@ -24,4 +26,19 @@ create policy if not exists "chat_messages_insert_authenticated"
 create index if not exists chat_messages_created_at_idx
   on public.chat_messages(created_at desc);
 
-alter publication supabase_realtime add table public.chat_messages;
+do $$
+begin
+  if exists (
+    select 1
+    from pg_publication
+    where pubname = 'supabase_realtime'
+  ) and not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'chat_messages'
+  ) then
+    alter publication supabase_realtime add table public.chat_messages;
+  end if;
+end $$;
