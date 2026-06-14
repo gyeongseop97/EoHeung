@@ -22,6 +22,7 @@
     const p=document.createElement('div');p.id='eoChatPanel';p.className='eo-chat-panel';p.innerHTML=`<div class="eo-chat-head"><div><div class="eo-chat-title">어흥 실시간 채팅</div><div class="eo-chat-sub" id="eoChatRole">접속 확인 중...</div></div><button class="eo-chat-close" id="eoChatClose">닫기</button></div><div class="eo-chat-people" id="eoChatPeople">참여자 확인 중...</div><div class="eo-chat-body" id="eoChatBody"><div class="eo-chat-empty">채팅을 불러오는 중입니다.</div></div><form class="eo-chat-form" id="eoChatForm"><textarea id="eoChatInput" placeholder="메시지를 입력하세요" maxlength="600"></textarea><button type="submit">전송</button></form>`;document.body.appendChild(p);
     fab.addEventListener('pointerdown',startDrag);document.addEventListener('pointermove',drag);document.addEventListener('pointerup',endDrag);
     fab.addEventListener('click',()=>{if(!moved)toggle()});$('#eoChatClose').onclick=()=>toggle(false);$('#eoChatForm').onsubmit=send;
+    $('#eoChatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('#eoChatForm').requestSubmit();}});
     const saved=JSON.parse(localStorage.getItem('eo_chat_pos')||'null');if(saved){fab.style.left=saved.left+'px';fab.style.top=saved.top+'px';fab.style.right='auto';fab.style.bottom='auto'}
   }
   function startDrag(e){down=true;moved=false;dragging=true;const r=e.currentTarget.getBoundingClientRect();offset={x:e.clientX-r.left,y:e.clientY-r.top};e.currentTarget.setPointerCapture?.(e.pointerId)}
