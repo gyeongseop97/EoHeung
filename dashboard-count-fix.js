@@ -1,32 +1,55 @@
 (function(){
-  function fixCount(){
-    try{
-      if(!window.state||!state.games||!state.gameMembers)return;
-      var done={};
-      var plan={};
-      state.gameMembers.forEach(function(e){
-        if(!e||!e.attended)return;
-        var g=state.games.find(function(x){return String(x.id)===String(e.game_id)});
-        if(!g)return;
-        if(g.status==='FINISHED')done[g.id]=1;else plan[g.id]=1;
-      });
-      var a=Object.keys(done).length;
-      var b=Object.keys(plan).length;
-      var el=document.getElementById('dashGames');
-      if(el)el.textContent=b?a+'('+b+')':String(a);
-    }catch(e){}
+  function makeText(){
+    if(!window.state || !state.games || !state.gameMembers) return '';
+    var map={};
+    state.games.forEach(function(g){ map[String(g.id)]=g; });
+    var watched={};
+    var future={};
+    state.gameMembers.forEach(function(e){
+      if(e && e.attended){
+        var g=map[String(e.game_id)];
+        if(g){
+          if(g.status==='FINISHED') watched[String(g.id)]=g;
+          else future[String(g.id)]=g;
+        }
+      }
+    });
+    var win=0, lose=0, draw=0;
+    Object.keys(watched).forEach(function(id){
+      var g=watched[id];
+      if(g.result==='W') win++;
+      else if(g.result==='L') lose++;
+      else if(g.result==='D') draw++;
+    });
+    var total=Object.keys(watched).length;
+    var plan=Object.keys(future).length;
+    var text=win+'승'+lose+'패';
+    if(draw) text+=draw+'무';
+    text+=' ('+total+'경기)';
+    if(plan) text+=' · 예정 '+plan+'경기';
+    return text;
   }
-  function start(){
-    var old=window.renderDashboard;
-    if(typeof old==='function'&&!old.__uniqueCount){
-      var wrapped=function(){var r=old.apply(this,arguments);fixCount();return r};
-      wrapped.__uniqueCount=true;
-      window.renderDashboard=wrapped;
-      try{renderDashboard=wrapped}catch(e){}
+  function apply(){
+    var text=makeText();
+    var el=document.getElementById('dashGames');
+    if(el && text) el.textContent=text;
+    var sub=el && el.closest('.metric') && el.closest('.metric').querySelector('.sub');
+    if(sub) sub.textContent='직관 경기 기준, 중복 인원 제외';
+  }
+  function patch(){
+    var original=window.renderDashboard;
+    if(typeof original==='function' && !original.eoGameResultPatch){
+      var next=function(){ var r=original.apply(this,arguments); apply(); return r; };
+      next.eoGameResultPatch=true;
+      window.renderDashboard=next;
+      try{ renderDashboard=next; }catch(err){}
     }
-    fixCount();
-    setTimeout(fixCount,500);
-    setTimeout(fixCount,1500);
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+  function boot(){
+    patch(); apply();
+    setTimeout(function(){ patch(); apply(); },300);
+    setTimeout(function(){ patch(); apply(); },1000);
+    setInterval(apply,2000);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
 })();
