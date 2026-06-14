@@ -23,6 +23,6 @@
   document.addEventListener('change',e=>{const cb=e.target.closest('input[data-game][data-member]');if(!cb)return;if(!canAttend(cb.dataset.member)){e.preventDefault();e.stopImmediatePropagation();cb.checked=!cb.checked;toast('정회원은 본인만, 관리자는 정회원/관리자만 체크할 수 있습니다.')}},true);
   document.addEventListener('click',e=>{const b=e.target.closest('[data-save-attendance-memo]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();saveMemo(b.dataset.saveAttendanceMemo)},true);
   function loadScript(id,src){if(document.getElementById(id))return;const s=document.createElement('script');s.id=id;s.src=src;s.defer=true;document.head.appendChild(s)}
-  function boot(){loadScript('eoLiveChatScript','live-chat-widget.js?v=2');loadScript('eoDashboardCountFinal','dashboard-count-final.js?v=1');load();setTimeout(apply,800);const root=$('#dateDetail');if(root)new MutationObserver(()=>setTimeout(apply,0)).observe(root,{childList:true,subtree:true});setInterval(load,30000)}
+  function boot(){loadScript('eoAuthEnhanceScript','auth-ui-enhancement.js?v=1');loadScript('eoLiveChatScript','live-chat-widget.js?v=3');loadScript('eoDashboardCountFinal','dashboard-count-final.js?v=1');load();setTimeout(apply,800);const root=$('#dateDetail');if(root)new MutationObserver(()=>setTimeout(apply,0)).observe(root,{childList:true,subtree:true});setInterval(load,30000)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
