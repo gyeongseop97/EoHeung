@@ -1,6 +1,6 @@
 (function(){
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
-  const FRAME_ASSET_VERSION='frame20260616d';
+  const FRAME_ASSET_VERSION='frame20260616e';
   const SRC={
     '16:9|landscape':'frame/16대9가로.png',
     '16:9|portrait':'frame/16대9세로.png',
