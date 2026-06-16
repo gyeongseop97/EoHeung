@@ -1,6 +1,6 @@
 (function(){
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
-  const FRAME_ASSET_VERSION='frame20260616c';
+  const FRAME_ASSET_VERSION='frame20260616d';
   const SRC={
     '16:9|landscape':'frame/16대9가로.png',
     '16:9|portrait':'frame/16대9세로.png',
@@ -10,20 +10,20 @@
     '4:3|portrait':'frame/4대3세로.png'
   };
   const PHOTO_BOX={
-    '16:9|landscape':{ref:[1635,927],x:100,y:83,w:1435,h:670},
-    '16:9|portrait':{ref:[979,1533],x:147,y:130,w:683,h:1135},
+    '16:9|landscape':{ref:[1635,927],x:96,y:82,w:1444,h:676},
+    '16:9|portrait':{ref:[979,1533],x:146,y:128,w:686,h:1142},
     '1:1|landscape':{ref:[1242,1245],x:142,y:78,w:958,h:925},
     '1:1|portrait':{ref:[1242,1245],x:142,y:78,w:958,h:925},
-    '4:3|landscape':{ref:[1426,1072],x:110,y:80,w:1208,h:760},
-    '4:3|portrait':{ref:[1074,1444],x:158,y:116,w:751,h:1057}
+    '4:3|landscape':{ref:[1426,1072],x:106,y:78,w:1215,h:764},
+    '4:3|portrait':{ref:[1074,1444],x:157,y:114,w:754,h:1062}
   };
   const TEXT_POS={
-    '16:9|landscape':{ref:[1635,927],font:24,date:{x:272,y:884,w:144},opponent:{x:596,y:884,w:154},scoreHome:{x:828,y:884,w:39},scoreAway:{x:895,y:884,w:40},cheer:{x:1076,y:884,w:210},location:{x:1422,y:884,w:158}},
-    '16:9|portrait':{ref:[979,1533],font:26,date:{x:281,y:1438,w:260},opponent:{x:774,y:1438,w:263},scoreHome:{x:213,y:1471,w:84},scoreAway:{x:336,y:1471,w:80},cheer:{x:699,y:1471,w:406},location:{x:553,y:1503,w:683}},
-    '1:1|landscape':{ref:[1242,1245],font:22,date:{x:242,y:1188,w:95},opponent:{x:472,y:1188,w:95},scoreHome:{x:635,y:1188,w:34},scoreAway:{x:687,y:1188,w:33},cheer:{x:820,y:1188,w:162},location:{x:1064,y:1188,w:69}},
-    '1:1|portrait':{ref:[1242,1245],font:22,date:{x:242,y:1188,w:95},opponent:{x:472,y:1188,w:95},scoreHome:{x:635,y:1188,w:34},scoreAway:{x:687,y:1188,w:33},cheer:{x:820,y:1188,w:162},location:{x:1064,y:1188,w:69}},
-    '4:3|landscape':{ref:[1426,1072],font:23,date:{x:249,y:1015,w:115},opponent:{x:518,y:1015,w:118},scoreHome:{x:705,y:1015,w:38},scoreAway:{x:765,y:1015,w:39},cheer:{x:924,y:1015,w:196},location:{x:1228,y:1015,w:126}},
-    '4:3|portrait':{ref:[1074,1444],font:25,date:{x:306,y:1333,w:276},opponent:{x:834,y:1333,w:301},scoreHome:{x:223,y:1370,w:84},scoreAway:{x:350,y:1370,w:81},cheer:{x:762,y:1370,w:439},location:{x:601,y:1406,w:745}}
+    '16:9|landscape':{ref:[1635,927],font:24,date:{x:272,y:884,w:152},opponent:{x:596,y:884,w:163},scoreHome:{x:828,y:884,w:41},scoreAway:{x:895,y:884,w:42},cheer:{x:1076,y:884,w:221},location:{x:1422,y:884,w:167}},
+    '16:9|portrait':{ref:[979,1533],font:26,date:{x:281,y:1438,w:274},opponent:{x:774,y:1438,w:277},scoreHome:{x:213,y:1471,w:89},scoreAway:{x:336,y:1471,w:85},cheer:{x:699,y:1471,w:428},location:{x:553,y:1503,w:719}},
+    '1:1|landscape':{ref:[1242,1245],font:22,date:{x:242,y:1188,w:100},opponent:{x:472,y:1188,w:100},scoreHome:{x:635,y:1188,w:36},scoreAway:{x:687,y:1188,w:35},cheer:{x:820,y:1188,w:171},location:{x:1064,y:1188,w:73}},
+    '1:1|portrait':{ref:[1242,1245],font:22,date:{x:242,y:1188,w:100},opponent:{x:472,y:1188,w:100},scoreHome:{x:635,y:1188,w:36},scoreAway:{x:687,y:1188,w:35},cheer:{x:820,y:1188,w:171},location:{x:1064,y:1188,w:73}},
+    '4:3|landscape':{ref:[1426,1072],font:23,date:{x:249,y:1015,w:121},opponent:{x:518,y:1015,w:124},scoreHome:{x:704,y:1015,w:40},scoreAway:{x:765,y:1015,w:41},cheer:{x:924,y:1015,w:206},location:{x:1228,y:1015,w:133}},
+    '4:3|portrait':{ref:[1074,1444],font:25,date:{x:306,y:1333,w:290},opponent:{x:834,y:1333,w:317},scoreHome:{x:223,y:1370,w:88},scoreAway:{x:350,y:1370,w:85},cheer:{x:762,y:1370,w:462},location:{x:601,y:1406,w:784}}
   };
   let pic=null,frame=null,game=null,crop={base:1,scale:1,x:0,y:0,down:false,sx:0,sy:0,ox:0,oy:0};
   function st(){try{return typeof state!='undefined'?state:window.state}catch(e){return window.state}}
