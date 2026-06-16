@@ -1,6 +1,6 @@
 (function(){
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
-  const FRAME_ASSET_VERSION='frame20260616b';
+  const FRAME_ASSET_VERSION='frame20260616c';
   const SRC={
     '16:9|landscape':'frame/16대9가로.png',
     '16:9|portrait':'frame/16대9세로.png',
@@ -10,11 +10,11 @@
     '4:3|portrait':'frame/4대3세로.png'
   };
   const PHOTO_BOX={
-    '16:9|landscape':{ref:[1635,927],x:142,y:110,w:1348,h:621},
+    '16:9|landscape':{ref:[1635,927],x:100,y:83,w:1435,h:670},
     '16:9|portrait':{ref:[979,1533],x:147,y:130,w:683,h:1135},
-    '1:1|landscape':{ref:[1242,1245],x:160,y:118,w:920,h:862},
-    '1:1|portrait':{ref:[1242,1245],x:160,y:118,w:920,h:862},
-    '4:3|landscape':{ref:[1426,1072],x:140,y:103,w:1146,h:710},
+    '1:1|landscape':{ref:[1242,1245],x:142,y:78,w:958,h:925},
+    '1:1|portrait':{ref:[1242,1245],x:142,y:78,w:958,h:925},
+    '4:3|landscape':{ref:[1426,1072],x:110,y:80,w:1208,h:760},
     '4:3|portrait':{ref:[1074,1444],x:158,y:116,w:751,h:1057}
   };
   const TEXT_POS={
@@ -39,11 +39,11 @@
   function read(f){return new Promise((ok,no)=>{let i=new Image,r=new FileReader;i.onload=()=>ok(i);i.onerror=no;r.onload=e=>i.src=e.target.result;r.onerror=no;r.readAsDataURL(f)})}
   async function lf(){frame=await loadImg(SRC[k()]||SRC['4:3|landscape']);return frame}
   function reset(){if(!pic||!frame)return;let b=box(frame.naturalWidth,frame.naturalHeight);crop.base=Math.max(b.w/pic.width,b.h/pic.height);crop.scale=1;crop.x=0;crop.y=0}
-  function rr(c,x,y,w,h,r){c.beginPath();c.roundRect?c.roundRect(x,y,w,h,r):(c.rect(x,y,w,h));}
+  function isLandscapeFrame(){return ($('#pfOrientation')?.value||'landscape')==='landscape'}
   function fit(c,t,x,y,max,fs){t=String(t??'').trim();if(!t)return;c.save();c.fillStyle='#061f68';c.textAlign='center';c.textBaseline='bottom';c.lineJoin='round';c.miterLimit=2;do{c.font=`900 ${fs}px "Noto Sans KR", Arial, sans-serif`;if(c.measureText(t).width<=max)break;fs--}while(fs>9);c.strokeStyle='rgba(255,255,255,.82)';c.lineWidth=Math.max(2,Math.round(fs*.13));c.strokeText(t,x,y);c.fillText(t,x,y);c.restore()}
   function gameTexts(){let a=sc(game),finished=game?.status=='FINISHED';return{date:String(game?.game_date||'').slice(0,10),opponent:game?.opponent||'',scoreHome:finished?String(a.s):'',scoreAway:finished?String(a.o):'',location:game?.stadium||'라이온즈파크',cheer:($('#pfCheerText')?.value||'').trim()}}
   function drawText(c,w,h){let cfg=textCfg(w,h),t=gameTexts(),fs=cfg.font;fit(c,t.date,cfg.date.x,cfg.date.y,cfg.date.w,fs);fit(c,t.opponent,cfg.opponent.x,cfg.opponent.y,cfg.opponent.w,fs);fit(c,t.scoreHome,cfg.scoreHome.x,cfg.scoreHome.y,cfg.scoreHome.w,fs);fit(c,t.scoreAway,cfg.scoreAway.x,cfg.scoreAway.y,cfg.scoreAway.w,fs);fit(c,t.cheer,cfg.cheer.x,cfg.cheer.y,cfg.cheer.w,Math.round(fs*.92));fit(c,t.location,cfg.location.x,cfg.location.y,cfg.location.w,fs)}
-  async function draw(){if(!game||!pic)return;await lf();let cn=$('#pfCanvas'),c=cn.getContext('2d'),w=frame.naturalWidth,h=frame.naturalHeight,b=box(w,h);cn.width=w;cn.height=h;let z=(crop.base||Math.max(b.w/pic.width,b.h/pic.height))*crop.scale,dw=pic.width*z,dh=pic.height*z;c.clearRect(0,0,w,h);c.save();rr(c,b.x,b.y,b.w,b.h,24);c.clip();c.drawImage(pic,b.x+(b.w-dw)/2+crop.x,b.y+(b.h-dh)/2+crop.y,dw,dh);c.restore();c.drawImage(frame,0,0,w,h);drawText(c,w,h);$('#pfDownloadBtn').disabled=false}
+  async function draw(){if(!game||!pic)return;await lf();let cn=$('#pfCanvas'),c=cn.getContext('2d'),w=frame.naturalWidth,h=frame.naturalHeight,b=box(w,h);cn.width=w;cn.height=h;let z=(crop.base||Math.max(b.w/pic.width,b.h/pic.height))*crop.scale,dw=pic.width*z,dh=pic.height*z;c.clearRect(0,0,w,h);if(isLandscapeFrame()){c.drawImage(pic,b.x+(b.w-dw)/2+crop.x,b.y+(b.h-dh)/2+crop.y,dw,dh)}else{c.save();c.beginPath();c.rect(b.x,b.y,b.w,b.h);c.clip();c.drawImage(pic,b.x+(b.w-dw)/2+crop.x,b.y+(b.h-dh)/2+crop.y,dw,dh);c.restore()}c.drawImage(frame,0,0,w,h);drawText(c,w,h);$('#pfDownloadBtn').disabled=false}
   function style(){if($('#photoFrameWidgetStyle'))return;let s=document.createElement('style');s.id='photoFrameWidgetStyle';s.textContent='.photo-frame-grid{display:grid;grid-template-columns:420px 1fr;gap:18px}.photo-frame-panel,.pf-preview{padding:20px}.pf-form{display:grid;gap:12px}.pf-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pf-field{display:grid;gap:7px}.pf-field select,.pf-field input{border:1px solid #dce5f2;border-radius:12px;padding:10px}.pf-help{font-size:12px;color:#64748b;line-height:1.45;margin-top:-3px}.pf-canvas{width:100%;background:transparent;border-radius:14px;cursor:grab}.pf-canvas-wrap{background:#eef5ff;border:1px solid #dbe7f5;border-radius:18px;padding:16px;overflow:auto}.pf-actions{display:flex;gap:8px}';document.head.appendChild(s)}
   function mount(){if($('#photoFrame'))return;style();let nav=$('.nav');if(nav&&!$('#photoFrameNavBtn')){let b=document.createElement('button');b.id='photoFrameNavBtn';b.textContent='🖼️ 포토프레임';b.onclick=open;nav.appendChild(b)}let main=$('.main');if(!main)return;let sec=document.createElement('section');sec.id='photoFrame';sec.className='section';sec.innerHTML='<div class="photo-frame-grid"><div class="card photo-frame-panel"><h3>포토프레임 만들기</h3><div class="pf-form"><div class="pf-field"><label>직관 날짜</label><select id="pfGameSelect"></select></div><div class="pf-row-2"><div class="pf-field"><label>사진 비율</label><select id="pfRatio"><option value="4:3">4:3</option><option value="16:9">16:9</option><option value="1:1">1:1</option></select></div><div class="pf-field"><label>사진 방향</label><select id="pfOrientation"><option value="landscape">가로</option><option value="portrait">세로</option></select></div></div><div class="pf-field"><label>응원 문구</label><input id="pfCheerText" type="text" maxlength="30" placeholder="예: 오늘도 삼성 승리! / 라팍 직관 완료"><div class="pf-help">프레임 하단 SCORE 옆의 제목 없는 빈줄에 표시됩니다.</div></div><div class="pf-field"><label>사진 업로드</label><input id="pfPhoto" type="file" accept="image/*"></div><div class="pf-actions"><button class="btn" id="pfRenderBtn">프레임 적용</button><button class="btn secondary" id="pfDownloadBtn" disabled>다운로드</button></div></div></div><div class="card pf-preview"><h3>미리보기</h3><div class="pf-canvas-wrap"><canvas id="pfCanvas" class="pf-canvas"></canvas></div></div></div>';main.appendChild(sec);bind();pop();lf().then(i=>{let cn=$('#pfCanvas');cn.width=i.naturalWidth;cn.height=i.naturalHeight;cn.getContext('2d').drawImage(i,0,0)})}
   function open(){$$('.section').forEach(s=>s.classList.remove('active'));$('#photoFrame').classList.add('active');pop()}
