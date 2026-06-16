@@ -1,5 +1,6 @@
 (function(){
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  const FRAME_ASSET_VERSION='frame20260616b';
   const SRC={
     '16:9|landscape':'frame/16대9가로.png',
     '16:9|portrait':'frame/16대9세로.png',
@@ -34,7 +35,7 @@
   function scaleRect(r,w,h){let sx=w/r.ref[0],sy=h/r.ref[1];return{x:r.x*sx,y:r.y*sy,w:r.w*sx,h:r.h*sy}}
   function box(w,h){return scaleRect(PHOTO_BOX[k()]||PHOTO_BOX['4:3|landscape'],w,h)}
   function textCfg(w,h){let cfg=TEXT_POS[k()]||TEXT_POS['4:3|landscape'],sx=w/cfg.ref[0],sy=h/cfg.ref[1],out={font:Math.round(cfg.font*Math.min(sx,sy))};['date','opponent','scoreHome','scoreAway','cheer','location'].forEach(n=>{let p=cfg[n];out[n]={x:p.x*sx,y:p.y*sy,w:p.w*sx}});return out}
-  function loadImg(src){return new Promise((ok,no)=>{let i=new Image;i.onload=()=>ok(i);i.onerror=no;i.src=encodeURI(src)+'?v=frame20260616'})}
+  function loadImg(src){return new Promise((ok,no)=>{let i=new Image;i.onload=()=>ok(i);i.onerror=no;const sep=src.includes('?')?'&':'?';i.src=encodeURI(src)+sep+'v='+FRAME_ASSET_VERSION+'&t='+(Date.now())})}
   function read(f){return new Promise((ok,no)=>{let i=new Image,r=new FileReader;i.onload=()=>ok(i);i.onerror=no;r.onload=e=>i.src=e.target.result;r.onerror=no;r.readAsDataURL(f)})}
   async function lf(){frame=await loadImg(SRC[k()]||SRC['4:3|landscape']);return frame}
   function reset(){if(!pic||!frame)return;let b=box(frame.naturalWidth,frame.naturalHeight);crop.base=Math.max(b.w/pic.width,b.h/pic.height);crop.scale=1;crop.x=0;crop.y=0}
