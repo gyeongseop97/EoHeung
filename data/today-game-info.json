@@ -1,12 +1,23 @@
 {
-  "date": "",
-  "updatedAt": "",
+  "date": "2026-06-17",
+  "updatedAt": "2026-06-17T06:09:58.320Z",
   "gameId": "",
-  "sourceSchedule": "",
+  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-17",
   "sourcePreview": "",
-  "message": "아직 수집된 오늘 경기 정보가 없습니다.",
-  "home": { "team": "", "code": "", "starter": "" },
-  "away": { "team": "", "code": "", "starter": "" },
+  "message": "오늘 삼성 경기 ID를 찾지 못했습니다.",
+  "home": {
+    "team": "삼성",
+    "code": "SS",
+    "starter": ""
+  },
+  "away": {
+    "team": "",
+    "code": "",
+    "starter": ""
+  },
   "lineupReady": false,
-  "lineups": { "home": [], "away": [] }
+  "lineups": {
+    "home": [],
+    "away": []
+  }
 }
