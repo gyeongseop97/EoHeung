@@ -1,0 +1,12 @@
+{
+  "date": "",
+  "updatedAt": "",
+  "gameId": "",
+  "sourceSchedule": "",
+  "sourcePreview": "",
+  "message": "아직 수집된 오늘 경기 정보가 없습니다.",
+  "home": { "team": "", "code": "", "starter": "" },
+  "away": { "team": "", "code": "", "starter": "" },
+  "lineupReady": false,
+  "lineups": { "home": [], "away": [] }
+}
