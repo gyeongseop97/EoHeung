@@ -1,0 +1,22 @@
+name: Update Naver game info
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node scripts/fetch-naver-game-info.js
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add data/today-game-info.json
+          git diff --cached --quiet || git commit -m "Update Naver game info cache"
+          git push
