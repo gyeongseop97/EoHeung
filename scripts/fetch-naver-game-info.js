@@ -8,14 +8,14 @@ const CODE_BY_TEAM={삼성:'SS',키움:'WO',LG:'LG',KT:'KT',한화:'HH',롯데:'
 const TEAM_NAMES=Object.keys(CODE_BY_TEAM);
 function kstDate(){const now=new Date();const kst=new Date(now.getTime()+9*60*60*1000);return kst.toISOString().slice(0,10)}
 function ymdCompact(d){return d.replace(/-/g,'')}
-function gameTail(d){return d.slice(0,4)}
+function gameTail(d){return '0'+d.slice(0,4)}
 function clean(s){return String(s||'').replace(/\\u([0-9a-fA-F]{4})/g,(_,h)=>String.fromCharCode(parseInt(h,16))).replace(/&quot;/g,'"').replace(/&#x27;|&#39;/g,"'").replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ')}
 function strip(html){return clean(html).replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()}
 async function fetchText(url){const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 EoHeungBot/1.0','accept':'text/html,application/json'}});if(!r.ok)throw new Error(`${r.status} ${url}`);return await r.text()}
 async function fetchTodayGameFromSupabase(date){try{const url=`${SUPABASE_URL}/rest/v1/games?select=*&game_date=eq.${date}&order=game_time.asc&limit=1`;const r=await fetch(url,{headers:{apikey:SUPABASE_KEY,authorization:`Bearer ${SUPABASE_KEY}`}});if(!r.ok)return null;const rows=await r.json();return rows&&rows[0]||null}catch(e){return null}}
 function gameIdFromSchedule(g,date){if(!g||!g.opponent)return '';const opp=CODE_BY_TEAM[g.opponent];if(!opp)return '';const d=ymdCompact(date),tail=gameTail(date);return g.home_away==='HOME'?`${d}${opp}SS${tail}`:`${d}SS${opp}${tail}`}
 function teamsFromGameId(id){const a=id.slice(8,10),h=id.slice(10,12);return{away:{code:a,team:TEAM_CODES[a]||a},home:{code:h,team:TEAM_CODES[h]||h}}}
-function findGameId(html,date){const d=ymdCompact(date);const ids=[...new Set([...html.matchAll(new RegExp(`${d}[A-Z]{4}\\d{4}`,'g'))].map(x=>x[0]))];return ids.find(id=>id.slice(8,12).includes('SS'))||''}
+function findGameId(html,date){const d=ymdCompact(date);const ids=[...new Set([...html.matchAll(new RegExp(`${d}[A-Z]{4}0\\d{4}`,'g'))].map(x=>x[0]))];return ids.find(id=>id.slice(8,12).includes('SS'))||''}
 function findGameIdByText(html,date){const text=strip(html),d=ymdCompact(date),tail=gameTail(date);for(const team of TEAM_NAMES.filter(t=>t!=='삼성')){const code=CODE_BY_TEAM[team];if(new RegExp(`${team}.{0,140}삼성`).test(text))return `${d}${code}SS${tail}`;if(new RegExp(`삼성.{0,140}${team}`).test(text))return `${d}SS${code}${tail}`}return ''}
 function parseNextJson(html){const m=html.match(/<script[^>]+id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/i);if(!m)return null;try{return JSON.parse(clean(m[1]))}catch(e){return null}}
 function walk(o,fn){if(!o||typeof o!=='object')return;fn(o);if(Array.isArray(o))o.forEach(v=>walk(v,fn));else Object.values(o).forEach(v=>walk(v,fn))}
