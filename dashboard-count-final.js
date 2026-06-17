@@ -37,7 +37,6 @@
     return state.games.filter(function(g){return g.game_date===today&&g.status!=='POSTPONED'}).sort(function(a,b){return (a.game_time||'').localeCompare(b.game_time||'')})[0]||null;
   }
   function escHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
-  function teamLogoHtml(team){try{return typeof teamLogo==='function'?teamLogo(team,'team-logo'):''}catch(e){return ''}}
   function pitcherText(info){
     if(!info||!info.gameId)return '선발투수 확인 중 · 30분마다 자동 갱신';
     var a=info.away||{},h=info.home||{};
@@ -84,7 +83,9 @@
     var home=info&&info.home?info.home:{team:g&&g.home_away==='HOME'?'삼성':g?g.opponent:'홈',starter:''};
     var awayRows=info&&info.lineups?info.lineups.away:[];
     var homeRows=info&&info.lineups?info.lineups.home:[];
-    body.innerHTML=`<div class="lineup-pitchers"><div class="lineup-pitcher">${escHtml(away.team||'원정')} 선발: ${escHtml(away.starter||'미공개')}</div><div class="lineup-pitcher">${escHtml(home.team||'홈')} 선발: ${escHtml(home.starter||'미공개')}</div></div><div class="lineup-grid"><div class="lineup-team"><h4>${escHtml(away.team||'원정')} 라인업</h4>${renderLineupList(awayRows)}</div><div class="lineup-team"><h4>${escHtml(home.team||'홈')} 라인업</h4>${renderLineupList(homeRows)}</div></div><div class="lineup-source">${info&&info.message?escHtml(info.message):'네이버 스포츠 기준 자동 수집'}${info&&info.sourcePreview?` · <a href="${escHtml(info.sourcePreview)}" target="_blank" rel="noopener">네이버 프리뷰 열기</a>`:''}</div>`;
+    var lineupUrl=info&&(info.sourceLineup||info.sourcePreview);
+    var lineupLabel=info&&info.sourceLineup?'네이버 라인업 열기':'네이버 프리뷰 열기';
+    body.innerHTML=`<div class="lineup-pitchers"><div class="lineup-pitcher">${escHtml(away.team||'원정')} 선발: ${escHtml(away.starter||'미공개')}</div><div class="lineup-pitcher">${escHtml(home.team||'홈')} 선발: ${escHtml(home.starter||'미공개')}</div></div><div class="lineup-grid"><div class="lineup-team"><h4>${escHtml(away.team||'원정')} 라인업</h4>${renderLineupList(awayRows)}</div><div class="lineup-team"><h4>${escHtml(home.team||'홈')} 라인업</h4>${renderLineupList(homeRows)}</div></div><div class="lineup-source">${info&&info.message?escHtml(info.message):'네이버 스포츠 기준 자동 수집'}${lineupUrl?` · <a href="${escHtml(lineupUrl)}" target="_blank" rel="noopener">${lineupLabel}</a>`:''}</div>`;
   }
   async function openTodayLineup(){
     ensureLineupModal().classList.add('show');
