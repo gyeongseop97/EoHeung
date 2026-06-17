@@ -1,1 +1,59 @@
-(function(){function f(){try{if(typeof state==='undefined'||!state.games||!state.gameMembers)return;var m={},a={},b={};state.games.forEach(function(g){m[String(g.id)]=g});state.gameMembers.forEach(function(e){if(!e||!e.attended)return;var g=m[String(e.game_id)];if(!g)return;if(g.status==='FINISHED')a[String(g.id)]=g;else b[String(g.id)]=g});var w=0,l=0,d=0;Object.keys(a).forEach(function(k){var r=a[k].result;if(r==='W')w++;else if(r==='L')l++;else if(r==='D')d++});var t=w+'승'+l+'패';if(d)t+=d+'무';t+=' ('+Object.keys(a).length+'경기)';var p=Object.keys(b).length;if(p)t+=' · 예정 '+p+'경기';var el=document.getElementById('dashGames');if(el)el.textContent=t;var sub=el&&el.closest('.metric')&&el.closest('.metric').querySelector('.sub');if(sub)sub.textContent='직관 경기 기준'}catch(e){}}function l(){if(document.getElementById('eoPhotoFrameWidget'))return;var s=document.createElement('script');s.id='eoPhotoFrameWidget';s.src='photo-frame-widget.js?v=4';s.defer=true;document.head.appendChild(s)}function b(){l();f();setTimeout(f,300);setTimeout(f,1000);setInterval(f,1000)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',b);else b();})();
+(function(){
+  function formatAvg(n){
+    if(!isFinite(n))return '-';
+    return Number.isInteger(n)?String(n):n.toFixed(1).replace(/\.0$/,'');
+  }
+  function setMetric(id,label,value,subText){
+    var el=document.getElementById(id);
+    if(!el)return;
+    var card=el.closest('.metric');
+    var labelEl=card&&card.querySelector('.label');
+    var sub=card&&card.querySelector('.sub');
+    if(labelEl)labelEl.textContent=label;
+    el.textContent=value;
+    if(sub)sub.textContent=subText;
+  }
+  function updateDashboardMetrics(){
+    try{
+      if(typeof state==='undefined'||!state.games||!state.gameMembers)return;
+      var gamesById={};
+      state.games.forEach(function(g){gamesById[String(g.id)]=g});
+      var completedTickets=0;
+      var plannedTickets=0;
+      var completedGameIds={};
+      state.gameMembers.forEach(function(e){
+        if(!e||!e.attended)return;
+        var g=gamesById[String(e.game_id)];
+        if(!g)return;
+        if(g.status==='FINISHED'){
+          completedTickets++;
+          completedGameIds[String(g.id)]=true;
+        }else if(g.status!=='POSTPONED'){
+          plannedTickets++;
+        }
+      });
+      var ticketText=completedTickets+'매';
+      if(plannedTickets)ticketText+=' · 예정 '+plannedTickets+'매';
+      var completedGameCount=Object.keys(completedGameIds).length;
+      var avgText=completedGameCount?formatAvg(completedTickets/completedGameCount)+'명 / 경기':'-';
+      setMetric('dashGames','누적 티켓 기여',ticketText,'전 회원 직관 체크 합산');
+      setMetric('dashRate','경기당 평균 참석',avgText,'완료 직관 경기별 평균 인원');
+    }catch(e){console.warn(e)}
+  }
+  function loadPhotoFrame(){
+    if(document.getElementById('eoPhotoFrameWidget'))return;
+    var s=document.createElement('script');
+    s.id='eoPhotoFrameWidget';
+    s.src='photo-frame-widget.js?v=11';
+    s.defer=true;
+    document.head.appendChild(s);
+  }
+  function boot(){
+    loadPhotoFrame();
+    updateDashboardMetrics();
+    setTimeout(updateDashboardMetrics,300);
+    setTimeout(updateDashboardMetrics,1000);
+    setInterval(updateDashboardMetrics,1000);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
