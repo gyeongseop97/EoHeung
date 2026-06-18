@@ -1,14 +1,14 @@
 {
   "date": "2026-06-18",
-  "updatedAt": "2026-06-17T23:56:24.440Z",
+  "updatedAt": "2026-06-18T02:20:56.987Z",
   "gameId": "20260618WOSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-18",
   "sourcePreview": "https://m.sports.naver.com/game/20260618WOSS02026/preview",
   "sourceLineup": "https://m.sports.naver.com/game/20260618WOSS02026/lineup",
   "checkedApis": [
-    "https://api-gw.sports.naver.com/schedule/games/20260618WOSS02026/preview",
     "https://api-gw.sports.naver.com/schedule/games/20260618WOSS02026/lineup",
-    "https://api-gw.sports.naver.com/schedule/games/20260618WOSS02026?fields=basic,schedule,score,relay,preview,record,lineup,lineUp",
+    "https://api-gw.sports.naver.com/schedule/games/20260618WOSS02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
+    "https://api-gw.sports.naver.com/schedule/games/20260618WOSS02026/preview",
     "https://api-gw.sports.naver.com/schedule/games/20260618WOSS02026/record"
   ],
   "message": "네이버 스포츠 기준 자동 수집 (naver-schedule-api)",
