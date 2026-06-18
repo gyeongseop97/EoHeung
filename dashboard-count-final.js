@@ -106,21 +106,18 @@
     try{
       if(typeof window.renderDashboard==='function'&&!window.renderDashboard.__eoTicketPatched){
         var original=window.renderDashboard;
-        window.renderDashboard=function(){var r=original.apply(this,arguments);updateDashboardMetrics();updateTodayGameCard();return r};
+        window.renderDashboard=function(){var r=original.apply(this,arguments);setTimeout(function(){updateDashboardMetrics();updateTodayGameCard()},0);return r};
         window.renderDashboard.__eoTicketPatched=true;
       }
     }catch(e){console.warn(e)}
   }
   function loadPhotoFrame(){
     if(document.getElementById('eoPhotoFrameWidget'))return;
-    var s=document.createElement('script');s.id='eoPhotoFrameWidget';s.src='photo-frame-widget.js?v=11';s.defer=true;document.head.appendChild(s);
+    var s=document.createElement('script');s.id='eoPhotoFrameWidget';s.src='photo-frame-widget.js?v=13';s.defer=true;document.head.appendChild(s);
   }
   function boot(){
     loadPhotoFrame();patchRenderDashboard();updateDashboardMetrics();updateTodayGameCard();
-    setTimeout(function(){patchRenderDashboard();updateDashboardMetrics();updateTodayGameCard()},50);
-    setTimeout(function(){patchRenderDashboard();updateDashboardMetrics();updateTodayGameCard()},250);
-    setTimeout(function(){patchRenderDashboard();updateDashboardMetrics();updateTodayGameCard()},900);
-    setInterval(updateDashboardMetrics,120);
+    [80,300,900,1800].forEach(function(ms){setTimeout(function(){patchRenderDashboard();updateDashboardMetrics();updateTodayGameCard()},ms)});
     setInterval(updateTodayGameCard,30*60*1000);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
