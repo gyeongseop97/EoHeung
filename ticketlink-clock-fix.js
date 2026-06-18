@@ -7,8 +7,15 @@
     const style=document.getElementById(STYLE_ID);
     if(style)style.remove();
   }
+  function moveSettingsToEnd(){
+    const nav=document.querySelector('.nav');
+    const btn=nav&&nav.querySelector('button[data-page="settings"]');
+    if(nav&&btn&&btn.nextElementSibling)nav.appendChild(btn);
+  }
   function boot(){
     removeLegacyTicketlinkClock();
+    moveSettingsToEnd();
+    setInterval(moveSettingsToEnd,2000);
     const links=document.getElementById('linkList');
     if(links&&!links.__legacyTicketlinkClockObserver){
       links.__legacyTicketlinkClockObserver=true;
