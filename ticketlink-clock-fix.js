@@ -1,50 +1,38 @@
 (function(){
   const CARD_ID='ticketlinkServerClockCard';
   const STYLE_ID='ticketlinkClockFixStyle';
-  function removeLegacyTicketlinkClock(){
-    const card=document.getElementById(CARD_ID);
-    if(card)card.remove();
-    const style=document.getElementById(STYLE_ID);
-    if(style)style.remove();
-  }
+  const $=(s,r=document)=>r.querySelector(s);
+  const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  let todayInfo=null,lastInfoLoad=0;
+  function removeLegacyTicketlinkClock(){const card=document.getElementById(CARD_ID);if(card)card.remove();const style=document.getElementById(STYLE_ID);if(style)style.remove()}
   function patchAccountPanel(){
     const panel=document.getElementById('eoAccountPanel');
     if(!panel)return;
-    if(!document.getElementById('eoAccountPanelPatchStyle')){
-      const s=document.createElement('style');
-      s.id='eoAccountPanelPatchStyle';
-      s.textContent='.eo-account-panel{width:340px!important}.eo-account-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;align-items:end!important}.eo-account-field{display:grid!important;gap:5px!important;min-width:0!important}.eo-account-field label{font-size:12px!important;font-weight:900!important;color:#475569!important}.eo-account-field input{width:100%!important;box-sizing:border-box!important}.eo-account-theme button.active{border-color:#074ca1!important;background:#eef4ff!important;color:#074ca1!important}@media(max-width:520px){.eo-account-grid{grid-template-columns:1fr!important}.eo-account-panel{left:10px!important;right:10px!important;width:auto!important}}';
-      document.head.appendChild(s);
-    }
-    const name=document.getElementById('eoAccountName');
-    const phone=document.getElementById('eoAccountPhone');
-    if(name&&phone&&!name.closest('.eo-account-field')){
-      const grid=name.parentElement;
-      grid.innerHTML='<div class="eo-account-field"><label for="eoAccountName">이름</label></div><div class="eo-account-field"><label for="eoAccountPhone">전화번호</label></div>';
-      grid.children[0].appendChild(name);
-      grid.children[1].appendChild(phone);
-    }
-    const labels={default:'기본',groupware:'그룹웨어',excel:'엑셀'};
-    document.querySelectorAll('[data-theme-value]').forEach(btn=>{const v=btn.dataset.themeValue;if(labels[v])btn.textContent=labels[v]});
+    if(!document.getElementById('eoAccountPanelPatchStyle')){const s=document.createElement('style');s.id='eoAccountPanelPatchStyle';s.textContent='.eo-account-panel{width:340px!important}.eo-account-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;align-items:end!important}.eo-account-field{display:grid!important;gap:5px!important;min-width:0!important}.eo-account-field label{font-size:12px!important;font-weight:900!important;color:#475569!important}.eo-account-field input{width:100%!important;box-sizing:border-box!important}.eo-account-theme button.active{border-color:#074ca1!important;background:#eef4ff!important;color:#074ca1!important}@media(max-width:520px){.eo-account-grid{grid-template-columns:1fr!important}.eo-account-panel{left:10px!important;right:10px!important;width:auto!important}}';document.head.appendChild(s)}
+    const name=document.getElementById('eoAccountName'),phone=document.getElementById('eoAccountPhone');
+    if(name&&phone&&!name.closest('.eo-account-field')){const grid=name.parentElement;grid.innerHTML='<div class="eo-account-field"><label for="eoAccountName">이름</label></div><div class="eo-account-field"><label for="eoAccountPhone">전화번호</label></div>';grid.children[0].appendChild(name);grid.children[1].appendChild(phone)}
+    const labels={default:'기본',groupware:'그룹웨어',excel:'엑셀'};document.querySelectorAll('[data-theme-value]').forEach(btn=>{const v=btn.dataset.themeValue;if(labels[v])btn.textContent=labels[v]})
   }
-  function loadChat(){
-    if(document.getElementById('eoLiveChatScript'))return;
-    const s=document.createElement('script');
-    s.id='eoLiveChatScript';
-    s.src='live-chat-widget.js?v=5';
-    s.defer=true;
-    document.head.appendChild(s);
+  function loadScript(id,src){if(document.getElementById(id))return;const s=document.createElement('script');s.id=id;s.src=src;s.defer=true;document.head.appendChild(s)}
+  function loadChat(){loadScript('eoLiveChatScript','live-chat-widget.js?v=8')}
+  function loadPhotoFrame(){loadScript('eoPhotoFrameWidget','photo-frame-widget.js?v=13')}
+  function fmtAvg(n){return !isFinite(n)?'-':(Number.isInteger(n)?String(n):n.toFixed(1).replace(/\.0$/,''))}
+  function setMetric(id,label,value,subText){const el=document.getElementById(id);if(!el)return;const card=el.closest('.metric');const labelEl=card&&card.querySelector('.label');const sub=card&&card.querySelector('.sub');if(labelEl&&labelEl.textContent!==label)labelEl.textContent=label;if(el.textContent!==value)el.textContent=value;if(sub&&sub.textContent!==subText)sub.textContent=subText}
+  function updateTicketMetrics(){
+    try{if(typeof state==='undefined'||!Array.isArray(state.games)||!Array.isArray(state.gameMembers))return;const gamesById={},doneIds={};let done=0,planned=0;state.games.forEach(g=>gamesById[String(g.id)]=g);state.gameMembers.forEach(e=>{if(!e||!e.attended)return;const g=gamesById[String(e.game_id)];if(!g)return;if(g.status==='FINISHED'){done++;doneIds[String(g.id)]=true}else if(g.status!=='POSTPONED')planned++});let ticketText=done+'매';if(planned)ticketText+=' · 예정 '+planned+'매';const gameCount=Object.keys(doneIds).length;const avg=gameCount?fmtAvg(done/gameCount)+'명 / 경기':'-';setMetric('dashGames','누적 티켓 기여',ticketText,'전 회원 직관 체크 합산');setMetric('dashRate','경기당 평균 참석',avg,'완료 직관 경기별 평균 인원')}
+    catch(e){console.warn(e)}
   }
-  function boot(){
-    removeLegacyTicketlinkClock();
-    loadChat();
-    patchAccountPanel();
-    setInterval(()=>{patchAccountPanel();loadChat()},1000);
-    const links=document.getElementById('linkList');
-    if(links&&!links.__legacyTicketlinkClockObserver){
-      links.__legacyTicketlinkClockObserver=true;
-      new MutationObserver(removeLegacyTicketlinkClock).observe(links,{childList:true,subtree:true});
-    }
-  }
+  function todayYmd(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+  function todaySamsungGame(){try{const today=todayYmd();return (state.games||[]).filter(g=>g.game_date===today&&g.status!=='POSTPONED').sort((a,b)=>(a.game_time||'').localeCompare(b.game_time||''))[0]||null}catch(e){return null}}
+  async function loadTodayInfo(force){const now=Date.now();if(!force&&todayInfo&&now-lastInfoLoad<3*60*1000)return todayInfo;lastInfoLoad=now;try{const r=await fetch('data/today-game-info.json?t='+now,{cache:'no-store'});if(!r.ok)throw new Error('no data');todayInfo=await r.json()}catch(e){todayInfo={message:'오늘 경기 정보 파일을 불러오지 못했습니다.',lineups:{home:[],away:[]}}}return todayInfo}
+  function pitcherText(info){if(!info||!info.gameId)return '선발투수 확인 중 · 30분마다 자동 갱신';const a=info.away||{},h=info.home||{};const away=a.team?(a.team+': '+(a.starter||'미공개')):'';const home=h.team?(h.team+': '+(h.starter||'미공개')):'';return ['선발투수',away,home].filter(Boolean).join(' · ')}
+  function lineupStyle(){if(document.getElementById('eoLineupStyle2'))return;const s=document.createElement('style');s.id='eoLineupStyle2';s.textContent='.today-game-clickable{cursor:pointer}.today-game-clickable:hover{transform:translateY(-1px);box-shadow:0 16px 36px rgba(7,76,161,.16)}.lineup-modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.58);display:none;place-items:center;z-index:91000;padding:18px}.lineup-modal-backdrop.show{display:grid}.lineup-modal{width:min(860px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:22px;box-shadow:0 30px 90px rgba(0,0,0,.28);padding:22px}.lineup-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px solid #dce5f2;padding-bottom:14px;margin-bottom:14px}.lineup-head h3{margin:0;font-size:22px}.lineup-sub{color:#68758a;font-size:13px;margin-top:5px}.lineup-close{border:0;background:#eef4ff;color:#074ca1;font-weight:900;border-radius:12px;padding:9px 12px}.lineup-pitchers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.lineup-pitcher{border:1px solid #dce5f2;background:#f8fbff;border-radius:14px;padding:12px;font-weight:900}.lineup-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.lineup-team{border:1px solid #dce5f2;border-radius:16px;overflow:hidden}.lineup-team h4{margin:0;background:#f1f6fd;padding:11px 13px}.lineup-row{display:grid;grid-template-columns:38px 1fr 58px;gap:8px;padding:10px 13px;border-top:1px solid #edf2f7;align-items:center}.lineup-row b{color:#074ca1}.lineup-empty{padding:18px;text-align:center;color:#68758a;background:#f8fbff;border-radius:14px}.lineup-source{margin-top:14px;font-size:12px;color:#68758a}.lineup-source a{color:#074ca1;font-weight:900}@media(max-width:720px){.lineup-grid,.lineup-pitchers{grid-template-columns:1fr}.lineup-modal{padding:18px;border-radius:18px}}';document.head.appendChild(s)}
+  function ensureLineupModal(){lineupStyle();let m=document.getElementById('todayLineupModal');if(m)return m;m=document.createElement('div');m.id='todayLineupModal';m.className='lineup-modal-backdrop';m.innerHTML='<div class="lineup-modal"><div class="lineup-head"><div><h3>오늘 경기 라인업</h3><div class="lineup-sub" id="todayLineupSubtitle">라인업 정보를 불러오는 중입니다.</div></div><button class="lineup-close" id="todayLineupClose">닫기</button></div><div id="todayLineupBody"></div></div>';document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m||e.target.id==='todayLineupClose')m.classList.remove('show')});return m}
+  function renderRows(rows){if(!rows||!rows.length)return '<div class="lineup-empty">라인업 발표 전입니다.<br>30분마다 자동 확인 중입니다.</div>';return rows.map(r=>'<div class="lineup-row"><b>'+esc(r.order||'')+'</b><span>'+esc(r.name||'')+'</span><em>'+esc(r.position||'')+'</em></div>').join('')}
+  function renderLineup(info){const m=ensureLineupModal(),body=document.getElementById('todayLineupBody'),sub=document.getElementById('todayLineupSubtitle');const g=todaySamsungGame();const title=g?((g.game_time?g.game_time.slice(0,5):'')+' '+(g.home_away==='HOME'?'vs':'@')+' '+g.opponent):(info&&info.gameId?info.gameId:'오늘 삼성 경기');sub.textContent=title+(info&&info.updatedAt?' · '+new Date(info.updatedAt).toLocaleString('ko-KR'):'');const away=info&&info.away?info.away:{team:g&&g.home_away==='AWAY'?'삼성':g?g.opponent:'원정',starter:''};const home=info&&info.home?info.home:{team:g&&g.home_away==='HOME'?'삼성':g?g.opponent:'홈',starter:''};const awayRows=info&&info.lineups?info.lineups.away:[];const homeRows=info&&info.lineups?info.lineups.home:[];const lineupUrl=info&&(info.sourceLineup||info.sourcePreview);const lineupLabel=info&&info.sourceLineup?'네이버 라인업 열기':'네이버 프리뷰 열기';body.innerHTML='<div class="lineup-pitchers"><div class="lineup-pitcher">'+esc(away.team||'원정')+' 선발: '+esc(away.starter||'미공개')+'</div><div class="lineup-pitcher">'+esc(home.team||'홈')+' 선발: '+esc(home.starter||'미공개')+'</div></div><div class="lineup-grid"><div class="lineup-team"><h4>'+esc(away.team||'원정')+' 라인업</h4>'+renderRows(awayRows)+'</div><div class="lineup-team"><h4>'+esc(home.team||'홈')+' 라인업</h4>'+renderRows(homeRows)+'</div></div><div class="lineup-source">'+esc(info&&info.message?info.message:'네이버 스포츠 기준 자동 수집')+(lineupUrl?' · <a href="'+esc(lineupUrl)+'" target="_blank" rel="noopener">'+lineupLabel+'</a>':'')+'</div>'}
+  async function openTodayLineup(){ensureLineupModal().classList.add('show');renderLineup(await loadTodayInfo(true))}
+  async function updateTodayCard(){const el=document.getElementById('dashNext');if(!el)return;const card=el.closest('.metric');if(!card)return;lineupStyle();card.classList.add('today-game-clickable');if(!card.__eoLineupBound){card.__eoLineupBound=true;card.addEventListener('click',openTodayLineup)}const sub=card.querySelector('.sub');if(sub)sub.textContent='선발투수 확인 중 · 30분마다 자동 갱신';const info=await loadTodayInfo(false);if(sub)sub.textContent=pitcherText(info)}
+  function boot(){removeLegacyTicketlinkClock();loadChat();loadPhotoFrame();patchAccountPanel();updateTicketMetrics();updateTodayCard();setInterval(()=>{patchAccountPanel();loadChat();loadPhotoFrame();updateTicketMetrics()},500);setInterval(updateTodayCard,30*60*1000);const links=document.getElementById('linkList');if(links&&!links.__legacyTicketlinkClockObserver){links.__legacyTicketlinkClockObserver=true;new MutationObserver(removeLegacyTicketlinkClock).observe(links,{childList:true,subtree:true})}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
