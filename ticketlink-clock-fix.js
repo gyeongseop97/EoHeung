@@ -5,6 +5,14 @@
     const card=document.getElementById(CARD_ID);if(card)card.remove();
     const style=document.getElementById(STYLE_ID);if(style)style.remove();
   }
+  function loadPremiumDefaultTheme(){
+    if(document.getElementById('premiumDefaultThemeCss'))return;
+    const link=document.createElement('link');
+    link.id='premiumDefaultThemeCss';
+    link.rel='stylesheet';
+    link.href='premium-default-theme.css?v=1';
+    document.head.appendChild(link);
+  }
   function patchAccountPanel(){
     const panel=document.getElementById('eoAccountPanel');
     if(!panel)return;
@@ -29,11 +37,12 @@
   function loadChat(){loadScript('eoLiveChatScript','live-chat-widget.js?v=8')}
   function loadPhotoFrame(){loadScript('eoPhotoFrameWidget','photo-frame-widget.js?v=13')}
   function boot(){
+    loadPremiumDefaultTheme();
     removeLegacyTicketlinkClock();
     loadChat();
     loadPhotoFrame();
     patchAccountPanel();
-    [300,1200,3000].forEach(ms=>setTimeout(()=>{patchAccountPanel();loadChat();loadPhotoFrame()},ms));
+    [300,1200,3000].forEach(ms=>setTimeout(()=>{loadPremiumDefaultTheme();patchAccountPanel();loadChat();loadPhotoFrame()},ms));
     const links=document.getElementById('linkList');
     if(links&&!links.__legacyTicketlinkClockObserver){
       links.__legacyTicketlinkClockObserver=true;
