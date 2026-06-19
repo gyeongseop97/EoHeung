@@ -1,6 +1,6 @@
 {
   "date": "2026-06-19",
-  "updatedAt": "2026-06-19T07:38:15.444Z",
+  "updatedAt": "2026-06-19T12:03:49.097Z",
   "gameId": "20260619SSHH02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-19",
   "sourcePreview": "https://m.sports.naver.com/game/20260619SSHH02026/preview",
@@ -27,113 +27,113 @@
     "away": [
       {
         "order": 1,
-        "name": "김재윤",
-        "position": "1",
-        "explicitOrder": false
+        "name": "김지찬",
+        "position": "중",
+        "explicitOrder": true
       },
       {
         "order": 2,
-        "name": "김태훈",
-        "position": "1",
-        "explicitOrder": false
+        "name": "김성윤",
+        "position": "우",
+        "explicitOrder": true
       },
       {
         "order": 3,
-        "name": "미야지",
-        "position": "1",
-        "explicitOrder": false
+        "name": "구자욱",
+        "position": "좌",
+        "explicitOrder": true
       },
       {
         "order": 4,
-        "name": "배찬승",
-        "position": "1",
-        "explicitOrder": false
+        "name": "디아즈",
+        "position": "一",
+        "explicitOrder": true
       },
       {
         "order": 5,
-        "name": "백정현",
-        "position": "1",
-        "explicitOrder": false
+        "name": "최형우",
+        "position": "지",
+        "explicitOrder": true
       },
       {
         "order": 6,
-        "name": "양창섭",
-        "position": "1",
-        "explicitOrder": false
+        "name": "류지혁",
+        "position": "二",
+        "explicitOrder": true
       },
       {
         "order": 7,
-        "name": "오러클린",
-        "position": "1",
-        "explicitOrder": false
+        "name": "전병우",
+        "position": "三",
+        "explicitOrder": true
       },
       {
         "order": 8,
-        "name": "이승민",
-        "position": "1",
-        "explicitOrder": false
+        "name": "김도환",
+        "position": "포",
+        "explicitOrder": true
       },
       {
         "order": 9,
-        "name": "이승현",
-        "position": "1",
-        "explicitOrder": false
+        "name": "김상준",
+        "position": "유",
+        "explicitOrder": true
       }
     ],
     "home": [
       {
         "order": 1,
-        "name": "류현진",
-        "position": "1",
-        "explicitOrder": false
+        "name": "이도윤",
+        "position": "二",
+        "explicitOrder": true
       },
       {
         "order": 2,
-        "name": "박상원",
-        "position": "1",
-        "explicitOrder": false
+        "name": "페라자",
+        "position": "우",
+        "explicitOrder": true
       },
       {
         "order": 3,
-        "name": "박준영",
-        "position": "1",
-        "explicitOrder": false
+        "name": "문현빈",
+        "position": "중",
+        "explicitOrder": true
       },
       {
         "order": 4,
-        "name": "에르난데스",
-        "position": "1",
-        "explicitOrder": false
+        "name": "강백호",
+        "position": "지",
+        "explicitOrder": true
       },
       {
         "order": 5,
-        "name": "왕옌청",
-        "position": "1",
-        "explicitOrder": false
+        "name": "노시환",
+        "position": "三",
+        "explicitOrder": true
       },
       {
         "order": 6,
-        "name": "이민우",
-        "position": "1",
-        "explicitOrder": false
+        "name": "김태연",
+        "position": "一",
+        "explicitOrder": true
       },
       {
         "order": 7,
-        "name": "이상규",
-        "position": "1",
-        "explicitOrder": false
+        "name": "유민",
+        "position": "좌",
+        "explicitOrder": true
       },
       {
         "order": 8,
-        "name": "장유호",
-        "position": "1",
-        "explicitOrder": false
+        "name": "허인서",
+        "position": "포",
+        "explicitOrder": true
       },
       {
         "order": 9,
-        "name": "정우주",
-        "position": "1",
-        "explicitOrder": false
+        "name": "심우준",
+        "position": "유",
+        "explicitOrder": true
       }
     ]
   }
