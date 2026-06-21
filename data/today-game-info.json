@@ -1,6 +1,6 @@
 {
   "date": "2026-06-21",
-  "updatedAt": "2026-06-21T08:28:08.811Z",
+  "updatedAt": "2026-06-21T11:32:04.654Z",
   "gameId": "20260621SSHH02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-21",
   "sourcePreview": "https://m.sports.naver.com/game/20260621SSHH02026/preview",
@@ -120,7 +120,7 @@
       {
         "order": 7,
         "name": "이원석",
-        "position": "좌",
+        "position": "좌우",
         "explicitOrder": true
       },
       {
