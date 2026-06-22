@@ -1,21 +1,26 @@
 {
-  "date": "2026-06-22",
-  "updatedAt": "2026-06-22T14:34:59.922Z",
-  "gameId": "",
-  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-22",
-  "sourcePreview": "",
-  "sourceLineup": "",
-  "checkedApis": [],
-  "message": "오늘 삼성 경기 ID를 찾지 못했습니다.",
+  "date": "2026-06-23",
+  "updatedAt": "2026-06-22T18:43:47.877Z",
+  "gameId": "20260623SSLG02026",
+  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-23",
+  "sourcePreview": "https://m.sports.naver.com/game/20260623SSLG02026/preview",
+  "sourceLineup": "https://m.sports.naver.com/game/20260623SSLG02026/lineup",
+  "checkedApis": [
+    "https://api-gw.sports.naver.com/schedule/games/20260623SSLG02026/lineup",
+    "https://api-gw.sports.naver.com/schedule/games/20260623SSLG02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
+    "https://api-gw.sports.naver.com/schedule/games/20260623SSLG02026/preview",
+    "https://api-gw.sports.naver.com/schedule/games/20260623SSLG02026/record"
+  ],
+  "message": "네이버 스포츠 기준 자동 수집 (naver-schedule-api)",
   "away": {
-    "team": "",
-    "code": "",
-    "starter": ""
+    "code": "SS",
+    "team": "삼성",
+    "starter": "최원태"
   },
   "home": {
-    "team": "삼성",
-    "code": "SS",
-    "starter": ""
+    "code": "LG",
+    "team": "LG",
+    "starter": "장현식"
   },
   "lineupReady": false,
   "lineups": {
