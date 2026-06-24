@@ -1,26 +1,21 @@
 {
   "date": "2026-06-25",
-  "updatedAt": "2026-06-24T19:10:13.067Z",
-  "gameId": "20260625SSLG02026",
+  "updatedAt": "2026-06-24T21:09:39.249Z",
+  "gameId": "",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-25",
-  "sourcePreview": "https://m.sports.naver.com/game/20260625SSLG02026/preview",
-  "sourceLineup": "https://m.sports.naver.com/game/20260625SSLG02026/lineup",
-  "checkedApis": [
-    "https://api-gw.sports.naver.com/schedule/games/20260625SSLG02026/lineup",
-    "https://api-gw.sports.naver.com/schedule/games/20260625SSLG02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
-    "https://api-gw.sports.naver.com/schedule/games/20260625SSLG02026/preview",
-    "https://api-gw.sports.naver.com/schedule/games/20260625SSLG02026/record"
-  ],
-  "message": "네이버 스포츠 기준 자동 수집 (naver-schedule-api)",
+  "sourcePreview": "",
+  "sourceLineup": "",
+  "checkedApis": [],
+  "message": "오늘 삼성 경기 ID를 찾지 못했습니다.",
   "away": {
-    "code": "SS",
-    "team": "삼성",
-    "starter": "후라도"
+    "team": "",
+    "code": "",
+    "starter": ""
   },
   "home": {
-    "code": "LG",
-    "team": "LG",
-    "starter": "이정용"
+    "team": "삼성",
+    "code": "SS",
+    "starter": ""
   },
   "lineupReady": false,
   "lineups": {
