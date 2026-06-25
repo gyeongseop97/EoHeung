@@ -1,6 +1,6 @@
 {
   "date": "2026-06-25",
-  "updatedAt": "2026-06-25T11:14:07.766Z",
+  "updatedAt": "2026-06-25T13:35:06.904Z",
   "gameId": "20260625SSLG02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-25",
   "sourcePreview": "https://m.sports.naver.com/game/20260625SSLG02026/preview",
@@ -58,7 +58,7 @@
       {
         "order": 6,
         "name": "전병우",
-        "position": "三",
+        "position": "三一",
         "explicitOrder": true
       },
       {
@@ -70,7 +70,7 @@
       {
         "order": 8,
         "name": "강민호",
-        "position": "포",
+        "position": "포一",
         "explicitOrder": true
       },
       {
@@ -84,7 +84,7 @@
       {
         "order": 1,
         "name": "천성호",
-        "position": "三",
+        "position": "三一",
         "explicitOrder": true
       },
       {
