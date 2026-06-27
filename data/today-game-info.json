@@ -1,6 +1,6 @@
 {
   "date": "2026-06-27",
-  "updatedAt": "2026-06-27T10:04:25.649Z",
+  "updatedAt": "2026-06-27T11:52:53.008Z",
   "gameId": "20260627KTSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-27",
   "sourcePreview": "https://m.sports.naver.com/game/20260627KTSS02026/preview",
@@ -90,13 +90,13 @@
       {
         "order": 2,
         "name": "김성윤",
-        "position": "우",
+        "position": "우중",
         "explicitOrder": true
       },
       {
         "order": 3,
         "name": "박승규",
-        "position": "좌",
+        "position": "좌우",
         "explicitOrder": true
       },
       {
