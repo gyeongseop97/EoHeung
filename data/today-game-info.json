@@ -1,6 +1,6 @@
 {
   "date": "2026-06-27",
-  "updatedAt": "2026-06-27T04:33:24.702Z",
+  "updatedAt": "2026-06-27T07:47:03.461Z",
   "gameId": "20260627KTSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-27",
   "sourcePreview": "https://m.sports.naver.com/game/20260627KTSS02026/preview",
@@ -22,9 +22,119 @@
     "team": "삼성",
     "starter": "원태인"
   },
-  "lineupReady": false,
+  "lineupReady": true,
   "lineups": {
-    "away": [],
-    "home": []
+    "away": [
+      {
+        "order": 1,
+        "name": "로건",
+        "position": "선발P",
+        "explicitOrder": false
+      },
+      {
+        "order": 2,
+        "name": "김현수",
+        "position": "1B",
+        "explicitOrder": true
+      },
+      {
+        "order": 3,
+        "name": "안현민",
+        "position": "RF",
+        "explicitOrder": true
+      },
+      {
+        "order": 4,
+        "name": "힐리어드",
+        "position": "LF",
+        "explicitOrder": true
+      },
+      {
+        "order": 5,
+        "name": "김민혁",
+        "position": "DH",
+        "explicitOrder": true
+      },
+      {
+        "order": 6,
+        "name": "김상수",
+        "position": "2B",
+        "explicitOrder": true
+      },
+      {
+        "order": 7,
+        "name": "허경민",
+        "position": "3B",
+        "explicitOrder": true
+      },
+      {
+        "order": 8,
+        "name": "한승택",
+        "position": "C",
+        "explicitOrder": true
+      },
+      {
+        "order": 9,
+        "name": "권동진",
+        "position": "SS",
+        "explicitOrder": true
+      }
+    ],
+    "home": [
+      {
+        "order": 1,
+        "name": "원태인",
+        "position": "선발P",
+        "explicitOrder": false
+      },
+      {
+        "order": 2,
+        "name": "김성윤",
+        "position": "RF",
+        "explicitOrder": true
+      },
+      {
+        "order": 3,
+        "name": "박승규",
+        "position": "LF",
+        "explicitOrder": true
+      },
+      {
+        "order": 4,
+        "name": "최형우",
+        "position": "DH",
+        "explicitOrder": true
+      },
+      {
+        "order": 5,
+        "name": "디아즈",
+        "position": "1B",
+        "explicitOrder": true
+      },
+      {
+        "order": 6,
+        "name": "강민호",
+        "position": "C",
+        "explicitOrder": true
+      },
+      {
+        "order": 7,
+        "name": "류지혁",
+        "position": "2B",
+        "explicitOrder": true
+      },
+      {
+        "order": 8,
+        "name": "전병우",
+        "position": "3B",
+        "explicitOrder": true
+      },
+      {
+        "order": 9,
+        "name": "심재훈",
+        "position": "SS",
+        "explicitOrder": true
+      }
+    ]
   }
 }
