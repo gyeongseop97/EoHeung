@@ -1,6 +1,6 @@
 {
   "date": "2026-06-28",
-  "updatedAt": "2026-06-28T07:48:25.987Z",
+  "updatedAt": "2026-06-28T10:25:11.084Z",
   "gameId": "20260628KTSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-28",
   "sourcePreview": "https://m.sports.naver.com/game/20260628KTSS02026/preview",
@@ -27,112 +27,112 @@
     "away": [
       {
         "order": 1,
-        "name": "고영표",
-        "position": "선발P",
-        "explicitOrder": false
+        "name": "최원준",
+        "position": "지",
+        "explicitOrder": true
       },
       {
         "order": 2,
         "name": "김현수",
-        "position": "1B",
+        "position": "一",
         "explicitOrder": true
       },
       {
         "order": 3,
         "name": "안현민",
-        "position": "RF",
+        "position": "우",
         "explicitOrder": true
       },
       {
         "order": 4,
         "name": "힐리어드",
-        "position": "CF",
+        "position": "중",
         "explicitOrder": true
       },
       {
         "order": 5,
         "name": "김상수",
-        "position": "2B",
+        "position": "二",
         "explicitOrder": true
       },
       {
         "order": 6,
         "name": "류현인",
-        "position": "3B",
+        "position": "三",
         "explicitOrder": true
       },
       {
         "order": 7,
         "name": "장진혁",
-        "position": "LF",
+        "position": "좌",
         "explicitOrder": true
       },
       {
         "order": 8,
         "name": "한승택",
-        "position": "C",
+        "position": "포",
         "explicitOrder": true
       },
       {
         "order": 9,
         "name": "권동진",
-        "position": "SS",
+        "position": "유",
         "explicitOrder": true
       }
     ],
     "home": [
       {
         "order": 1,
-        "name": "양창섭",
-        "position": "선발P",
-        "explicitOrder": false
+        "name": "김지찬",
+        "position": "중",
+        "explicitOrder": true
       },
       {
         "order": 2,
         "name": "김성윤",
-        "position": "RF",
+        "position": "우",
         "explicitOrder": true
       },
       {
         "order": 3,
         "name": "구자욱",
-        "position": "LF",
+        "position": "좌",
         "explicitOrder": true
       },
       {
         "order": 4,
         "name": "최형우",
-        "position": "DH",
+        "position": "지",
         "explicitOrder": true
       },
       {
         "order": 5,
         "name": "디아즈",
-        "position": "1B",
+        "position": "一",
         "explicitOrder": true
       },
       {
         "order": 6,
         "name": "전병우",
-        "position": "3B",
+        "position": "三",
         "explicitOrder": true
       },
       {
         "order": 7,
         "name": "류지혁",
-        "position": "2B",
+        "position": "二",
         "explicitOrder": true
       },
       {
         "order": 8,
         "name": "김도환",
-        "position": "C",
+        "position": "포",
         "explicitOrder": true
       },
       {
         "order": 9,
         "name": "양우현",
-        "position": "SS",
+        "position": "유",
         "explicitOrder": true
       }
     ]
