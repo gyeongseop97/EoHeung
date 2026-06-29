@@ -8,11 +8,10 @@
     if(!btn){btn=document.createElement('button');btn.id='reloadAllBtn';btn.type='button';btn.style.display='none';host.appendChild(btn)}
   }
   function installMobileAccountFix(){
-    if(qs('eoInitialMobileFixStyle'))return;
-    var s=document.createElement('style');
-    s.id='eoInitialMobileFixStyle';
-    s.textContent='@media(max-width:900px){#eoAccountFixed,#eoAccountPanel{display:none!important}#mobileMenuToggle{right:12px!important;top:12px!important;z-index:90020!important}.mobile-menu-backdrop{z-index:90000!important}.sidebar.mobile-menu-open{z-index:90010!important}.sidebar.mobile-menu-open #mobileDrawerFooter{display:grid!important;gap:8px;margin-top:14px;padding:12px;border-top:1px solid rgba(255,255,255,.18)}.mobile-drawer-user{font-size:12px;color:#dbeafe;word-break:break-all}.mobile-logout-btn{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.10);color:#fff;border-radius:10px;padding:9px 10px;font-weight:900}}';
-    document.head.appendChild(s);
+    var s=qs('eoInitialMobileFixStyle');
+    var css='@media(max-width:900px){.syncbox,.topbar>.toolbar,#desktopAccountActions,#desktopAccountPanel,#eoAccountFixed,#eoAccountPanel,#eoHardAccount,#eoHardPop,#eoNewAccount,#eoAccountPop,#eoCleanAccount,#eoCleanPop,#accountShell,#accountPanel,.account-shell,.account-strip,.account-pop,.eo-account-fixed,.eo-account-panel,.eo-hard-account,.eo-hard-pop,.eo-new-account,.eo-account-pop,.eo-clean-account,.eo-clean-pop{display:none!important;visibility:hidden!important;pointer-events:none!important}#mobileMenuToggle{position:fixed!important;right:12px!important;top:12px!important;z-index:95020!important;width:44px!important;height:44px!important;margin:0!important}.mobile-menu-backdrop{z-index:95000!important}.sidebar.mobile-menu-open{z-index:95010!important}.sidebar.mobile-menu-open #mobileDrawerFooter{display:grid!important;gap:8px;margin-top:14px;padding:12px;border-top:1px solid rgba(255,255,255,.18)}.sidebar:not(.mobile-menu-open) #mobileDrawerFooter{display:none!important}.mobile-drawer-user{font-size:12px;color:#dbeafe;word-break:break-all}.mobile-logout-btn{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.10);color:#fff;border-radius:10px;padding:9px 10px;font-weight:900}}';
+    if(!s){s=document.createElement('style');s.id='eoInitialMobileFixStyle';document.head.appendChild(s)}
+    if(s.textContent!==css)s.textContent=css;
   }
   function requiredDataReady(){
     if(typeof window.state==='undefined')return false;
@@ -54,7 +53,8 @@
     ensureStatusNodes();
     installMobileAccountFix();
     patchLoadAll();
-    [80,250,600,1200,2200,3600,5500,8000].forEach(function(ms){setTimeout(function(){retryInitialLoad()},ms)});
+    [80,250,600,1200,2200,3600,5500,8000].forEach(function(ms){setTimeout(function(){installMobileAccountFix();retryInitialLoad()},ms)});
+    window.addEventListener('resize',installMobileAccountFix);
     document.addEventListener('visibilitychange',function(){if(!document.hidden)retryInitialLoad()});
     document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#reloadAllBtn'))ensureStatusNodes()},true);
   }
