@@ -37,6 +37,7 @@
   function loadChat(){loadScript('eoLiveChatScript','live-chat-widget.js?v=8')}
   function loadPhotoFrame(){loadScript('eoPhotoFrameWidget','photo-frame-widget.js?v=13')}
   function loadScheduleTodayFix(){loadScript('eoScheduleTodayFix','schedule-today-fix.js?v=1')}
+  function loadInitialMobileFix(){loadScript('eoInitialMobileFix','initial-load-mobile-fix.js?v=1')}
   function formatAvg(n){return !isFinite(n)?'-':(Number.isInteger(n)?String(n):n.toFixed(1).replace(/\.0$/,''))}
   function setMetric(id,label,value,subText){
     const el=document.getElementById(id);if(!el)return;
@@ -99,6 +100,7 @@
   }
   function boot(){
     loadPremiumDefaultTheme();
+    loadInitialMobileFix();
     loadScheduleTodayFix();
     removeLegacyTicketlinkClock();
     loadChat();
@@ -107,7 +109,7 @@
     patchRenderDashboard();
     applyTicketMetrics();
     watchMetricMutations();
-    [100,300,800,1600,3000].forEach(ms=>setTimeout(()=>{loadPremiumDefaultTheme();loadScheduleTodayFix();patchAccountPanel();loadChat();loadPhotoFrame();patchRenderDashboard();applyTicketMetrics();watchMetricMutations()},ms));
+    [100,300,800,1600,3000].forEach(ms=>setTimeout(()=>{loadPremiumDefaultTheme();loadInitialMobileFix();loadScheduleTodayFix();patchAccountPanel();loadChat();loadPhotoFrame();patchRenderDashboard();applyTicketMetrics();watchMetricMutations()},ms));
     const links=document.getElementById('linkList');
     if(links&&!links.__legacyTicketlinkClockObserver){
       links.__legacyTicketlinkClockObserver=true;
