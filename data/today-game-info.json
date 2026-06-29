@@ -1,21 +1,26 @@
 {
-  "date": "2026-06-29",
-  "updatedAt": "2026-06-29T14:33:30.785Z",
-  "gameId": "",
-  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-29",
-  "sourcePreview": "",
-  "sourceLineup": "",
-  "checkedApis": [],
-  "message": "오늘 삼성 경기 ID를 찾지 못했습니다.",
+  "date": "2026-06-30",
+  "updatedAt": "2026-06-29T17:33:43.258Z",
+  "gameId": "20260630SSNC02026",
+  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-06-30",
+  "sourcePreview": "https://m.sports.naver.com/game/20260630SSNC02026/preview",
+  "sourceLineup": "https://m.sports.naver.com/game/20260630SSNC02026/lineup",
+  "checkedApis": [
+    "https://api-gw.sports.naver.com/schedule/games/20260630SSNC02026/lineup",
+    "https://api-gw.sports.naver.com/schedule/games/20260630SSNC02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
+    "https://api-gw.sports.naver.com/schedule/games/20260630SSNC02026/preview",
+    "https://api-gw.sports.naver.com/schedule/games/20260630SSNC02026/record"
+  ],
+  "message": "네이버 스포츠 기준 자동 수집 (naver-schedule-api)",
   "away": {
-    "team": "",
-    "code": "",
-    "starter": ""
+    "code": "SS",
+    "team": "삼성",
+    "starter": "오러클린"
   },
   "home": {
-    "team": "삼성",
-    "code": "SS",
-    "starter": ""
+    "code": "NC",
+    "team": "NC",
+    "starter": "테일러"
   },
   "lineupReady": false,
   "lineups": {
