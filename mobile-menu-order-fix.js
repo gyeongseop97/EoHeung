@@ -11,6 +11,25 @@
   }
   function toastMsg(msg){try{if(typeof toast==='function')return toast(msg)}catch(e){}console.warn(msg)}
   function currentTheme(){try{return state.theme||localStorage.getItem('eoheung_theme')||'default'}catch(e){return localStorage.getItem('eoheung_theme')||'default'}}
+  function showLoginScreen(){
+    try{if(typeof state!=='undefined')state.user=null}catch(e){}
+    var auth=document.getElementById('authView');
+    var app=document.getElementById('appView');
+    if(app)app.classList.add('hide');
+    if(auth)auth.classList.remove('hide');
+    document.body.classList.remove('mobile-menu-open');
+    var sidebar=document.querySelector('.sidebar');if(sidebar)sidebar.classList.remove('mobile-menu-open');
+    var backdrop=document.getElementById('mobileMenuBackdrop');if(backdrop)backdrop.classList.remove('show');
+    var pw=document.getElementById('loginPassword');if(pw)pw.value='';
+  }
+  async function doLogout(e){
+    if(e){e.preventDefault();e.stopPropagation()}
+    var btn=e&&e.currentTarget?e.currentTarget:null;
+    if(btn)btn.disabled=true;
+    try{if(typeof state!=='undefined'&&state.client)await state.client.auth.signOut()}catch(x){console.warn('logout failed',x)}
+    showLoginScreen();
+    if(btn)btn.disabled=false;
+  }
   function moveMenuItems(){
     var nav=document.querySelector('.nav');
     if(!nav)return;
@@ -51,7 +70,7 @@
     if(!$('#mobileAccountBox',footer)){
       footer.innerHTML='<div class="mobile-account-box" id="mobileAccountBox"><h4>개인정보 / 테마</h4><div class="mobile-account-email" id="mobileAccountEmail">로그인 계정 확인 중</div><div class="mobile-account-grid"><div class="mobile-account-field"><label for="mobileAccountName">이름</label><input id="mobileAccountName" placeholder="이름"></div><div class="mobile-account-field"><label for="mobileAccountPhone">전화번호</label><input id="mobileAccountPhone" placeholder="전화번호"></div></div><div class="mobile-theme-list"><button type="button" data-mobile-theme="default">기본</button><button type="button" data-mobile-theme="groupware">그룹웨어</button><button type="button" data-mobile-theme="excel">엑셀</button></div><div class="mobile-account-actions"><button type="button" class="mobile-account-save" id="mobileAccountSave">저장</button><button type="button" class="mobile-account-logout" id="mobileAccountLogout">로그아웃</button></div></div>';
       $('#mobileAccountSave',footer).addEventListener('click',saveMobileProfile);
-      $('#mobileAccountLogout',footer).addEventListener('click',async function(e){e.preventDefault();try{if(state&&state.client)await state.client.auth.signOut()}catch(x){location.reload()}});
+      $('#mobileAccountLogout',footer).addEventListener('click',doLogout);
       $$('[data-mobile-theme]',footer).forEach(function(btn){btn.addEventListener('click',function(){setMobileTheme(btn.dataset.mobileTheme)})});
     }
     fillMobileAccount();
@@ -97,10 +116,19 @@
     }
     fillMobileAccount();
   }
+  function bindLogoutDelegation(){
+    if(window.__eoMobileLogoutDelegation)return;
+    window.__eoMobileLogoutDelegation=true;
+    document.addEventListener('click',function(e){
+      var target=e.target&&e.target.closest&&e.target.closest('#mobileAccountLogout,.mobile-account-logout');
+      if(target)doLogout(e);
+    },true);
+  }
   function boot(){
     style();
     ensureMobileAccount();
     moveMenuItems();
+    bindLogoutDelegation();
     [100,300,800,1500,3000,5000].forEach(function(ms){setTimeout(function(){style();ensureMobileAccount();moveMenuItems();fillMobileAccount()},ms)});
     setInterval(function(){ensureMobileAccount();moveMenuItems();fillMobileAccount()},1500);
   }
