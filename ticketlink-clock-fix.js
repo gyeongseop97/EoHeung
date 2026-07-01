@@ -39,6 +39,7 @@
   function loadScheduleTodayFix(){loadScript('eoScheduleTodayFix','schedule-today-fix.js?v=1')}
   function loadInitialMobileFix(){loadScript('eoInitialMobileFix','initial-load-mobile-fix.js?v=1')}
   function loadMobileMenuOrderFix(){loadScript('eoMobileMenuOrderFix','mobile-menu-order-fix.js?v=1')}
+  function loadLogoutFix(){loadScript('eoLogoutFix','logout-fix.js?v=1')}
   function formatAvg(n){return !isFinite(n)?'-':(Number.isInteger(n)?String(n):n.toFixed(1).replace(/\.0$/,''))}
   function setMetric(id,label,value,subText){
     const el=document.getElementById(id);if(!el)return;
@@ -101,6 +102,7 @@
   }
   function boot(){
     loadPremiumDefaultTheme();
+    loadLogoutFix();
     loadInitialMobileFix();
     loadMobileMenuOrderFix();
     loadScheduleTodayFix();
@@ -111,7 +113,7 @@
     patchRenderDashboard();
     applyTicketMetrics();
     watchMetricMutations();
-    [100,300,800,1600,3000].forEach(ms=>setTimeout(()=>{loadPremiumDefaultTheme();loadInitialMobileFix();loadMobileMenuOrderFix();loadScheduleTodayFix();patchAccountPanel();loadChat();loadPhotoFrame();patchRenderDashboard();applyTicketMetrics();watchMetricMutations()},ms));
+    [100,300,800,1600,3000].forEach(ms=>setTimeout(()=>{loadPremiumDefaultTheme();loadLogoutFix();loadInitialMobileFix();loadMobileMenuOrderFix();loadScheduleTodayFix();patchAccountPanel();loadChat();loadPhotoFrame();patchRenderDashboard();applyTicketMetrics();watchMetricMutations()},ms));
     const links=document.getElementById('linkList');
     if(links&&!links.__legacyTicketlinkClockObserver){
       links.__legacyTicketlinkClockObserver=true;
