@@ -1,6 +1,6 @@
 {
   "date": "2026-07-05",
-  "updatedAt": "2026-07-05T06:38:06.344Z",
+  "updatedAt": "2026-07-05T09:40:20.329Z",
   "gameId": "20260705SSSK02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-05",
   "sourcePreview": "https://m.sports.naver.com/game/20260705SSSK02026/preview",
@@ -22,9 +22,119 @@
     "team": "SSG",
     "starter": "김건우"
   },
-  "lineupReady": false,
+  "lineupReady": true,
   "lineups": {
-    "away": [],
-    "home": []
+    "away": [
+      {
+        "order": 1,
+        "name": "김지찬",
+        "position": "지",
+        "explicitOrder": true
+      },
+      {
+        "order": 2,
+        "name": "김성윤",
+        "position": "우",
+        "explicitOrder": true
+      },
+      {
+        "order": 3,
+        "name": "김현준",
+        "position": "중",
+        "explicitOrder": true
+      },
+      {
+        "order": 4,
+        "name": "박승규",
+        "position": "좌",
+        "explicitOrder": true
+      },
+      {
+        "order": 5,
+        "name": "디아즈",
+        "position": "一",
+        "explicitOrder": true
+      },
+      {
+        "order": 6,
+        "name": "류지혁",
+        "position": "二",
+        "explicitOrder": true
+      },
+      {
+        "order": 7,
+        "name": "강민호",
+        "position": "포",
+        "explicitOrder": true
+      },
+      {
+        "order": 8,
+        "name": "심재훈",
+        "position": "유",
+        "explicitOrder": true
+      },
+      {
+        "order": 9,
+        "name": "전병우",
+        "position": "三",
+        "explicitOrder": true
+      }
+    ],
+    "home": [
+      {
+        "order": 1,
+        "name": "박성한",
+        "position": "유",
+        "explicitOrder": true
+      },
+      {
+        "order": 2,
+        "name": "에레디아",
+        "position": "우",
+        "explicitOrder": true
+      },
+      {
+        "order": 3,
+        "name": "최정",
+        "position": "지",
+        "explicitOrder": true
+      },
+      {
+        "order": 4,
+        "name": "김재환",
+        "position": "좌",
+        "explicitOrder": true
+      },
+      {
+        "order": 5,
+        "name": "고명준",
+        "position": "三",
+        "explicitOrder": true
+      },
+      {
+        "order": 6,
+        "name": "전의산",
+        "position": "一",
+        "explicitOrder": true
+      },
+      {
+        "order": 7,
+        "name": "최지훈",
+        "position": "중",
+        "explicitOrder": true
+      },
+      {
+        "order": 8,
+        "name": "조형우",
+        "position": "포",
+        "explicitOrder": true
+      },
+      {
+        "order": 9,
+        "name": "정준재",
+        "position": "二",
+        "explicitOrder": true
+      }
+    ]
   }
 }
