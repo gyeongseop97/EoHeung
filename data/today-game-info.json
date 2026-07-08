@@ -1,6 +1,6 @@
 {
   "date": "2026-07-08",
-  "updatedAt": "2026-07-08T11:21:49.393Z",
+  "updatedAt": "2026-07-08T13:00:23.958Z",
   "gameId": "20260708LGSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-08",
   "sourcePreview": "https://m.sports.naver.com/game/20260708LGSS02026/preview",
@@ -76,7 +76,7 @@
       {
         "order": 9,
         "name": "구본혁",
-        "position": "二",
+        "position": "二三",
         "explicitOrder": true
       }
     ],
@@ -120,7 +120,7 @@
       {
         "order": 7,
         "name": "김영웅",
-        "position": "三",
+        "position": "三유",
         "explicitOrder": true
       },
       {
@@ -132,7 +132,7 @@
       {
         "order": 9,
         "name": "심재훈",
-        "position": "유",
+        "position": "유二",
         "explicitOrder": true
       }
     ]
