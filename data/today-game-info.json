@@ -1,140 +1,25 @@
 {
-  "date": "2026-07-09",
-  "updatedAt": "2026-07-09T12:43:52.395Z",
-  "gameId": "20260709LGSS02026",
-  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-09",
-  "sourcePreview": "https://m.sports.naver.com/game/20260709LGSS02026/preview",
-  "sourceLineup": "https://m.sports.naver.com/game/20260709LGSS02026/lineup",
-  "checkedApis": [
-    "https://api-gw.sports.naver.com/schedule/games/20260709LGSS02026/lineup",
-    "https://api-gw.sports.naver.com/schedule/games/20260709LGSS02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
-    "https://api-gw.sports.naver.com/schedule/games/20260709LGSS02026/preview",
-    "https://api-gw.sports.naver.com/schedule/games/20260709LGSS02026/record"
-  ],
-  "message": "네이버 스포츠 기준 자동 수집 (naver-schedule-api)",
+  "date": "2026-07-10",
+  "updatedAt": "2026-07-09T15:43:46.599Z",
+  "gameId": "",
+  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-10",
+  "sourcePreview": "",
+  "sourceLineup": "",
+  "checkedApis": [],
+  "message": "오늘 삼성 경기 ID를 찾지 못했습니다.",
   "away": {
-    "code": "LG",
-    "team": "LG",
-    "starter": "웰스"
+    "team": "",
+    "code": "",
+    "starter": ""
   },
   "home": {
-    "code": "SS",
     "team": "삼성",
-    "starter": "원태인"
+    "code": "SS",
+    "starter": ""
   },
-  "lineupReady": true,
+  "lineupReady": false,
   "lineups": {
-    "away": [
-      {
-        "order": 1,
-        "name": "홍창기",
-        "position": "우",
-        "explicitOrder": true
-      },
-      {
-        "order": 2,
-        "name": "박해민",
-        "position": "중",
-        "explicitOrder": true
-      },
-      {
-        "order": 3,
-        "name": "오스틴",
-        "position": "지",
-        "explicitOrder": true
-      },
-      {
-        "order": 4,
-        "name": "송찬의",
-        "position": "좌",
-        "explicitOrder": true
-      },
-      {
-        "order": 5,
-        "name": "박동원",
-        "position": "포",
-        "explicitOrder": true
-      },
-      {
-        "order": 6,
-        "name": "천성호",
-        "position": "一",
-        "explicitOrder": true
-      },
-      {
-        "order": 7,
-        "name": "문보경",
-        "position": "三",
-        "explicitOrder": true
-      },
-      {
-        "order": 8,
-        "name": "오지환",
-        "position": "유",
-        "explicitOrder": true
-      },
-      {
-        "order": 9,
-        "name": "신민재",
-        "position": "二",
-        "explicitOrder": true
-      }
-    ],
-    "home": [
-      {
-        "order": 1,
-        "name": "김지찬",
-        "position": "중",
-        "explicitOrder": true
-      },
-      {
-        "order": 2,
-        "name": "박승규",
-        "position": "우",
-        "explicitOrder": true
-      },
-      {
-        "order": 3,
-        "name": "구자욱",
-        "position": "좌",
-        "explicitOrder": true
-      },
-      {
-        "order": 4,
-        "name": "최형우",
-        "position": "지",
-        "explicitOrder": true
-      },
-      {
-        "order": 5,
-        "name": "디아즈",
-        "position": "一",
-        "explicitOrder": true
-      },
-      {
-        "order": 6,
-        "name": "강민호",
-        "position": "포",
-        "explicitOrder": true
-      },
-      {
-        "order": 7,
-        "name": "김영웅",
-        "position": "三",
-        "explicitOrder": true
-      },
-      {
-        "order": 8,
-        "name": "심재훈",
-        "position": "유",
-        "explicitOrder": true
-      },
-      {
-        "order": 9,
-        "name": "양우현",
-        "position": "二",
-        "explicitOrder": true
-      }
-    ]
+    "away": [],
+    "home": []
   }
 }
