@@ -1,6 +1,6 @@
 {
   "date": "2026-07-18",
-  "updatedAt": "2026-07-18T06:02:14.528Z",
+  "updatedAt": "2026-07-18T08:17:23.427Z",
   "gameId": "20260718LTSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-18",
   "sourcePreview": "https://m.sports.naver.com/game/20260718LTSS02026/preview",
@@ -22,9 +22,119 @@
     "team": "삼성",
     "starter": "페덱"
   },
-  "lineupReady": false,
+  "lineupReady": true,
   "lineups": {
-    "away": [],
-    "home": []
+    "away": [
+      {
+        "order": 1,
+        "name": "나균안",
+        "position": "선발P",
+        "explicitOrder": false
+      },
+      {
+        "order": 2,
+        "name": "고승민",
+        "position": "1B",
+        "explicitOrder": true
+      },
+      {
+        "order": 3,
+        "name": "레이예스",
+        "position": "LF",
+        "explicitOrder": true
+      },
+      {
+        "order": 4,
+        "name": "한동희",
+        "position": "DH",
+        "explicitOrder": true
+      },
+      {
+        "order": 5,
+        "name": "노진혁",
+        "position": "3B",
+        "explicitOrder": true
+      },
+      {
+        "order": 6,
+        "name": "한태양",
+        "position": "2B",
+        "explicitOrder": true
+      },
+      {
+        "order": 7,
+        "name": "전민재",
+        "position": "SS",
+        "explicitOrder": true
+      },
+      {
+        "order": 8,
+        "name": "조민영",
+        "position": "RF",
+        "explicitOrder": true
+      },
+      {
+        "order": 9,
+        "name": "손성빈",
+        "position": "C",
+        "explicitOrder": true
+      }
+    ],
+    "home": [
+      {
+        "order": 1,
+        "name": "페덱",
+        "position": "선발P",
+        "explicitOrder": false
+      },
+      {
+        "order": 2,
+        "name": "김성윤",
+        "position": "RF",
+        "explicitOrder": true
+      },
+      {
+        "order": 3,
+        "name": "구자욱",
+        "position": "LF",
+        "explicitOrder": true
+      },
+      {
+        "order": 4,
+        "name": "최형우",
+        "position": "DH",
+        "explicitOrder": true
+      },
+      {
+        "order": 5,
+        "name": "디아즈",
+        "position": "1B",
+        "explicitOrder": true
+      },
+      {
+        "order": 6,
+        "name": "류지혁",
+        "position": "2B",
+        "explicitOrder": true
+      },
+      {
+        "order": 7,
+        "name": "김영웅",
+        "position": "3B",
+        "explicitOrder": true
+      },
+      {
+        "order": 8,
+        "name": "강민호",
+        "position": "C",
+        "explicitOrder": true
+      },
+      {
+        "order": 9,
+        "name": "양우현",
+        "position": "SS",
+        "explicitOrder": true
+      }
+    ]
   }
 }
