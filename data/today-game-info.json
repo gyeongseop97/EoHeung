@@ -1,6 +1,6 @@
 {
   "date": "2026-07-19",
-  "updatedAt": "2026-07-19T07:05:05.211Z",
+  "updatedAt": "2026-07-19T09:25:49.313Z",
   "gameId": "20260719LTSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-19",
   "sourcePreview": "https://m.sports.naver.com/game/20260719LTSS02026/preview",
@@ -22,9 +22,119 @@
     "team": "삼성",
     "starter": "원태인"
   },
-  "lineupReady": false,
+  "lineupReady": true,
   "lineups": {
-    "away": [],
-    "home": []
+    "away": [
+      {
+        "order": 1,
+        "name": "황성빈",
+        "position": "중",
+        "explicitOrder": true
+      },
+      {
+        "order": 2,
+        "name": "고승민",
+        "position": "二",
+        "explicitOrder": true
+      },
+      {
+        "order": 3,
+        "name": "레이예스",
+        "position": "좌",
+        "explicitOrder": true
+      },
+      {
+        "order": 4,
+        "name": "한동희",
+        "position": "지",
+        "explicitOrder": true
+      },
+      {
+        "order": 5,
+        "name": "나승엽",
+        "position": "一",
+        "explicitOrder": true
+      },
+      {
+        "order": 6,
+        "name": "윤동희",
+        "position": "우",
+        "explicitOrder": true
+      },
+      {
+        "order": 7,
+        "name": "한태양",
+        "position": "三",
+        "explicitOrder": true
+      },
+      {
+        "order": 8,
+        "name": "전민재",
+        "position": "유",
+        "explicitOrder": true
+      },
+      {
+        "order": 9,
+        "name": "손성빈",
+        "position": "포",
+        "explicitOrder": true
+      }
+    ],
+    "home": [
+      {
+        "order": 1,
+        "name": "김현준",
+        "position": "중",
+        "explicitOrder": true
+      },
+      {
+        "order": 2,
+        "name": "김성윤",
+        "position": "우",
+        "explicitOrder": true
+      },
+      {
+        "order": 3,
+        "name": "구자욱",
+        "position": "좌",
+        "explicitOrder": true
+      },
+      {
+        "order": 4,
+        "name": "최형우",
+        "position": "지",
+        "explicitOrder": true
+      },
+      {
+        "order": 5,
+        "name": "디아즈",
+        "position": "一",
+        "explicitOrder": true
+      },
+      {
+        "order": 6,
+        "name": "전병우",
+        "position": "三",
+        "explicitOrder": true
+      },
+      {
+        "order": 7,
+        "name": "류지혁",
+        "position": "二",
+        "explicitOrder": true
+      },
+      {
+        "order": 8,
+        "name": "김도환",
+        "position": "포",
+        "explicitOrder": true
+      },
+      {
+        "order": 9,
+        "name": "심재훈",
+        "position": "유",
+        "explicitOrder": true
+      }
+    ]
   }
 }
