@@ -1,6 +1,6 @@
 {
   "date": "2026-07-19",
-  "updatedAt": "2026-07-19T11:54:43.793Z",
+  "updatedAt": "2026-07-19T13:10:32.805Z",
   "gameId": "20260719LTSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-19",
   "sourcePreview": "https://m.sports.naver.com/game/20260719LTSS02026/preview",
@@ -34,7 +34,7 @@
       {
         "order": 2,
         "name": "고승민",
-        "position": "二",
+        "position": "二一",
         "explicitOrder": true
       },
       {
@@ -64,7 +64,7 @@
       {
         "order": 7,
         "name": "한태양",
-        "position": "三",
+        "position": "三二",
         "explicitOrder": true
       },
       {
