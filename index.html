@@ -153,7 +153,44 @@ async function deleteGame(){const id=qs('gameId').value;if(!id)return;if(!confir
 async function saveLink(){const payload={title:qs('linkTitle').value.trim(),url:qs('linkUrl').value.trim(),description:qs('linkDesc').value.trim()};if(!payload.title||!payload.url)return toast('제목과 URL을 입력해 주세요.');const {error}=await state.client.from('quick_links').insert(payload);if(error)return toast('링크 저장 오류: '+error.message);closeModal('linkModal');['linkTitle','linkUrl','linkDesc'].forEach(id=>qs(id).value='');await loadAll()}
 async function syncKboSchedule(){toast('KBO 동기화는 GitHub Actions 또는 서버 함수에서 실행해 주세요. 현재 화면에서는 수동 입력을 사용합니다.')}
 function renderSettings(){qs('themeSelect').value=state.theme;renderThemePreview()}
-function bindEvents(){qs('signInBtn').onclick=async()=>{const {error}=await state.client.auth.signInWithPassword({email:qs('loginEmail').value.trim(),password:qs('loginPassword').value});if(error)toast(error.message)};qs('signUpBtn').onclick=async()=>{const {error}=await state.client.auth.signUp({email:qs('loginEmail').value.trim(),password:qs('loginPassword').value});if(error)toast(error.message);else toast('회원가입 확인 메일 또는 승인을 확인해 주세요.')};qs('reloadAllBtn').onclick=loadAll;document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));qs(b.dataset.page).classList.add('active');qs('pageTitle').textContent=b.textContent.replace(/^[^가-힣A-Za-z]+/,'');qs('pageSub').textContent={dashboard:'삼성 라이온즈 직관 모임 현황을 확인합니다.',schedule:'경기 일정과 직관 기록을 관리합니다.',members:'모임 회원 정보를 관리합니다.',records:'직관 횟수와 승률 기록을 확인합니다.',links:'야구 관련 링크를 모아둡니다.',settings:'데이터와 화면 설정을 관리합니다.'}[b.dataset.page]||'';if(b.dataset.page==='schedule')renderWeatherForUpcoming();if(b.dataset.page==='settings')renderSettings()});qs('openMemberModalBtn').onclick=()=>{clearMemberForm();openModal('memberModal')};qs('saveMemberBtn').onclick=saveMember;qs('openGameModalBtn').onclick=()=>{clearGameForm();openModal('gameModal')};qs('saveGameBtn').onclick=saveGame;qs('deleteGameBtn').onclick=deleteGame;qs('openLinkModalBtn').onclick=()=>openModal('linkModal');qs('saveLinkBtn').onclick=saveLink;qs('syncKboBtn').onclick=syncKboSchedule;qs('prevMonthBtn').onclick=()=>{state.month--;if(state.month<1){state.month=12;state.year--}syncSelects();renderCalendar();renderWatchList();renderDateDetail()};qs('nextMonthBtn').onclick=()=>{state.month++;if(state.month>12){state.month=1;state.year++}syncSelects();renderCalendar();renderWatchList();renderDateDetail()};qs('todayBtn').onclick=()=>{const d=new Date();state.year=d.getFullYear();state.month=d.getMonth()+1;state.selectedDate=toYmd(d);syncSelects();renderCalendar();renderWatchList();renderDateDetail()};qs('yearSelect').onchange=e=>{state.year=Number(e.target.value);renderCalendar();renderWatchList()};qs('monthSelect').onchange=e=>{state.month=Number(e.target.value);renderCalendar();renderWatchList()};qs('dateDetail').addEventListener('change',e=>{if(e.target.matches('input[type="checkbox"][data-game]'))saveAttendance(e.target.dataset.game,e.target.dataset.member,e.target.checked)});document.body.addEventListener('click',e=>{const em=e.target.closest('[data-edit-member]');if(em)editMember(em.dataset.editMember);const eg=e.target.closest('[data-edit-game]');if(eg)editGame(eg.dataset.editGame)});qs('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({members:state.members,games:state.games,gameMembers:state.gameMembers,links:state.links},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='eoheung-backup.json';a.click()};qs('themeSelect').onchange=e=>applyTheme(e.target.value);for(let y=2024;y<=2030;y++)qs('yearSelect').insertAdjacentHTML('beforeend',`<option value="${y}">${y}년</option>`);for(let m=1;m<=12;m++)qs('monthSelect').insertAdjacentHTML('beforeend',`<option value="${m}">${m}월</option>`);syncSelects()}
+const ROUTE_PATHS={dashboard:'/dashboard',schedule:'/schedule',members:'/members',records:'/records',links:'/links',settings:'/settings'};
+const PAGE_META={
+  dashboard:{title:'대시보드',sub:'삼성 라이온즈 직관 모임 현황을 확인합니다.'},
+  schedule:{title:'경기 일정/결과',sub:'경기 일정과 직관 기록을 관리합니다.'},
+  members:{title:'회원 관리',sub:'모임 회원 정보를 관리합니다.'},
+  records:{title:'기록실',sub:'직관 횟수와 승률 기록을 확인합니다.'},
+  links:{title:'바로가기',sub:'야구 관련 링크를 모아둡니다.'},
+  settings:{title:'설정',sub:'데이터와 화면 설정을 관리합니다.'}
+};
+function pageFromPath(pathname=window.location.pathname){
+  const normalized=(pathname||'/').replace(/\/+$/,'')||'/';
+  if(normalized==='/')return'dashboard';
+  const entry=Object.entries(ROUTE_PATHS).find(([,path])=>path===normalized);
+  return entry?entry[0]:'dashboard';
+}
+function activatePage(page,{updateUrl=false,replaceUrl=false}={}){
+  const target=ROUTE_PATHS[page]?page:'dashboard';
+  document.querySelectorAll('.nav button[data-page]').forEach(button=>{
+    const active=button.dataset.page===target;
+    button.classList.toggle('active',active);
+    if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
+  });
+  document.querySelectorAll('.section').forEach(section=>section.classList.toggle('active',section.id===target));
+  const meta=PAGE_META[target];
+  qs('pageTitle').textContent=meta.title;
+  qs('pageSub').textContent=meta.sub;
+  document.title=`${meta.title} | 삼성 직관 모임`;
+  if(target==='schedule')renderWeatherForUpcoming();
+  if(target==='settings')renderSettings();
+  if(updateUrl){
+    const path=ROUTE_PATHS[target];
+    const method=replaceUrl||window.location.pathname===path?'replaceState':'pushState';
+    window.history[method]({page:target},'',path);
+  }
+}
+function navigateToPage(page){activatePage(page,{updateUrl:true})}
+function applyRoute(replaceUrl=false){activatePage(pageFromPath(),{updateUrl:true,replaceUrl})}
+function bindEvents(){qs('signInBtn').onclick=async()=>{const {error}=await state.client.auth.signInWithPassword({email:qs('loginEmail').value.trim(),password:qs('loginPassword').value});if(error)toast(error.message)};qs('signUpBtn').onclick=async()=>{const {error}=await state.client.auth.signUp({email:qs('loginEmail').value.trim(),password:qs('loginPassword').value});if(error)toast(error.message);else toast('회원가입 확인 메일 또는 승인을 확인해 주세요.')};qs('reloadAllBtn').onclick=loadAll;document.querySelectorAll('.nav button[data-page]').forEach(button=>button.onclick=e=>{e.preventDefault();navigateToPage(button.dataset.page)});window.addEventListener('popstate',()=>activatePage(pageFromPath()));applyRoute(true);qs('openMemberModalBtn').onclick=()=>{clearMemberForm();openModal('memberModal')};qs('saveMemberBtn').onclick=saveMember;qs('openGameModalBtn').onclick=()=>{clearGameForm();openModal('gameModal')};qs('saveGameBtn').onclick=saveGame;qs('deleteGameBtn').onclick=deleteGame;qs('openLinkModalBtn').onclick=()=>openModal('linkModal');qs('saveLinkBtn').onclick=saveLink;qs('syncKboBtn').onclick=syncKboSchedule;qs('prevMonthBtn').onclick=()=>{state.month--;if(state.month<1){state.month=12;state.year--}syncSelects();renderCalendar();renderWatchList();renderDateDetail()};qs('nextMonthBtn').onclick=()=>{state.month++;if(state.month>12){state.month=1;state.year++}syncSelects();renderCalendar();renderWatchList();renderDateDetail()};qs('todayBtn').onclick=()=>{const d=new Date();state.year=d.getFullYear();state.month=d.getMonth()+1;state.selectedDate=toYmd(d);syncSelects();renderCalendar();renderWatchList();renderDateDetail()};qs('yearSelect').onchange=e=>{state.year=Number(e.target.value);renderCalendar();renderWatchList()};qs('monthSelect').onchange=e=>{state.month=Number(e.target.value);renderCalendar();renderWatchList()};qs('dateDetail').addEventListener('change',e=>{if(e.target.matches('input[type="checkbox"][data-game]'))saveAttendance(e.target.dataset.game,e.target.dataset.member,e.target.checked)});document.body.addEventListener('click',e=>{const em=e.target.closest('[data-edit-member]');if(em)editMember(em.dataset.editMember);const eg=e.target.closest('[data-edit-game]');if(eg)editGame(eg.dataset.editGame)});qs('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({members:state.members,games:state.games,gameMembers:state.gameMembers,links:state.links},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='eoheung-backup.json';a.click()};qs('themeSelect').onchange=e=>applyTheme(e.target.value);for(let y=2024;y<=2030;y++)qs('yearSelect').insertAdjacentHTML('beforeend',`<option value="${y}">${y}년</option>`);for(let m=1;m<=12;m++)qs('monthSelect').insertAdjacentHTML('beforeend',`<option value="${m}">${m}월</option>`);syncSelects()}
 function syncSelects(){qs('yearSelect').value=state.year;qs('monthSelect').value=state.month}
 init();
   </script>
