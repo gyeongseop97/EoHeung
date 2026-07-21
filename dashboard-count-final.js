@@ -61,8 +61,14 @@
     s.textContent='.today-game-clickable{cursor:pointer}.today-game-clickable:hover{transform:translateY(-1px);box-shadow:0 16px 36px rgba(7,76,161,.16)}.lineup-modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.58);display:none;place-items:center;z-index:90;padding:18px}.lineup-modal-backdrop.show{display:grid}.lineup-modal{width:min(900px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:22px;box-shadow:0 30px 90px rgba(0,0,0,.28);padding:22px}.lineup-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px solid #dce5f2;padding-bottom:14px;margin-bottom:14px}.lineup-head h3{margin:0;font-size:22px}.lineup-sub{color:#68758a;font-size:13px;margin-top:5px}.lineup-close{border:0;background:#eef4ff;color:#074ca1;font-weight:900;border-radius:12px;padding:9px 12px}.lineup-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.lineup-team{border:1px solid #dce5f2;border-radius:16px;overflow:hidden;background:#fff}.lineup-team h4{margin:0;background:#f1f6fd;padding:12px 14px;font-size:15px}.lineup-row{display:grid;grid-template-columns:38px minmax(0,1fr) minmax(108px,auto);gap:8px;padding:10px 13px;border-top:1px solid #edf2f7;align-items:center}.lineup-row b{color:#074ca1}.lineup-row span{font-weight:800}.lineup-row em{font-style:normal;color:#68758a;font-size:12px;text-align:right;white-space:nowrap}.lineup-starter{background:#f8fbff}.lineup-starter b{font-size:12px}.lineup-empty{padding:18px;text-align:center;color:#68758a;background:#f8fbff;border-top:1px solid #edf2f7}.lineup-source{margin-top:14px;font-size:12px;color:#68758a}.lineup-source a{color:#074ca1;font-weight:900}@media(max-width:720px){.lineup-grid{grid-template-columns:1fr}.lineup-modal{padding:16px;border-radius:18px}.lineup-row{grid-template-columns:34px minmax(0,1fr) minmax(104px,auto);padding:10px 11px}}';
     document.head.appendChild(s);
   }
+  function installPlayerStyle(){
+    if(document.getElementById('eoLineupPlayerStyle'))return;
+    var s=document.createElement('style');s.id='eoLineupPlayerStyle';
+    s.textContent='.lineup-player-img{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#eef2f7;border:1px solid #dce5f2;flex:0 0 auto}.lineup-player-fallback{display:grid;place-items:center;color:#94a3b8;font-size:20px}.lineup-player{display:flex;align-items:center;gap:10px;min-width:0}.lineup-section-title{padding:12px 13px 7px;font-size:13px;font-weight:900;color:#34445d;background:#f8fbff;border-top:1px solid #dce5f2}.lineup-reserve-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px 12px 14px;background:#f8fbff}.lineup-reserve{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e4ebf4;border-radius:12px;padding:7px;min-width:0}.lineup-reserve .lineup-player-img{width:34px;height:34px}.lineup-reserve b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}@media(max-width:480px){.lineup-reserve-grid{grid-template-columns:1fr}.lineup-player-img{width:38px;height:38px}}';
+    document.head.appendChild(s);
+  }
   function ensureLineupModal(){
-    installLineupStyle();
+    installLineupStyle();installPlayerStyle();
     var m=document.getElementById('todayLineupModal');
     if(m)return m;
     m=document.createElement('div');m.id='todayLineupModal';m.className='lineup-modal-backdrop';m.innerHTML='<div class="lineup-modal"><div class="lineup-head"><div><h3>오늘 경기 라인업</h3><div class="lineup-sub" id="todayLineupSubtitle">라인업 정보를 불러오는 중입니다.</div></div><button class="lineup-close" id="todayLineupClose">닫기</button></div><div id="todayLineupBody"></div></div>';
@@ -70,13 +76,22 @@
     m.addEventListener('click',function(e){if(e.target===m||e.target.id==='todayLineupClose')m.classList.remove('show')});
     return m;
   }
+  function playerPhoto(player){
+    var name=escHtml(player&&player.name||'선수');
+    return player&&player.image?`<img class="lineup-player-img" src="${escHtml(player.image)}" alt="${name}" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<span class=&quot;lineup-player-img lineup-player-fallback&quot;>♟</span>'">`:'<span class="lineup-player-img lineup-player-fallback">♟</span>';
+  }
   function renderLineupList(rows){
     if(!rows||!rows.length)return '<div class="lineup-empty">라인업 발표 전입니다.<br>30분마다 자동 확인 중입니다.</div>';
-    return rows.map(function(r){var meta=[r.position,r.batsThrows].filter(Boolean).join(' · ');return `<div class="lineup-row"><b>${escHtml(r.order||'')}</b><span>${escHtml(r.name||'')}</span><em>${escHtml(meta)}</em></div>`}).join('');
+    return rows.map(function(r){var meta=[r.position,r.batsThrows].filter(Boolean).join(' · ');return `<div class="lineup-row"><b>${escHtml(r.order||'')}</b><span class="lineup-player">${playerPhoto(r)}<span>${escHtml(r.name||'')}</span></span><em>${escHtml(meta)}</em></div>`}).join('');
   }
-  function renderTeamLineup(team,rows){
+  function renderReserves(title,rows){
+    if(!rows||!rows.length)return '';
+    return `<div class="lineup-section-title">${escHtml(title)}</div><div class="lineup-reserve-grid">${rows.map(function(r){return `<div class="lineup-reserve">${playerPhoto(r)}<b>${escHtml(r.name||'')}</b></div>`}).join('')}</div>`;
+  }
+  function renderTeamLineup(team,rows,reserves,starterInfo){
     var starterMeta=[team.starterThrows].filter(Boolean).join(' · ');
-    return `<div class="lineup-team"><h4>${escHtml(team.team||'팀')} 선발</h4><div class="lineup-row lineup-starter"><b>선발</b><span>${escHtml(team.starter||'미공개')}</span><em>${escHtml(starterMeta)}</em></div>${renderLineupList(rows)}</div>`;
+    var starter={name:team.starter||'미공개',image:team.starterImage||(starterInfo&&starterInfo.image)||''};
+    return `<div class="lineup-team"><h4>${escHtml(team.team||'팀')} 선발</h4><div class="lineup-row lineup-starter"><b>선발</b><span class="lineup-player">${playerPhoto(starter)}<span>${escHtml(starter.name)}</span></span><em>${escHtml(starterMeta)}</em></div>${renderLineupList(rows)}${renderReserves('후보 야수',reserves&&reserves.fielders)}${renderReserves('불펜 투수',reserves&&reserves.bullpen)}</div>`;
   }
   function renderLineupModal(info){
     var m=ensureLineupModal(),body=document.getElementById('todayLineupBody'),sub=document.getElementById('todayLineupSubtitle');
@@ -87,9 +102,11 @@
     var home=info&&info.home?info.home:{team:g&&g.home_away==='HOME'?'삼성':g?g.opponent:'홈',starter:''};
     var awayRows=info&&info.lineups?info.lineups.away:[];
     var homeRows=info&&info.lineups?info.lineups.home:[];
+    var reserves=info&&info.lineups&&info.lineups.reserves?info.lineups.reserves:{away:{},home:{}};
+    var starterInfo=info&&info.lineups&&info.lineups.starters?info.lineups.starters:{away:{},home:{}};
     var lineupUrl=info&&(info.sourceLineup||info.sourcePreview);
     var lineupLabel=info&&info.sourceLineup?'네이버 라인업 열기':'네이버 프리뷰 열기';
-    body.innerHTML=`<div class="lineup-grid">${renderTeamLineup(away,awayRows)}${renderTeamLineup(home,homeRows)}</div><div class="lineup-source">${info&&info.message?escHtml(info.message):'네이버 스포츠 라인업 기준 자동 수집'}${lineupUrl?` · <a href="${escHtml(lineupUrl)}" target="_blank" rel="noopener">${lineupLabel}</a>`:''}</div>`;
+    body.innerHTML=`<div class="lineup-grid">${renderTeamLineup(away,awayRows,reserves.away,starterInfo.away)}${renderTeamLineup(home,homeRows,reserves.home,starterInfo.home)}</div><div class="lineup-source">${info&&info.message?escHtml(info.message):'네이버 스포츠 라인업 기준 자동 수집'}${lineupUrl?` · <a href="${escHtml(lineupUrl)}" target="_blank" rel="noopener">${lineupLabel}</a>`:''}</div>`;
   }
   async function openTodayLineup(){
     ensureLineupModal().classList.add('show');

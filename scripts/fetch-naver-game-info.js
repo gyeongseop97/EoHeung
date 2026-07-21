@@ -10,6 +10,7 @@ const NAME_KEYS=/^(name|playerName|korName|nameKo|fullName|shortName|batterName)
 const ORDER_KEYS=/^(order|battingOrder|batOrder|batterOrder|lineupOrder|seq|no|batNo)$/i;
 const POS_KEYS=/^(position|positionName|posName|pos|positionCode|defensePosition)$/i;
 const BAT_KEYS=/^(batsThrows|batType|bats|hitType)$/i;
+const IMAGE_KEYS=/(image|img|photo|profile|thumbnail|thumb)/i;
 const LINEUP_PATH=/(lineup|lineUp|line_up|batting|batter|starter|starting|선발|타순|라인업)/i;
 const PITCHER_KEY=/(starter|starting|probable|pitcher|sp|선발|투수)/i;
 
@@ -36,15 +37,17 @@ function namesFromValue(v){const names=[];function add(x){if(isName(x)&&!names.i
 function normalizePosition(v){const s=String(v||'').replace(/\s+/g,'');const map={'0':'지명타자','1':'투수','2':'포수','3':'1루수','4':'2루수','5':'3루수','6':'유격수','7':'좌익수','8':'중견수','9':'우익수',P:'투수',C:'포수','1B':'1루수','2B':'2루수','3B':'3루수',SS:'유격수',LF:'좌익수',CF:'중견수',RF:'우익수',DH:'지명타자'};return map[s.toUpperCase()]||s}
 function normalizeBat(v){const m=String(v||'').match(/(우타|좌타|양타)/);return m?m[1]:''}
 function normalizeThrow(v){const m=String(v||'').match(/(우투|좌투|우언|좌언)/);return m?m[1]:''}
+function playerImage(obj){let found='';walkObj(obj,(value,path)=>{if(found||typeof value!=='string'||!/^https?:\/\//i.test(value))return;const key=String(path[path.length-1]||'');if(IMAGE_KEYS.test(key)||/(player|sports-phinf|kbaseball)/i.test(value))found=value});return found}
+function playerBase(obj){const name=firstByKey(obj,NAME_KEYS)||namesFromValue(obj)[0]||'';if(!isName(name))return null;const code=String(obj.playerCode||obj.pcode||'');const fallbackImage=code?`https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/${new Date().getFullYear()}/${code}.jpg`:'';return{name,playerCode:code,position:normalizePosition(obj.positionName||obj.position||firstByKey(obj,POS_KEYS)),batsThrows:normalizeBat(firstByKey(obj,BAT_KEYS)),throws:normalizeThrow(firstByKey(obj,BAT_KEYS)),image:playerImage(obj)||fallbackImage}}
 function starterPairFromScheduleText(text,awayTeam,homeTeam){const t=clean(text);if(!awayTeam||!homeTeam)return{away:'',home:''};let m=t.match(new RegExp(`${awayTeam}\\s+([가-힣]{2,5}).{0,180}${homeTeam}\\s+([가-힣]{2,5})`));if(m&&isName(m[1])&&isName(m[2]))return{away:m[1],home:m[2]};m=t.match(new RegExp(`${homeTeam}\\s+([가-힣]{2,5}).{0,180}${awayTeam}\\s+([가-힣]{2,5})`));if(m&&isName(m[1])&&isName(m[2]))return{away:m[2],home:m[1]};return{away:'',home:''}}
 function starterFromExplicitJsonSources(sources,side,team){let found='';if(!team)return '';const sideWords=side==='away'?/(away|visitor|원정)/i:/(home|홈)/i;for(const source of sources){if(found)break;walkObj(source,(obj,path)=>{if(found||!obj||typeof obj!=='object'||Array.isArray(obj))return;const pathText=path.join(' ');for(const [k,v] of Object.entries(obj)){if(found)break;if(PITCHER_KEY.test(String(k))&&sideWords.test(String(k)+' '+pathText)){const n=namesFromValue(v).find(x=>x!==team);if(n)found=n}}})}return found}
 function starterFromText(text,team){if(!team)return '';const t=clean(text);const pats=[new RegExp(`${team}.{0,240}선발.{0,140}?([가-힣]{2,5})`),new RegExp(`선발.{0,140}${team}.{0,140}?([가-힣]{2,5})`)];for(const p of pats){const m=t.match(p);if(m&&isName(m[1]))return m[1]}return ''}
-function parsePlayerRow(obj){if(!obj||typeof obj!=='object'||Array.isArray(obj))return null;const name=firstByKey(obj,NAME_KEYS)||namesFromValue(obj)[0]||'';if(!isName(name))return null;const order=Number(firstByKey(obj,ORDER_KEYS));if(!Number.isInteger(order)||order<1||order>9)return null;const position=normalizePosition(obj.positionName||firstByKey(obj,POS_KEYS));const batsThrows=normalizeBat(firstByKey(obj,BAT_KEYS));return{order,name,position,batsThrows}}
+function parsePlayerRow(obj){if(!obj||typeof obj!=='object'||Array.isArray(obj))return null;const base=playerBase(obj);if(!base)return null;const order=Number(firstByKey(obj,ORDER_KEYS));if(!Number.isInteger(order)||order<1||order>9)return null;return{order,...base}}
 function candidateSide(pathText,blob,teams){const p=pathText.toLowerCase();if(p.includes('away')||p.includes('visitor')||p.includes('ateam')||blob.includes(teams.away.team))return 'away';if(p.includes('home')||p.includes('hteam')||blob.includes(teams.home.team))return 'home';return ''}
 function chooseBest(cands){cands.sort((a,b)=>b.score-a.score);return cands[0]?.rows||[]}
-function lineupsFromJsonSources(sources,teams){const cands={away:[],home:[]};for(const source of sources){walkObj(source,(arr,path)=>{if(!Array.isArray(arr)||arr.length<9||arr.length>20)return;const pathText=path.join(' ');const blob=JSON.stringify(arr);const looksLineup=LINEUP_PATH.test(pathText+' '+blob);if(!looksLineup)return;const side=candidateSide(pathText,blob,teams);if(!side)return;const rows=[];const seen=new Set();arr.forEach(x=>{const r=parsePlayerRow(x);if(r&&!seen.has(r.order)&&!rows.some(v=>v.name===r.name)){seen.add(r.order);rows.push(r)}});const orders=rows.map(r=>r.order).sort((a,b)=>a-b).join(',');if(rows.length===9&&orders==='1,2,3,4,5,6,7,8,9'){rows.sort((a,b)=>a.order-b.order);const score=(LINEUP_PATH.test(pathText)?50:0)+rows.filter(r=>r.position).length*4+rows.filter(r=>r.batsThrows).length*2;cands[side].push({score,rows})}})}return{away:chooseBest(cands.away),home:chooseBest(cands.home)}}
+function lineupsFromJsonSources(sources,teams){const cands={away:[],home:[]};for(const source of sources){walkObj(source,(arr,path)=>{if(!Array.isArray(arr)||arr.length<9||arr.length>20)return;const pathText=path.join(' ');const blob=JSON.stringify(arr);const looksLineup=LINEUP_PATH.test(pathText+' '+blob);if(!looksLineup)return;const side=candidateSide(pathText,blob,teams);if(!side)return;const rows=[];const seen=new Set();arr.forEach(x=>{const r=parsePlayerRow(x);if(r&&!seen.has(r.order)&&!rows.some(v=>v.name===r.name)){seen.add(r.order);rows.push(r)}});const orders=rows.map(r=>r.order).sort((a,b)=>a-b).join(',');if(rows.length===9&&orders==='1,2,3,4,5,6,7,8,9'){rows.sort((a,b)=>a.order-b.order);const score=(LINEUP_PATH.test(pathText)?50:0)+rows.filter(r=>r.position).length*4+rows.filter(r=>r.batsThrows).length*2;cands[side].push({score,rows})}})}return{away:chooseBest(cands.away),home:chooseBest(cands.home),reserves:reservesFromJsonSources(sources),starters:startersFromJsonSources(sources)}}
 function startersFromJsonSources(sources){
-  const out={away:{name:'',throws:''},home:{name:'',throws:''}};
+  const out={away:{name:'',throws:'',image:''},home:{name:'',throws:'',image:''}};
   for(const source of sources){
     walkObj(source,(obj)=>{
       if(!obj||typeof obj!=='object'||Array.isArray(obj))return;
@@ -55,11 +58,16 @@ function startersFromJsonSources(sources){
         if(!Array.isArray(full))continue;
         const pitcher=full.find(x=>x&&/\uC120\uBC1C\uD22C\uC218/.test(String(x.positionName||''))&&!Number(x.batorder));
         if(!pitcher)continue;
-        const name=firstByKey(pitcher,NAME_KEYS)||namesFromValue(pitcher)[0]||'';
-        if(isName(name))out[side]={name,throws:normalizeThrow(pitcher.batsThrows||pitcher.hitType)};
+        const player=playerBase(pitcher);
+        if(player)out[side]={name:player.name,throws:player.throws,image:player.image};
       }
     });
   }
+  return out;
+}
+function reservesFromJsonSources(sources){
+  const out={away:{fielders:[],bullpen:[]},home:{fielders:[],bullpen:[]}};
+  for(const source of sources){walkObj(source,(obj)=>{if(!obj||typeof obj!=='object'||Array.isArray(obj))return;for(const side of ['away','home']){const team=obj[`${side}TeamLineUp`];if(!team||typeof team!=='object')continue;const fielders=(Array.isArray(team.batterCandidate)?team.batterCandidate:[]).map(playerBase).filter(Boolean);const bullpen=(Array.isArray(team.pitcherBullpen)?team.pitcherBullpen:[]).map(playerBase).filter(Boolean);if(fielders.length+bullpen.length>out[side].fielders.length+out[side].bullpen.length)out[side]={fielders,bullpen}}})}
   return out;
 }
 function lineupsFromText(text,teams){const out={away:[],home:[]};const t=clean(text);function parse(side,team){if(!team)return[];const idx=t.indexOf(team);const seg=idx>=0?t.slice(idx,idx+5000):t;const rows=[];const seen=new Set();const re=/(?:^|\s)([1-9])\s*(?:번|[.)])?\s*([가-힣]{2,5})\s*(포수|투수|1루수|2루수|3루수|유격수|좌익수|중견수|우익수|지명타자|C|P|1B|2B|3B|SS|LF|CF|RF|DH)?/g;for(const m of seg.matchAll(re)){const order=Number(m[1]),name=m[2];if(order>=1&&order<=9&&isName(name)&&!seen.has(order)&&!rows.some(r=>r.name===name)){seen.add(order);rows.push({order,name,position:normalizePosition(m[3]||'')})}}rows.sort((a,b)=>a.order-b.order);return rows.length>=9?rows.slice(0,9):[]}out.away=parse('away',teams.away.team);out.home=parse('home',teams.home.team);return out}
