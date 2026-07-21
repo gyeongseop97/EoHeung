@@ -11,9 +11,12 @@
   }
   function showLogin(){
     try{if(typeof state!=='undefined'){state.user=null;state.members=[];state.games=[];state.gameMembers=[];state.links=[];state.allGames=[]}}catch(e){}
+    if(typeof window.eoShowAuthRoute==='function'){window.eoShowAuthRoute({rememberRoute:false});return}
     var app=id('appView'),auth=id('authView');
     if(app)app.classList.add('hide');
     if(auth)auth.classList.remove('hide');
+    if(window.location.pathname!=='/login')window.history.replaceState({auth:true},'','/login');
+    document.title='로그인 | 어흥';
     document.body.classList.remove('mobile-menu-open');
     var side=document.querySelector('.sidebar');if(side)side.classList.remove('mobile-menu-open');
     var back=id('mobileMenuBackdrop');if(back)back.classList.remove('show');
