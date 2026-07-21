@@ -21,6 +21,8 @@ SUPABASE_URL = os.environ["SUPABASE_URL"].rstrip("/")
 SERVICE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
 TARGET_YEAR = int(os.environ.get("TARGET_YEAR", date.today().year))
 TARGET_TEAM = os.environ.get("TARGET_TEAM", "SAMSUNG").upper()
+RESULT_SYNC_ONLY = os.environ.get("RESULT_SYNC_ONLY", "").lower() in {"1", "true", "yes"}
+SYNC_TARGET_DATE = os.environ.get("SYNC_TARGET_DATE", "").strip()
 KBO_EN_URL = "https://eng.koreabaseball.com/Schedule/DailySchedule.aspx"
 
 TEAM_MAP = {
@@ -266,6 +268,30 @@ def scrape_english_year():
     return dedupe(all_games)
 
 
+def scrape_english_month(target_date: str):
+    target = date.fromisoformat(target_date)
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
+        page = browser.new_page(locale="en-US")
+        page.goto(KBO_EN_URL, wait_until="networkidle", timeout=45000)
+
+        for _ in range(18):
+            games, page_year, page_month = parse_english_schedule_text(page_body_text(page))
+            current = (page_year, page_month)
+            wanted = (target.year, target.month)
+            if current == wanted:
+                browser.close()
+                print(f"Parsed KBO English result month {page_year}-{page_month:02d}: {len(games)} all games")
+                return dedupe(games)
+            direction = "prev" if current > wanted else "next"
+            if not click_month_nav(page, direction):
+                break
+            time.sleep(0.2)
+
+        browser.close()
+    raise RuntimeError(f"KBO English page could not navigate to result month {target.year}-{target.month:02d}.")
+
+
 def supabase_headers():
     headers = {
         "apikey": SERVICE_KEY,
@@ -297,8 +323,13 @@ def dedupe(rows):
 
 
 def main():
-    print(f"Scraping official KBO English Daily Schedule for TARGET_YEAR={TARGET_YEAR}...")
-    all_games = scrape_english_year()
+    if RESULT_SYNC_ONLY:
+        target_date = SYNC_TARGET_DATE or date.today().isoformat()
+        print(f"Refreshing official KBO results for the month containing {target_date}...")
+        all_games = scrape_english_month(target_date)
+    else:
+        print(f"Scraping official KBO English Daily Schedule for TARGET_YEAR={TARGET_YEAR}...")
+        all_games = scrape_english_year()
     print(f"Collected all KBO games: {len(all_games)}")
     if not all_games:
         raise RuntimeError("No KBO games were collected from the KBO English Daily Schedule page.")
@@ -311,7 +342,7 @@ def main():
     all_count = postgrest_upsert("kbo_all_games", all_games, required=False)
     samsung_count = postgrest_upsert("games", samsung_games, required=True)
     print(f"Done. Upserted {all_count} rows into kbo_all_games and {samsung_count} rows into games.")
-    if len({g['game_date'][:7] for g in all_games}) < 2:
+    if not RESULT_SYNC_ONLY and len({g['game_date'][:7] for g in all_games}) < 2:
         print("WARNING: Only one month was synced. KBO English page did not expose navigable month controls in this run.")
 
 
