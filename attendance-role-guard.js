@@ -1,24 +1,107 @@
 (function(){
-  const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>Array.from(r.querySelectorAll(s));
-  const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
-  const toast=m=>{try{window.toast?window.toast(m):console.warn(m)}catch(e){console.warn(m)}};
-  const me=()=>{try{const u=state.user||{},uid=String(u.id||''),mail=String(u.email||'').toLowerCase();return (state.members||[]).find(x=>String(x.auth_user_id||'')===uid)||(state.members||[]).find(x=>String(x.email||'').toLowerCase()===mail)||null}catch(e){return null}};
-  const role=m=>m?.member_role||'associate';
-  const isAdmin=()=>role(me())==='admin';
-  const isRegular=()=>role(me())==='regular';
-  const byId=id=>(state.members||[]).find(m=>String(m.id)===String(id));
-  const canAttend=id=>{const m=byId(id);return !!m&&(isAdmin()?['regular','admin'].includes(role(m)):(isRegular()&&String(me()?.id)===String(id)))};
-  const ent=(g,m)=>(state.gameMembers||[]).find(x=>String(x.game_id)===String(g)&&String(x.member_id)===String(m));
-  function style(){if($('#eoGuardStyle'))return;const s=document.createElement('style');s.id='eoGuardStyle';s.textContent='.syncbox,#desktopAccountActions,#desktopAccountPanel{display:none!important}.nav button[data-page="settings"]{display:none!important}.check-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px}.check-row label{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.check-row.eo-noauth{display:none!important}.attendance-memo-line{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;gap:6px}.attendance-memo-line textarea{height:30px!important;min-height:28px!important;font-size:12px!important;padding:5px 7px!important}.attendance-memo-line .btn{padding:5px 8px!important;font-size:12px!important}.eo-account-fixed{position:fixed;right:14px;top:12px;z-index:90000;display:flex;gap:8px;background:#fff;border:1px solid #dce5f2;box-shadow:0 8px 22px rgba(4,30,66,.14);padding:8px 10px;border-radius:14px}.eo-account-mail{border:0;background:#fff;color:#475569;font-size:12px;font-weight:800;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:6px 4px;cursor:pointer}.eo-account-out{border:1px solid #fecdd3;background:#fff1f2;color:#be123c;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:900}.eo-account-panel{position:fixed;right:14px;top:62px;width:340px;max-width:calc(100vw - 24px);z-index:90001;background:white;border:1px solid #dce5f2;border-radius:16px;box-shadow:0 24px 70px rgba(15,23,42,.28);padding:16px;display:none}.eo-account-panel.show{display:block}.eo-account-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.eo-account-theme{display:grid;gap:8px;margin-top:10px}.eo-account-theme button{border:1px solid #dce5f2;background:#f8fbff;border-radius:12px;padding:10px;text-align:left;font-weight:900}';document.head.appendChild(s)}
-  function buildAccount(){style();document.querySelectorAll('#desktopAccountActions,#desktopAccountPanel').forEach(x=>x.remove());const sb=$('.syncbox');if(sb){sb.innerHTML='';sb.style.display='none'}const set=$('.nav button[data-page="settings"]');if(set)set.remove();if(!$('#eoAccountFixed')){const b=document.createElement('div');b.id='eoAccountFixed';b.className='eo-account-fixed';b.innerHTML='<button type="button" class="eo-account-mail" id="eoAccountMailBtn">계정</button><button type="button" class="eo-account-out" id="eoAccountOutBtn">로그아웃</button>';document.body.appendChild(b);$('#eoAccountMailBtn').onclick=e=>{e.preventDefault();e.stopPropagation();$('#eoAccountPanel')?.classList.toggle('show')};$('#eoAccountOutBtn').onclick=async()=>{try{await state.client.auth.signOut()}catch(e){location.reload()}}}if(!$('#eoAccountPanel')){const p=document.createElement('div');p.id='eoAccountPanel';p.className='eo-account-panel';p.innerHTML='<h3>내 계정 설정</h3><p id="eoAccountEmailText" style="font-size:12px;color:#68758a"></p><div class="eo-account-grid"><input id="eoAccountName" class="input" placeholder="이름"><input id="eoAccountPhone" class="input" placeholder="전화번호"></div><div style="margin-top:12px;text-align:right"><button type="button" class="btn" id="eoAccountSaveBtn">개인정보 저장</button></div><div style="border-top:1px solid #dce5f2;margin-top:14px;padding-top:14px"><h3>화면 테마</h3><div class="eo-account-theme"><button type="button" data-theme-value="default">기본 대시보드</button><button type="button" data-theme-value="groupware">그룹웨어 느낌</button><button type="button" data-theme-value="excel">엑셀 업무표 느낌</button></div></div>';document.body.appendChild(p);$('#eoAccountSaveBtn').onclick=saveProfile;$$('[data-theme-value]',p).forEach(btn=>btn.onclick=()=>setTheme(btn.dataset.themeValue))}fillAccount()}
-  function fillAccount(){const mail=state.user?.email||'계정';$('#eoAccountMailBtn')&&($('#eoAccountMailBtn').textContent=mail);$('#eoAccountEmailText')&&($('#eoAccountEmailText').textContent='로그인 계정: '+mail);const m=me();if(m){if($('#eoAccountName')&&!$('#eoAccountName').matches(':focus'))$('#eoAccountName').value=m.name||'';if($('#eoAccountPhone')&&!$('#eoAccountPhone').matches(':focus'))$('#eoAccountPhone').value=m.phone||''}}
-  async function saveProfile(){const m=me();if(!m)return toast('연동된 회원 정보를 찾지 못했습니다.');const name=($('#eoAccountName')?.value||'').trim(),phone=($('#eoAccountPhone')?.value||'').trim();if(!name)return toast('이름을 입력해 주세요.');const r=await state.client.from('members').update({name,phone}).eq('id',m.id).select().single();if(r.error)return toast('개인정보 저장 오류: '+r.error.message);Object.assign(m,r.data);toast('개인정보를 저장했습니다.')}
-  function setTheme(v){if(typeof applyTheme==='function')applyTheme(v);else{localStorage.setItem('eoheung_theme',v);document.body.classList.toggle('theme-groupware',v==='groupware');document.body.classList.toggle('theme-excel',v==='excel');state.theme=v}}
-  function addMemo(row,cb){if(row.querySelector('[data-attendance-memo]'))return;const e=ent(cb.dataset.game,cb.dataset.member);const w=document.createElement('div');w.className='attendance-memo-line';w.innerHTML=`<textarea class="input" data-attendance-memo="${cb.dataset.game}|${cb.dataset.member}" placeholder="직관 메모">${esc(e?.memo||'')}</textarea><button class="btn secondary" data-save-attendance-memo="${cb.dataset.game}|${cb.dataset.member}">저장</button>`;row.appendChild(w)}
-  function apply(){style();buildAccount();const root=$('#dateDetail');if(!root)return;$$('.check-row',root).forEach(row=>{const cb=row.querySelector('input[data-game][data-member]');if(!cb)return;const ok=canAttend(cb.dataset.member);row.classList.toggle('eo-noauth',!ok);cb.disabled=!ok;if(ok)addMemo(row,cb)})}
-  async function saveMemo(key){const [game_id,member_id]=key.split('|'),memo=($(`[data-attendance-memo="${key}"]`)?.value||'').trim();if(!canAttend(member_id))return toast('권한이 없습니다.');const r=await state.client.from('game_members').upsert({game_id,member_id,planned:true,attended:true,memo},{onConflict:'game_id,member_id'}).select().single();if(r.error)return toast('메모 저장 오류: '+r.error.message);const old=ent(game_id,member_id);old?Object.assign(old,r.data):state.gameMembers.push(r.data);toast('직관 메모를 저장했습니다.');try{renderDashboard();renderCalendar();renderWatchList();renderRecords()}catch(e){}}
-  function loadScript(id,src){if(document.getElementById(id))return;const s=document.createElement('script');s.id=id;s.src=src;s.defer=true;document.head.appendChild(s)}
-  document.addEventListener('click',e=>{const b=e.target.closest('[data-save-attendance-memo]');if(b){e.preventDefault();e.stopPropagation();saveMemo(b.dataset.saveAttendanceMemo);return}if($('#eoAccountPanel')?.classList.contains('show')&&!e.target.closest('#eoAccountPanel')&&!e.target.closest('#eoAccountFixed'))$('#eoAccountPanel').classList.remove('show')},true);
-  function boot(){loadScript('eoLiveChatScript','live-chat-widget.js?v=9');loadScript('eoDashboardCountFinal','dashboard-count-final.js?v=9');loadScript('eoPhotoFrameWidgetDirect','photo-frame-widget.js?v=13');apply();setTimeout(apply,800);const root=$('#dateDetail');if(root)new MutationObserver(()=>setTimeout(apply,0)).observe(root,{childList:true,subtree:true});setInterval(apply,3000)}
+  const $=(selector,root=document)=>root.querySelector(selector);
+  const $$=(selector,root=document)=>Array.from(root.querySelectorAll(selector));
+  const esc=value=>String(value??'').replace(/[&<>"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[char]));
+  const notify=message=>{try{if(typeof toast==='function')return toast(message)}catch(e){}console.warn(message)};
+
+  function appState(){try{return typeof state!=='undefined'?state:null}catch(e){return null}}
+  function me(){
+    const current=appState();
+    if(!current?.user)return null;
+    const uid=String(current.user.id||'');
+    const email=String(current.user.email||'').toLowerCase();
+    return (current.members||[]).find(member=>String(member.auth_user_id||'')===uid)
+      ||(current.members||[]).find(member=>String(member.email||'').toLowerCase()===email)
+      ||null;
+  }
+  function role(member){return member?.member_role||'associate'}
+  function isAdmin(){return role(me())==='admin'}
+  function isRegular(){return role(me())==='regular'}
+  function memberById(id){return (appState()?.members||[]).find(member=>String(member.id)===String(id))}
+  function canAttend(id){
+    const member=memberById(id);
+    if(!member)return false;
+    if(isAdmin())return ['regular','admin'].includes(role(member));
+    return isRegular()&&String(me()?.id)===String(id);
+  }
+  function attendance(gameId,memberId){return (appState()?.gameMembers||[]).find(item=>String(item.game_id)===String(gameId)&&String(item.member_id)===String(memberId))}
+
+  function style(){
+    if($('#eoGuardStyle'))return;
+    const sheet=document.createElement('style');
+    sheet.id='eoGuardStyle';
+    sheet.textContent='.check-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px}.check-row label{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.check-row.eo-noauth{display:none!important}.attendance-memo-line{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;gap:6px}.attendance-memo-line textarea{height:30px!important;min-height:28px!important;font-size:12px!important;padding:5px 7px!important}.attendance-memo-line .btn{padding:5px 8px!important;font-size:12px!important}';
+    document.head.appendChild(sheet);
+  }
+
+  function removeLegacyAccountPanels(){
+    ['eoAccountFixed','eoAccountPanel','desktopAccountPanel'].forEach(id=>document.getElementById(id)?.remove());
+  }
+
+  function addMemo(row,checkbox){
+    if(row.querySelector('[data-attendance-memo]'))return;
+    const entry=attendance(checkbox.dataset.game,checkbox.dataset.member);
+    const wrapper=document.createElement('div');
+    wrapper.className='attendance-memo-line';
+    wrapper.innerHTML=`<textarea class="input" data-attendance-memo="${checkbox.dataset.game}|${checkbox.dataset.member}" placeholder="직관 메모">${esc(entry?.memo||'')}</textarea><button class="btn secondary" data-save-attendance-memo="${checkbox.dataset.game}|${checkbox.dataset.member}">저장</button>`;
+    row.appendChild(wrapper);
+  }
+
+  function apply(){
+    style();
+    removeLegacyAccountPanels();
+    const root=$('#dateDetail');
+    if(!root)return;
+    $$('.check-row',root).forEach(row=>{
+      const checkbox=row.querySelector('input[data-game][data-member]');
+      if(!checkbox)return;
+      const allowed=canAttend(checkbox.dataset.member);
+      row.classList.toggle('eo-noauth',!allowed);
+      checkbox.disabled=!allowed;
+      if(allowed)addMemo(row,checkbox);
+    });
+  }
+
+  async function saveMemo(key){
+    const current=appState();
+    if(!current?.client)return;
+    const [game_id,member_id]=key.split('|');
+    const memo=($(`[data-attendance-memo="${key}"]`)?.value||'').trim();
+    if(!canAttend(member_id))return notify('권한이 없습니다.');
+    const result=await current.client.from('game_members').upsert({game_id,member_id,planned:true,attended:true,memo},{onConflict:'game_id,member_id'}).select().single();
+    if(result.error)return notify('메모 저장 오류: '+result.error.message);
+    const old=attendance(game_id,member_id);
+    old?Object.assign(old,result.data):current.gameMembers.push(result.data);
+    notify('직관 메모를 저장했습니다.');
+    try{renderDashboard();renderCalendar();renderWatchList();renderRecords()}catch(e){}
+  }
+
+  function loadScript(id,src){
+    if(document.getElementById(id))return;
+    const script=document.createElement('script');
+    script.id=id;
+    script.src=src;
+    script.defer=true;
+    document.head.appendChild(script);
+  }
+
+  document.addEventListener('click',event=>{
+    const button=event.target.closest('[data-save-attendance-memo]');
+    if(!button)return;
+    event.preventDefault();
+    event.stopPropagation();
+    saveMemo(button.dataset.saveAttendanceMemo);
+  },true);
+
+  function boot(){
+    loadScript('eoLiveChatScript','live-chat-widget.js?v=10');
+    loadScript('eoDashboardCountFinal','dashboard-count-final.js?v=9');
+    loadScript('eoPhotoFrameWidgetDirect','photo-frame-widget.js?v=13');
+    apply();
+    setTimeout(apply,800);
+    const root=$('#dateDetail');
+    if(root)new MutationObserver(()=>setTimeout(apply,0)).observe(root,{childList:true,subtree:true});
+    setInterval(apply,3000);
+  }
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',boot):boot();
 })();

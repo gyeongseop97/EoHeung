@@ -28,7 +28,7 @@
   body.theme-excel .sidebar{grid-template-columns:250px minmax(0,1fr)!important;padding-right:235px!important;overflow:visible!important}
   body.theme-groupware .sidebar{grid-template-columns:260px minmax(0,1fr)!important;padding-right:235px!important;overflow:visible!important}
   #desktopAccountActions{position:fixed!important;right:14px!important;top:12px!important;z-index:8000!important;display:flex!important;align-items:center!important;gap:10px!important;margin:0!important;padding:8px 10px!important;border-radius:16px!important;background:rgba(255,255,255,.97)!important;border:1px solid rgba(220,229,242,.95)!important;box-shadow:0 8px 22px rgba(4,30,66,.14)!important;backdrop-filter:blur(10px)!important}
-  #desktopAccountActions .desktop-account-email{display:block!important;max-width:190px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;color:#475569!important;font-size:12px!important;line-height:1!important}
+  #desktopAccountActions .desktop-account-email{display:block!important;max-width:190px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;color:#475569!important;font-size:12px!important;font-weight:850!important;line-height:1!important;border:0!important;background:transparent!important;padding:7px 5px!important;cursor:pointer!important}
   #desktopAccountActions .desktop-account-logout{border:1px solid #fecdd3!important;background:#fff1f2!important;color:#be123c!important;border-radius:12px!important;padding:8px 10px!important;font-size:12px!important;font-weight:900!important;line-height:1!important;box-shadow:none!important;cursor:pointer!important}
   body.theme-excel #desktopAccountActions{top:5px!important;right:10px!important;border-radius:2px!important;background:#fff!important;border:1px solid #b7c9b7!important;box-shadow:none!important;padding:5px 8px!important}
   body.theme-excel #desktopAccountActions .desktop-account-logout{border-radius:2px!important;padding:7px 9px!important}
@@ -49,8 +49,9 @@ body.theme-groupware .link-clock-card{background:#fff!important;color:#111827!im
     if(!box){
       box=document.createElement('div');
       box.id='desktopAccountActions';
-      box.innerHTML='<span class="desktop-account-email"></span><button type="button" class="desktop-account-logout">로그아웃</button>';
+      box.innerHTML='<button type="button" class="desktop-account-email" title="내 설정 열기"></button><button type="button" class="desktop-account-logout">로그아웃</button>';
       document.body.appendChild(box);
+      box.querySelector('.desktop-account-email').addEventListener('click',()=>{if(window.eoSettingsHub?.open)window.eoSettingsHub.open('account');else if(typeof navigateToPage==='function')navigateToPage('settings')});
       box.querySelector('.desktop-account-logout').addEventListener('click',doLogout);
     }
     const email=getEmail();
