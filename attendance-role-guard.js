@@ -95,7 +95,7 @@
 
   function boot(){
     loadScript('eoLiveChatScript','live-chat-widget.js?v=10');
-    loadScript('eoDashboardCountFinal','dashboard-count-final.js?v=9');
+    loadScript('eoDashboardCountFinal','dashboard-count-final.js?v=10');
     loadScript('eoPhotoFrameWidgetDirect','photo-frame-widget.js?v=13');
     apply();
     setTimeout(apply,800);

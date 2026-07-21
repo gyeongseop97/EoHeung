@@ -1,6 +1,6 @@
 {
   "date": "2026-07-21",
-  "updatedAt": "2026-07-21T08:22:35.110Z",
+  "updatedAt": "2026-07-21T09:06:09.497Z",
   "gameId": "20260721SSWO02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-21",
   "sourcePreview": "https://m.sports.naver.com/game/20260721SSWO02026/preview",
@@ -11,129 +11,131 @@
     "https://api-gw.sports.naver.com/schedule/games/20260721SSWO02026/preview",
     "https://api-gw.sports.naver.com/schedule/games/20260721SSWO02026/record"
   ],
-  "message": "네이버 스포츠 기준 자동 수집 (naver-schedule-api)",
+  "message": "네이버 스포츠 라인업 기준 자동 수집 (naver-schedule-api)",
   "away": {
     "code": "SS",
     "team": "삼성",
-    "starter": "최원태"
+    "starter": "최원태",
+    "starterThrows": "우투"
   },
   "home": {
     "code": "WO",
     "team": "키움",
-    "starter": "배동현"
+    "starter": "배동현",
+    "starterThrows": "우투"
   },
   "lineupReady": true,
   "lineups": {
     "away": [
       {
         "order": 1,
-        "name": "강민호",
-        "position": "2",
-        "explicitOrder": false
+        "name": "김지찬",
+        "position": "중견수",
+        "batsThrows": "좌타"
       },
       {
         "order": 2,
-        "name": "김도환",
-        "position": "2",
-        "explicitOrder": false
+        "name": "김성윤",
+        "position": "우익수",
+        "batsThrows": "좌타"
       },
       {
         "order": 3,
-        "name": "장승현",
-        "position": "2",
-        "explicitOrder": false
+        "name": "구자욱",
+        "position": "좌익수",
+        "batsThrows": "좌타"
       },
       {
         "order": 4,
-        "name": "디아즈",
-        "position": "3",
-        "explicitOrder": false
+        "name": "최형우",
+        "position": "지명타자",
+        "batsThrows": "좌타"
       },
       {
         "order": 5,
-        "name": "류지혁",
-        "position": "4",
-        "explicitOrder": false
+        "name": "디아즈",
+        "position": "1루수",
+        "batsThrows": "좌타"
       },
       {
         "order": 6,
-        "name": "전병우",
-        "position": "5",
-        "explicitOrder": false
+        "name": "류지혁",
+        "position": "2루수",
+        "batsThrows": "좌타"
       },
       {
         "order": 7,
-        "name": "김영웅",
-        "position": "5",
-        "explicitOrder": false
+        "name": "강민호",
+        "position": "포수",
+        "batsThrows": "우타"
       },
       {
         "order": 8,
-        "name": "이재현",
-        "position": "6",
-        "explicitOrder": false
+        "name": "김영웅",
+        "position": "3루수",
+        "batsThrows": "좌타"
       },
       {
         "order": 9,
-        "name": "양우현",
-        "position": "6",
-        "explicitOrder": false
+        "name": "이재현",
+        "position": "유격수",
+        "batsThrows": "우타"
       }
     ],
     "home": [
       {
         "order": 1,
-        "name": "김선기",
-        "position": "1",
-        "explicitOrder": false
+        "name": "서건창",
+        "position": "2루수",
+        "batsThrows": "좌타"
       },
       {
         "order": 2,
-        "name": "김성민",
-        "position": "1",
-        "explicitOrder": false
+        "name": "추재현",
+        "position": "좌익수",
+        "batsThrows": "좌타"
       },
       {
         "order": 3,
-        "name": "박정훈",
-        "position": "1",
-        "explicitOrder": false
+        "name": "데이비슨",
+        "position": "1루수",
+        "batsThrows": "우타"
       },
       {
         "order": 4,
-        "name": "박준현",
-        "position": "1",
-        "explicitOrder": false
+        "name": "히우라",
+        "position": "지명타자",
+        "batsThrows": "우타"
       },
       {
         "order": 5,
-        "name": "박지성",
-        "position": "1",
-        "explicitOrder": false
+        "name": "임병욱",
+        "position": "중견수",
+        "batsThrows": "좌타"
       },
       {
         "order": 6,
-        "name": "안우진",
-        "position": "1",
-        "explicitOrder": false
+        "name": "박찬혁",
+        "position": "우익수",
+        "batsThrows": "우타"
       },
       {
         "order": 7,
-        "name": "알칸타라",
-        "position": "1",
-        "explicitOrder": false
+        "name": "김웅빈",
+        "position": "3루수",
+        "batsThrows": "좌타"
       },
       {
         "order": 8,
-        "name": "원종현",
-        "position": "1",
-        "explicitOrder": false
+        "name": "김건희",
+        "position": "포수",
+        "batsThrows": "우타"
       },
       {
         "order": 9,
-        "name": "유토",
-        "position": "1",
-        "explicitOrder": false
+        "name": "권혁빈",
+        "position": "유격수",
+        "batsThrows": "우타"
       }
     ]
   }
