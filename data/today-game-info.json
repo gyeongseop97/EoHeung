@@ -1,6 +1,6 @@
 {
   "date": "2026-07-21",
-  "updatedAt": "2026-07-21T05:47:17.880Z",
+  "updatedAt": "2026-07-21T08:22:35.110Z",
   "gameId": "20260721SSWO02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-21",
   "sourcePreview": "https://m.sports.naver.com/game/20260721SSWO02026/preview",
@@ -22,9 +22,119 @@
     "team": "키움",
     "starter": "배동현"
   },
-  "lineupReady": false,
+  "lineupReady": true,
   "lineups": {
-    "away": [],
-    "home": []
+    "away": [
+      {
+        "order": 1,
+        "name": "강민호",
+        "position": "2",
+        "explicitOrder": false
+      },
+      {
+        "order": 2,
+        "name": "김도환",
+        "position": "2",
+        "explicitOrder": false
+      },
+      {
+        "order": 3,
+        "name": "장승현",
+        "position": "2",
+        "explicitOrder": false
+      },
+      {
+        "order": 4,
+        "name": "디아즈",
+        "position": "3",
+        "explicitOrder": false
+      },
+      {
+        "order": 5,
+        "name": "류지혁",
+        "position": "4",
+        "explicitOrder": false
+      },
+      {
+        "order": 6,
+        "name": "전병우",
+        "position": "5",
+        "explicitOrder": false
+      },
+      {
+        "order": 7,
+        "name": "김영웅",
+        "position": "5",
+        "explicitOrder": false
+      },
+      {
+        "order": 8,
+        "name": "이재현",
+        "position": "6",
+        "explicitOrder": false
+      },
+      {
+        "order": 9,
+        "name": "양우현",
+        "position": "6",
+        "explicitOrder": false
+      }
+    ],
+    "home": [
+      {
+        "order": 1,
+        "name": "김선기",
+        "position": "1",
+        "explicitOrder": false
+      },
+      {
+        "order": 2,
+        "name": "김성민",
+        "position": "1",
+        "explicitOrder": false
+      },
+      {
+        "order": 3,
+        "name": "박정훈",
+        "position": "1",
+        "explicitOrder": false
+      },
+      {
+        "order": 4,
+        "name": "박준현",
+        "position": "1",
+        "explicitOrder": false
+      },
+      {
+        "order": 5,
+        "name": "박지성",
+        "position": "1",
+        "explicitOrder": false
+      },
+      {
+        "order": 6,
+        "name": "안우진",
+        "position": "1",
+        "explicitOrder": false
+      },
+      {
+        "order": 7,
+        "name": "알칸타라",
+        "position": "1",
+        "explicitOrder": false
+      },
+      {
+        "order": 8,
+        "name": "원종현",
+        "position": "1",
+        "explicitOrder": false
+      },
+      {
+        "order": 9,
+        "name": "유토",
+        "position": "1",
+        "explicitOrder": false
+      }
+    ]
   }
 }
