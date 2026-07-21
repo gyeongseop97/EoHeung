@@ -8,6 +8,8 @@
   const SUPABASE_ANON='sb_publishable_NiKj0BxbW3VauGK_kkflbg_OqMXPpCT';
   const EDGE_TIME_URL=SUPABASE_URL+'/functions/v1/ticketlink-time';
   const clockState={offsetMs:0,source:'syncing',rtt:null,lastSync:null,error:'',syncing:false};
+  let menuScrollY=0;
+  let bodyLockState=null;
 
   function isMobileLike(){return window.innerWidth<=900||window.matchMedia('(hover:none) and (pointer:coarse) and (max-width:920px)').matches}
   function safeEsc(s){return String(s??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
@@ -39,6 +41,17 @@
 body.theme-excel .link-clock-card{background:#fff!important;color:#111827!important;border:1px solid #70ad47!important;border-radius:0!important;box-shadow:none!important;min-height:142px!important}.theme-excel .link-clock-card::before{content:'SERVER TIME';position:absolute;top:0;left:0;right:0;height:28px;background:#217346;color:#fff;font-size:12px;font-weight:900;display:flex;align-items:center;padding-left:10px}.theme-excel .link-clock-card::after{display:none}.theme-excel .link-clock-title{color:#185c37!important;margin-top:22px}.theme-excel .link-clock-title .sync-state{background:#e2f0d9;color:#185c37}.theme-excel .link-clock-sub{color:#548235!important}.theme-excel .link-clock-time{color:#111827!important}.theme-excel .link-clock-time .link-clock-sec{color:#217346!important}.theme-excel .link-clock-actions a,.theme-excel .link-clock-actions button{border-radius:0!important;background:#fff!important;color:#185c37!important;border:1px solid #70ad47!important}.theme-excel .link-clock-actions a.primary{background:#217346!important;color:#fff!important}
 body.theme-groupware .link-clock-card{background:#fff!important;color:#111827!important;border:1px solid #c7d8ea!important;border-radius:0!important;box-shadow:0 1px 4px rgba(0,0,0,.12)!important;min-height:142px!important}.theme-groupware .link-clock-card::after{background:rgba(23,78,166,.08)}.theme-groupware .link-clock-title{color:#111827!important}.theme-groupware .link-clock-title .sync-state{background:#eaf3ff;color:#174ea6}.theme-groupware .link-clock-sub{color:#64748b!important}.theme-groupware .link-clock-time{color:#0f172a!important}.theme-groupware .link-clock-time .link-clock-sec{color:#174ea6!important}.theme-groupware .link-clock-actions a,.theme-groupware .link-clock-actions button{border-radius:2px!important;background:#fff!important;color:#174ea6!important;border:1px solid #c7d8ea!important}.theme-groupware .link-clock-actions a.primary{background:#174ea6!important;color:#fff!important}.quick-link-card{display:grid;gap:12px}.quick-link-main h3{margin:0 0 6px}.quick-link-actions{display:flex;gap:8px;justify-content:flex-end;align-items:center}.quick-link-open,.quick-link-delete{padding:8px 11px!important;font-size:12px!important}
 @media(max-width:900px){.syncbox{display:none!important}#desktopAccountActions{display:none!important}.topbar>.toolbar{display:none!important}.link-clock-card{min-height:128px!important;padding:14px!important}.link-clock-title{font-size:14px!important}.link-clock-time{font-size:clamp(40px,13vw,62px)!important}.link-clock-actions a,.link-clock-actions button{min-height:34px!important;flex:1!important}}
+@media(max-width:768px),(hover:none) and (pointer:coarse) and (max-width:920px){
+  html.mobile-menu-open,body.mobile-menu-open{overflow:hidden!important;overscroll-behavior:none!important}
+  body.mobile-menu-open{width:100%!important}
+  .sidebar,body.theme-excel .sidebar,body.theme-groupware .sidebar{position:fixed!important;top:0!important;left:0!important;right:0!important}
+  .nav,body.theme-excel .nav,body.theme-groupware .nav{top:64px!important;height:calc(100vh - 64px)!important;height:calc(100dvh - 64px)!important;max-height:calc(100dvh - 64px)!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important}
+  .mobile-menu-backdrop{touch-action:none!important;overscroll-behavior:none!important}
+  .mobile-menu-toggle span{transform-origin:center!important;transition:transform .2s ease,opacity .15s ease!important}
+  .sidebar.mobile-menu-open .mobile-menu-toggle span:nth-child(1){transform:translateY(8px) rotate(45deg)!important}
+  .sidebar.mobile-menu-open .mobile-menu-toggle span:nth-child(2){opacity:0!important}
+  .sidebar.mobile-menu-open .mobile-menu-toggle span:nth-child(3){transform:translateY(-8px) rotate(-45deg)!important}
+}
 `;
     if(!style){style=document.createElement('style');style.id='eoheungLayoutFixStyle';document.head.appendChild(style)}
     if(style.textContent!==css)style.textContent=css;
@@ -64,12 +77,51 @@ body.theme-groupware .link-clock-card{background:#fff!important;color:#111827!im
     const sidebar=$('.sidebar'); const nav=$('.nav'); if(!sidebar||!nav)return;
     if(!byId('mobileMenuBackdrop')){const backdrop=document.createElement('div');backdrop.id='mobileMenuBackdrop';backdrop.className='mobile-menu-backdrop';document.body.appendChild(backdrop);backdrop.addEventListener('click',closeMenu)}
     let btn=byId('mobileMenuToggle');
-    if(!btn){btn=document.createElement('button');btn.id='mobileMenuToggle';btn.className='mobile-menu-toggle';btn.type='button';btn.setAttribute('aria-label','메뉴 열기');btn.setAttribute('aria-expanded','false');btn.innerHTML='<span></span><span></span><span></span>';btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const open=!sidebar.classList.contains('mobile-menu-open');sidebar.classList.toggle('mobile-menu-open',open);document.body.classList.toggle('mobile-menu-open',open);btn.setAttribute('aria-expanded',open?'true':'false')})}
+    if(!nav.id)nav.id='mobileDrawerNav';
+    if(!btn){btn=document.createElement('button');btn.id='mobileMenuToggle';btn.className='mobile-menu-toggle';btn.type='button';btn.setAttribute('aria-label','메뉴 열기');btn.setAttribute('aria-controls',nav.id);btn.setAttribute('aria-expanded','false');btn.innerHTML='<span></span><span></span><span></span>';btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();setMenuOpen(!sidebar.classList.contains('mobile-menu-open'))})}
     sidebar.appendChild(btn);
     let footer=byId('mobileDrawerFooter');
     if(!footer){footer=document.createElement('div');footer.id='mobileDrawerFooter';footer.className='mobile-drawer-footer';footer.innerHTML='<div class="mobile-drawer-user">로그인 계정</div><button type="button" class="mobile-logout-btn">로그아웃</button>';nav.appendChild(footer);footer.querySelector('.mobile-logout-btn').addEventListener('click',e=>{e.preventDefault();closeMenu();doLogout()})}
     const user=footer.querySelector('.mobile-drawer-user'); if(user)user.textContent=getEmail()||'로그인 계정';
     nav.querySelectorAll('button[data-page]').forEach(button=>button.addEventListener('click',closeMenu));
+  }
+
+  function lockBackgroundScroll(){
+    if(bodyLockState)return;
+    menuScrollY=window.scrollY||window.pageYOffset||0;
+    bodyLockState={position:document.body.style.position,top:document.body.style.top,left:document.body.style.left,right:document.body.style.right,width:document.body.style.width,overflow:document.body.style.overflow};
+    document.body.style.position='fixed';
+    document.body.style.top=`-${menuScrollY}px`;
+    document.body.style.left='0';
+    document.body.style.right='0';
+    document.body.style.width='100%';
+    document.body.style.overflow='hidden';
+  }
+
+  function unlockBackgroundScroll(){
+    if(!bodyLockState)return;
+    const saved=bodyLockState;
+    bodyLockState=null;
+    document.body.style.position=saved.position;
+    document.body.style.top=saved.top;
+    document.body.style.left=saved.left;
+    document.body.style.right=saved.right;
+    document.body.style.width=saved.width;
+    document.body.style.overflow=saved.overflow;
+    const restoreY=menuScrollY;
+    requestAnimationFrame(()=>window.scrollTo(0,restoreY));
+  }
+
+  function setMenuOpen(open){
+    const sidebar=$('.sidebar');
+    const btn=byId('mobileMenuToggle');
+    if(!sidebar)return;
+    const shouldOpen=Boolean(open&&isMobileLike());
+    sidebar.classList.toggle('mobile-menu-open',shouldOpen);
+    document.body.classList.toggle('mobile-menu-open',shouldOpen);
+    document.documentElement.classList.toggle('mobile-menu-open',shouldOpen);
+    if(btn){btn.setAttribute('aria-expanded',shouldOpen?'true':'false');btn.setAttribute('aria-label',shouldOpen?'메뉴 닫기':'메뉴 열기')}
+    if(shouldOpen)lockBackgroundScroll();else unlockBackgroundScroll();
   }
 
   function enhanceScheduleControls(){
@@ -130,8 +182,8 @@ body.theme-groupware .link-clock-card{background:#fff!important;color:#111827!im
     if(!window.__ticketlinkSyncInterval)window.__ticketlinkSyncInterval=setInterval(()=>syncTicketlinkServerTime(false),15000);
     setTimeout(()=>{try{enhancedRenderLinks();syncTicketlinkServerTime(true)}catch(e){}},250);
   }
-  function closeMenu(){const sidebar=$('.sidebar');const btn=byId('mobileMenuToggle'); if(sidebar)sidebar.classList.remove('mobile-menu-open'); document.body.classList.remove('mobile-menu-open'); if(btn)btn.setAttribute('aria-expanded','false')}
+  function closeMenu(){setMenuOpen(false)}
   function runFixes(){injectStyle(); ensureDesktopAccount(); ensureMobileDrawer(); enhanceScheduleControls(); installQuickLinkFeatures(); updateLinkClock()}
-  function init(){runFixes(); setInterval(runFixes,1000); window.addEventListener('resize',()=>{runFixes(); if(!isMobileLike())closeMenu()}); document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()})}
+  function init(){runFixes(); setInterval(runFixes,1000); window.addEventListener('resize',()=>{runFixes(); if(!isMobileLike())closeMenu()}); document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});document.addEventListener('touchmove',e=>{const insideMenu=e.target instanceof Element&&e.target.closest('.nav');if(document.body.classList.contains('mobile-menu-open')&&!insideMenu)e.preventDefault()},{passive:false});window.eoCloseMobileMenu=closeMenu}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init); else init();
 })();
