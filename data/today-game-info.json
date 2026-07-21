@@ -1,6 +1,6 @@
 {
   "date": "2026-07-21",
-  "updatedAt": "2026-07-21T09:20:19.536Z",
+  "updatedAt": "2026-07-21T10:37:48.326Z",
   "gameId": "20260721SSWO02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-21",
   "sourcePreview": "https://m.sports.naver.com/game/20260721SSWO02026/preview",
@@ -196,20 +196,20 @@
       "away": {
         "fielders": [
           {
-            "name": "장승현",
-            "playerCode": "63202",
-            "position": "포수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/63202.jpg"
-          },
-          {
             "name": "김도환",
             "playerCode": "69442",
             "position": "포수",
             "batsThrows": "우타",
             "throws": "우투",
             "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/69442.jpg"
+          },
+          {
+            "name": "장승현",
+            "playerCode": "63202",
+            "position": "포수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/63202.jpg"
           },
           {
             "name": "전병우",
@@ -386,20 +386,20 @@
             "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/79608.jpg"
           },
           {
-            "name": "여동욱",
-            "playerCode": "55393",
-            "position": "3루수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/55393.jpg"
-          },
-          {
             "name": "최재영",
             "playerCode": "56338",
             "position": "3루수",
             "batsThrows": "우타",
             "throws": "우투",
             "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/56338.jpg"
+          },
+          {
+            "name": "여동욱",
+            "playerCode": "55393",
+            "position": "3루수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/55393.jpg"
           },
           {
             "name": "이형종",
