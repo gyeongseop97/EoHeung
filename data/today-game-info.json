@@ -1,6 +1,6 @@
 {
   "date": "2026-07-22",
-  "updatedAt": "2026-07-22T07:07:59.228Z",
+  "updatedAt": "2026-07-22T09:57:14.270Z",
   "gameId": "20260722SSWO02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-22",
   "sourcePreview": "https://m.sports.naver.com/game/20260722SSWO02026/preview",
@@ -24,18 +24,506 @@
     "starter": "알칸타라",
     "starterThrows": ""
   },
-  "lineupReady": false,
+  "lineupReady": true,
   "lineups": {
-    "away": [],
-    "home": [],
+    "away": [
+      {
+        "order": 1,
+        "name": "김지찬",
+        "playerCode": "50458",
+        "position": "중견수",
+        "batsThrows": "좌타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/50458.jpg"
+      },
+      {
+        "order": 2,
+        "name": "김성윤",
+        "playerCode": "67449",
+        "position": "우익수",
+        "batsThrows": "좌타",
+        "throws": "좌투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/67449.jpg"
+      },
+      {
+        "order": 3,
+        "name": "구자욱",
+        "playerCode": "62404",
+        "position": "좌익수",
+        "batsThrows": "좌타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/62404.jpg"
+      },
+      {
+        "order": 4,
+        "name": "최형우",
+        "playerCode": "72443",
+        "position": "지명타자",
+        "batsThrows": "좌타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/72443.jpg"
+      },
+      {
+        "order": 5,
+        "name": "디아즈",
+        "playerCode": "54400",
+        "position": "1루수",
+        "batsThrows": "좌타",
+        "throws": "좌투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/54400.jpg"
+      },
+      {
+        "order": 6,
+        "name": "류지혁",
+        "playerCode": "62234",
+        "position": "2루수",
+        "batsThrows": "좌타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/62234.jpg"
+      },
+      {
+        "order": 7,
+        "name": "이재현",
+        "playerCode": "52415",
+        "position": "유격수",
+        "batsThrows": "우타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/52415.jpg"
+      },
+      {
+        "order": 8,
+        "name": "김영웅",
+        "playerCode": "52430",
+        "position": "3루수",
+        "batsThrows": "좌타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/52430.jpg"
+      },
+      {
+        "order": 9,
+        "name": "김도환",
+        "playerCode": "69442",
+        "position": "포수",
+        "batsThrows": "우타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/69442.jpg"
+      }
+    ],
+    "home": [
+      {
+        "order": 1,
+        "name": "서건창",
+        "playerCode": "78168",
+        "position": "2루수",
+        "batsThrows": "좌타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/78168.jpg"
+      },
+      {
+        "order": 2,
+        "name": "추재현",
+        "playerCode": "68362",
+        "position": "중견수",
+        "batsThrows": "좌타",
+        "throws": "좌투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/68362.jpg"
+      },
+      {
+        "order": 3,
+        "name": "데이비슨",
+        "playerCode": "54944",
+        "position": "1루수",
+        "batsThrows": "우타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/54944.jpg"
+      },
+      {
+        "order": 4,
+        "name": "히우라",
+        "playerCode": "56305",
+        "position": "좌익수",
+        "batsThrows": "우타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/56305.jpg"
+      },
+      {
+        "order": 5,
+        "name": "김웅빈",
+        "playerCode": "65898",
+        "position": "지명타자",
+        "batsThrows": "좌타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/65898.jpg"
+      },
+      {
+        "order": 6,
+        "name": "박찬혁",
+        "playerCode": "52348",
+        "position": "우익수",
+        "batsThrows": "우타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/52348.jpg"
+      },
+      {
+        "order": 7,
+        "name": "김건희",
+        "playerCode": "53312",
+        "position": "포수",
+        "batsThrows": "우타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/53312.jpg"
+      },
+      {
+        "order": 8,
+        "name": "권혁빈",
+        "playerCode": "55371",
+        "position": "유격수",
+        "batsThrows": "우타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/55371.jpg"
+      },
+      {
+        "order": 9,
+        "name": "여동욱",
+        "playerCode": "55393",
+        "position": "3루수",
+        "batsThrows": "우타",
+        "throws": "우투",
+        "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/55393.jpg"
+      }
+    ],
     "reserves": {
       "away": {
-        "fielders": [],
-        "bullpen": []
+        "fielders": [
+          {
+            "name": "장승현",
+            "playerCode": "63202",
+            "position": "포수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/63202.jpg"
+          },
+          {
+            "name": "강민호",
+            "playerCode": "74540",
+            "position": "포수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/74540.jpg"
+          },
+          {
+            "name": "전병우",
+            "playerCode": "65586",
+            "position": "3루수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/65586.jpg"
+          },
+          {
+            "name": "양우현",
+            "playerCode": "69403",
+            "position": "유격수",
+            "batsThrows": "좌타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/69403.jpg"
+          },
+          {
+            "name": "심재훈",
+            "playerCode": "55438",
+            "position": "유격수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/55438.jpg"
+          },
+          {
+            "name": "김헌곤",
+            "playerCode": "61404",
+            "position": "좌익수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/61404.jpg"
+          },
+          {
+            "name": "김현준",
+            "playerCode": "51417",
+            "position": "중견수",
+            "batsThrows": "좌타",
+            "throws": "좌투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/51417.jpg"
+          }
+        ],
+        "bullpen": [
+          {
+            "name": "김재윤",
+            "playerCode": "65062",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/65062.jpg"
+          },
+          {
+            "name": "김태훈",
+            "playerCode": "62360",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/62360.jpg"
+          },
+          {
+            "name": "미야지",
+            "playerCode": "56415",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/56415.jpg"
+          },
+          {
+            "name": "배찬승",
+            "playerCode": "55455",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/55455.jpg"
+          },
+          {
+            "name": "양창섭",
+            "playerCode": "68415",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/68415.jpg"
+          },
+          {
+            "name": "원태인",
+            "playerCode": "69446",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/69446.jpg"
+          },
+          {
+            "name": "이승민",
+            "playerCode": "50464",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/50464.jpg"
+          },
+          {
+            "name": "이승현",
+            "playerCode": "51454",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/51454.jpg"
+          },
+          {
+            "name": "이승현",
+            "playerCode": "60146",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/60146.jpg"
+          },
+          {
+            "name": "이재희",
+            "playerCode": "51460",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/51460.jpg"
+          },
+          {
+            "name": "임기영",
+            "playerCode": "62754",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/62754.jpg"
+          },
+          {
+            "name": "최원태",
+            "playerCode": "65320",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/65320.jpg"
+          },
+          {
+            "name": "페덱",
+            "playerCode": "56459",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/56459.jpg"
+          }
+        ]
       },
       "home": {
-        "fielders": [],
-        "bullpen": []
+        "fielders": [
+          {
+            "name": "김동헌",
+            "playerCode": "53344",
+            "position": "포수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/53344.jpg"
+          },
+          {
+            "name": "최주환",
+            "playerCode": "76267",
+            "position": "1루수",
+            "batsThrows": "좌타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/76267.jpg"
+          },
+          {
+            "name": "안치홍",
+            "playerCode": "79608",
+            "position": "2루수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/79608.jpg"
+          },
+          {
+            "name": "최재영",
+            "playerCode": "56338",
+            "position": "3루수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/56338.jpg"
+          },
+          {
+            "name": "이형종",
+            "playerCode": "78135",
+            "position": "좌익수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/78135.jpg"
+          },
+          {
+            "name": "박채울",
+            "playerCode": "54303",
+            "position": "중견수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/54303.jpg"
+          },
+          {
+            "name": "임병욱",
+            "playerCode": "64346",
+            "position": "우익수",
+            "batsThrows": "좌타",
+            "throws": "우투",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/64346.jpg"
+          }
+        ],
+        "bullpen": [
+          {
+            "name": "김선기",
+            "playerCode": "66018",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/66018.jpg"
+          },
+          {
+            "name": "김성민",
+            "playerCode": "67828",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/67828.jpg"
+          },
+          {
+            "name": "박정훈",
+            "playerCode": "55394",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/55394.jpg"
+          },
+          {
+            "name": "박준현",
+            "playerCode": "56318",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/56318.jpg"
+          },
+          {
+            "name": "박지성",
+            "playerCode": "56337",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/56337.jpg"
+          },
+          {
+            "name": "안우진",
+            "playerCode": "68341",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/68341.jpg"
+          },
+          {
+            "name": "원종현",
+            "playerCode": "76118",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/76118.jpg"
+          },
+          {
+            "name": "유토",
+            "playerCode": "56348",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/56348.jpg"
+          },
+          {
+            "name": "정다훈",
+            "playerCode": "56345",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/56345.jpg"
+          },
+          {
+            "name": "정현우",
+            "playerCode": "55313",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/55313.jpg"
+          },
+          {
+            "name": "조영건",
+            "playerCode": "69360",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/69360.jpg"
+          },
+          {
+            "name": "최현우",
+            "playerCode": "56312",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/56312.jpg"
+          },
+          {
+            "name": "하영민",
+            "playerCode": "64350",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2026/64350.jpg"
+          }
+        ]
       }
     },
     "starters": {
