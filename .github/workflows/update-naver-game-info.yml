@@ -19,6 +19,6 @@ jobs:
       - run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add data/today-game-info.json
+          git add data/today-game-info.json data/player-images
           git diff --cached --quiet || git commit -m "Update Naver game info cache"
           git push
