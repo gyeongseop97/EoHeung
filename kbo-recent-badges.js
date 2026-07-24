@@ -34,7 +34,7 @@
     const arr=Object.values(rows);arr.forEach(r=>{const denom=r.w+r.l;r.pct=denom?r.w/denom:0});
     arr.sort((a,b)=>b.pct-a.pct||b.w-a.w||a.l-b.l||a.team.localeCompare(b.team));
     const leader=arr[0]||{w:0,l:0};arr.forEach((r,i)=>{r.gb=i?((leader.w-r.w)+(r.l-leader.l))/2:0});
-    arr.forEach(r=>{const res=[];for(let i=gs.length-1;i>=0;i--){const v=result(gs[i],r.team);if(v)res.push(v)}let type=res[0]||'',cnt=0;for(const v of res){if(v===type)cnt++;else break}r.streak=cnt?`${cnt}${label(type)}`:'-';r.recent5=res.slice(0,5).reverse();r.nextOpponent=nextOpp(r.team)});
+    arr.forEach(r=>{const res=[];for(let i=gs.length-1;i>=0;i--){const v=result(gs[i],r.team);if(v)res.push(v)}const decisive=res.filter(v=>v!=='D');let type=decisive[0]||'',cnt=0;for(const v of decisive){if(v===type)cnt++;else break}r.streak=cnt?`${cnt}${label(type)}`:'-';r.recent5=res.slice(0,5).reverse();r.nextOpponent=nextOpp(r.team)});
     let rank=0,prev='';arr.forEach((r,i)=>{const k=`${r.pct.toFixed(3)}|${r.w}|${r.l}`;if(k!==prev)rank=i+1;r.rank=rank;prev=k});return arr;
   }
   function badges(list){return Array.isArray(list)&&list.length?`<div class="recent5-badges">${list.map(v=>`<span class="recent-badge ${cls(v)}">${label(v)}</span>`).join('')}</div>`:'-'}

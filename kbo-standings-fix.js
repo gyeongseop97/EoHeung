@@ -87,8 +87,9 @@
     arr.forEach(r=>{
       const results=[];
       for(let i=games.length-1;i>=0;i--){const res=gameResultFor(games[i],r.team);if(res)results.push(res);}
-      let type=results[0]||'',cnt=0;
-      for(const res of results){if(res===type)cnt++;else break;}
+      const decisiveResults=results.filter(result=>result!=='D');
+      let type=decisiveResults[0]||'',cnt=0;
+      for(const res of decisiveResults){if(res===type)cnt++;else break;}
       r.streak=cnt?`${cnt}${resultLabel(type)}`:'-';
       const last=results.slice(0,5);
       const w=last.filter(x=>x==='W').length,l=last.filter(x=>x==='L').length,d=last.filter(x=>x==='D').length;

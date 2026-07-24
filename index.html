@@ -35,13 +35,13 @@ body.theme-excel .toolbar{gap:6px}
   <script src="eoheung-member-logo-patch.js" defer></script>
   <script src="eoheung-commandments.js" defer></script>
   <script src="kbo-standings-fix.js" defer></script>
-  <script src="kbo-recent-badges.js" defer></script>
+  <script src="kbo-recent-badges.js?v=2" defer></script>
   <script src="ticketlink-clock-fix.js" defer></script>
   <script src="member-permission-control.js?v=2" defer></script>
   <script src="attendance-permission-guard.js" defer></script>
   <script src="attendance-role-guard.js?v=2" defer></script>
   <script src="settings-hub.js?v=1" defer></script>
-  <script src="game-result-auto-refresh.js?v=1" defer></script>
+  <script src="game-result-auto-refresh.js?v=2" defer></script>
 </head>
 <body>
   <div id="authView" class="auth-wrap"><div class="card auth-card"><div class="brand" style="color:var(--text);margin-bottom:14px"><div class="logo" style="background:var(--blue);color:#fff">SL</div><div><h1>Samsung Lions Watch Party Manager</h1><p>Supabase 연동 버전</p></div></div><p>이메일과 비밀번호만 입력해 로그인하시면 됩니다.</p><div class="form-grid"><input id="loginEmail" class="input" placeholder="이메일" type="email" /><input id="loginPassword" class="input" placeholder="비밀번호" type="password" /></div><div class="toolbar" style="margin-top:14px"><button class="btn green" id="signInBtn">로그인</button><button class="btn secondary" id="signUpBtn">회원가입</button></div><p class="note">회원가입이 막혀 있으면 Supabase Dashboard &gt; Authentication에서 사용자를 먼저 생성해 주세요.</p></div></div>
@@ -82,7 +82,7 @@ body.theme-excel .toolbar{gap:6px}
     function teamLogo(team,cls='team-logo'){return TEAM_LOGOS[team]?`<img class="${cls}" src="${TEAM_LOGOS[team]}" alt="${esc(team)}">`:''}
     function gameLabelHtml(g,cls='team-logo sm'){return `${g.home_away==='HOME'?'':teamLogo(g.opponent,cls)}<b>${g.game_time?esc(g.game_time.slice(0,5)):''}</b> ${g.home_away==='HOME'?'vs':'@'} ${esc(g.opponent)} ${g.home_away==='HOME'?teamLogo(g.opponent,cls):''}`}
     function gameChipHtml(g){return `${g.game_time?esc(g.game_time.slice(0,5)):''} ${g.home_away==='HOME'?'vs':'@'} ${esc(g.opponent)} ${g.status==='FINISHED'?scoreText(g):''} ${teamLogo(g.opponent,'team-logo sm')}`}
-    function allGameCardHtml(g){const home=g.home_team,away=g.away_team;const score=g.status==='FINISHED'?` ${g.away_score??''}:${g.home_score??''} `:' : ';return `<div class="mini-row"><b>${esc((g.game_time||'').slice(0,5)||'-')}</b><br><span class="note">${esc(g.stadium||'')}</span><br><b>${esc(away)}</b> ${teamLogo(away,'team-logo sm')}<b>${score}</b>${teamLogo(home,'team-logo sm')} <b>${esc(home)}</b><br><span class="note">${statusText(g.status)}</span></div>`}
+    function allGameCardHtml(g){const home=g.home_team,away=g.away_team;const hasScore=g.away_score!==null&&g.away_score!==undefined&&g.away_score!==''&&g.home_score!==null&&g.home_score!==undefined&&g.home_score!=='';const score=hasScore?` ${g.away_score}:${g.home_score} `:' : ';return `<div class="mini-row"><b>${esc((g.game_time||'').slice(0,5)||'-')}</b><br><span class="note">${esc(g.stadium||'')}</span><br><b>${esc(away)}</b> ${teamLogo(away,'team-logo sm')}<b>${score}</b>${teamLogo(home,'team-logo sm')} <b>${esc(home)}</b><br><span class="note">${statusText(g.status)}</span></div>`}
     function scoreText(g){if(g.samsung_score==null||g.opponent_score==null)return'';return `${g.samsung_score}:${g.opponent_score}`}
     function resultBadge(g){if(g.status==='FINISHED'&&g.result)return `<span class="badge ${g.result}">${g.result==='W'?'승':g.result==='L'?'패':'무'}</span>`;return `<span class="badge ${g.status}">${statusText(g.status)}</span>`}
     function statusText(s){return s==='FINISHED'?'종료':s==='POSTPONED'?'연기/취소':'예정'}
