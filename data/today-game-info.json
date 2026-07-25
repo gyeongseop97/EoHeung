@@ -1,6 +1,6 @@
 {
   "date": "2026-07-25",
-  "updatedAt": "2026-07-25T08:29:25.913Z",
+  "updatedAt": "2026-07-25T10:10:33.151Z",
   "gameId": "20260725SSOB02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-25",
   "sourcePreview": "https://m.sports.naver.com/game/20260725SSOB02026/preview",
@@ -362,20 +362,20 @@
       "home": {
         "fielders": [
           {
-            "name": "김기연",
-            "playerCode": "66112",
-            "position": "포수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/66112.jpg"
-          },
-          {
             "name": "윤준호",
             "playerCode": "53296",
             "position": "포수",
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/53296.jpg"
+          },
+          {
+            "name": "김기연",
+            "playerCode": "66112",
+            "position": "포수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/66112.jpg"
           },
           {
             "name": "강승호",
