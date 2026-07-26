@@ -1,6 +1,6 @@
 {
   "date": "2026-07-26",
-  "updatedAt": "2026-07-26T08:55:01.079Z",
+  "updatedAt": "2026-07-26T10:42:12.584Z",
   "gameId": "20260726SSOB02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-26",
   "sourcePreview": "https://m.sports.naver.com/game/20260726SSOB02026/preview",
@@ -220,20 +220,20 @@
             "image": "data/player-images/65586.jpg"
           },
           {
-            "name": "심재훈",
-            "playerCode": "55438",
-            "position": "유격수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/55438.jpg"
-          },
-          {
             "name": "양우현",
             "playerCode": "69403",
             "position": "유격수",
             "batsThrows": "좌타",
             "throws": "우투",
             "image": "data/player-images/69403.jpg"
+          },
+          {
+            "name": "심재훈",
+            "playerCode": "55438",
+            "position": "유격수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/55438.jpg"
           },
           {
             "name": "김헌곤",
