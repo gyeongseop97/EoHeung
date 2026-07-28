@@ -1,6 +1,6 @@
 {
   "date": "2026-07-28",
-  "updatedAt": "2026-07-28T09:16:02.767Z",
+  "updatedAt": "2026-07-28T11:34:30.144Z",
   "gameId": "20260728HTSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-28",
   "sourcePreview": "https://m.sports.naver.com/game/20260728HTSS02026/preview",
@@ -362,20 +362,20 @@
       "home": {
         "fielders": [
           {
-            "name": "강민호",
-            "playerCode": "74540",
-            "position": "포수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/74540.jpg"
-          },
-          {
             "name": "장승현",
             "playerCode": "63202",
             "position": "포수",
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/63202.jpg"
+          },
+          {
+            "name": "강민호",
+            "playerCode": "74540",
+            "position": "포수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/74540.jpg"
           },
           {
             "name": "전병우",
@@ -477,19 +477,19 @@
           },
           {
             "name": "이승현",
-            "playerCode": "60146",
-            "position": "투수",
-            "batsThrows": "",
-            "throws": "",
-            "image": "data/player-images/60146.jpg"
-          },
-          {
-            "name": "이승현",
             "playerCode": "51454",
             "position": "투수",
             "batsThrows": "",
             "throws": "",
             "image": "data/player-images/51454.jpg"
+          },
+          {
+            "name": "이승현",
+            "playerCode": "60146",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "data/player-images/60146.jpg"
           },
           {
             "name": "이재희",
