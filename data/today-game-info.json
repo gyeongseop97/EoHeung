@@ -1,6 +1,6 @@
 {
   "date": "2026-07-31",
-  "updatedAt": "2026-07-31T08:44:33.499Z",
+  "updatedAt": "2026-07-31T11:27:02.865Z",
   "gameId": "20260731SSLT02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-07-31",
   "sourcePreview": "https://m.sports.naver.com/game/20260731SSLT02026/preview",
@@ -386,14 +386,6 @@
             "image": "data/player-images/52568.jpg"
           },
           {
-            "name": "전민재",
-            "playerCode": "68205",
-            "position": "유격수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/68205.jpg"
-          },
-          {
             "name": "김세민",
             "playerCode": "52514",
             "position": "유격수",
@@ -402,12 +394,12 @@
             "image": "data/player-images/52514.jpg"
           },
           {
-            "name": "김동혁",
-            "playerCode": "52504",
-            "position": "우익수",
-            "batsThrows": "좌타",
-            "throws": "좌투",
-            "image": "data/player-images/52504.jpg"
+            "name": "전민재",
+            "playerCode": "68205",
+            "position": "유격수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/68205.jpg"
           },
           {
             "name": "김한홀",
@@ -416,6 +408,14 @@
             "batsThrows": "좌타",
             "throws": "우투",
             "image": "data/player-images/56595.jpg"
+          },
+          {
+            "name": "김동혁",
+            "playerCode": "52504",
+            "position": "우익수",
+            "batsThrows": "좌타",
+            "throws": "좌투",
+            "image": "data/player-images/52504.jpg"
           }
         ],
         "bullpen": [
