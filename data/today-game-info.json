@@ -1,6 +1,6 @@
 {
   "date": "2026-08-05",
-  "updatedAt": "2026-08-05T08:03:15.914Z",
+  "updatedAt": "2026-08-05T10:59:16.804Z",
   "gameId": "20260805HHSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-05",
   "sourcePreview": "https://m.sports.naver.com/game/20260805HHSS02026/preview",
@@ -310,20 +310,20 @@
             "image": "data/player-images/62234.jpg"
           },
           {
-            "name": "김영웅",
-            "playerCode": "52430",
-            "position": "3루수",
-            "batsThrows": "좌타",
-            "throws": "우투",
-            "image": "data/player-images/52430.jpg"
-          },
-          {
             "name": "전병우",
             "playerCode": "65586",
             "position": "3루수",
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/65586.jpg"
+          },
+          {
+            "name": "김영웅",
+            "playerCode": "52430",
+            "position": "3루수",
+            "batsThrows": "좌타",
+            "throws": "우투",
+            "image": "data/player-images/52430.jpg"
           },
           {
             "name": "심재훈",
