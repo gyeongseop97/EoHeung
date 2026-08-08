@@ -1,6 +1,6 @@
 {
   "date": "2026-08-08",
-  "updatedAt": "2026-08-08T13:42:26.806Z",
+  "updatedAt": "2026-08-08T14:28:28.044Z",
   "gameId": "20260808OBSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-08",
   "sourcePreview": "https://m.sports.naver.com/game/20260808OBSS02026/preview",
@@ -32,14 +32,6 @@
       "away": {
         "fielders": [
           {
-            "name": "양의지",
-            "playerCode": "76232",
-            "position": "포수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/76232.jpg"
-          },
-          {
             "name": "김기연",
             "playerCode": "66112",
             "position": "포수",
@@ -56,6 +48,22 @@
             "image": "data/player-images/53296.jpg"
           },
           {
+            "name": "양의지",
+            "playerCode": "76232",
+            "position": "포수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/76232.jpg"
+          },
+          {
+            "name": "강승호",
+            "playerCode": "63123",
+            "position": "1루수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/63123.jpg"
+          },
+          {
             "name": "오명진",
             "playerCode": "50208",
             "position": "1루수",
@@ -70,14 +78,6 @@
             "batsThrows": "양타",
             "throws": "우투",
             "image": "data/player-images/56236.jpg"
-          },
-          {
-            "name": "강승호",
-            "playerCode": "63123",
-            "position": "1루수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/63123.jpg"
           },
           {
             "name": "이유찬",
@@ -120,14 +120,6 @@
             "image": "data/player-images/64646.jpg"
           },
           {
-            "name": "김민석",
-            "playerCode": "53554",
-            "position": "좌익수",
-            "batsThrows": "좌타",
-            "throws": "우투",
-            "image": "data/player-images/53554.jpg"
-          },
-          {
             "name": "김인태",
             "playerCode": "63257",
             "position": "좌익수",
@@ -136,12 +128,12 @@
             "image": "data/player-images/63257.jpg"
           },
           {
-            "name": "조수행",
-            "playerCode": "66209",
-            "position": "중견수",
+            "name": "김민석",
+            "playerCode": "53554",
+            "position": "좌익수",
             "batsThrows": "좌타",
             "throws": "우투",
-            "image": "data/player-images/66209.jpg"
+            "image": "data/player-images/53554.jpg"
           },
           {
             "name": "정수빈",
@@ -150,6 +142,14 @@
             "batsThrows": "좌타",
             "throws": "좌투",
             "image": "data/player-images/79231.jpg"
+          },
+          {
+            "name": "조수행",
+            "playerCode": "66209",
+            "position": "중견수",
+            "batsThrows": "좌타",
+            "throws": "우투",
+            "image": "data/player-images/66209.jpg"
           },
           {
             "name": "김대한",
@@ -457,19 +457,19 @@
           },
           {
             "name": "이승현",
-            "playerCode": "60146",
-            "position": "투수",
-            "batsThrows": "",
-            "throws": "",
-            "image": "data/player-images/60146.jpg"
-          },
-          {
-            "name": "이승현",
             "playerCode": "51454",
             "position": "투수",
             "batsThrows": "",
             "throws": "",
             "image": "data/player-images/51454.jpg"
+          },
+          {
+            "name": "이승현",
+            "playerCode": "60146",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "data/player-images/60146.jpg"
           },
           {
             "name": "이재익",
