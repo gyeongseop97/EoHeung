@@ -1,22 +1,27 @@
 {
-  "date": "2026-08-10",
-  "updatedAt": "2026-08-10T14:54:31.750Z",
-  "gameId": "",
-  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-10",
-  "sourcePreview": "",
-  "sourceLineup": "",
-  "checkedApis": [],
-  "message": "오늘 삼성 경기 ID를 찾지 못했습니다.",
+  "date": "2026-08-11",
+  "updatedAt": "2026-08-10T15:57:11.164Z",
+  "gameId": "20260811SSHT02026",
+  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-11",
+  "sourcePreview": "https://m.sports.naver.com/game/20260811SSHT02026/preview",
+  "sourceLineup": "https://m.sports.naver.com/game/20260811SSHT02026/lineup",
+  "checkedApis": [
+    "https://api-gw.sports.naver.com/schedule/games/20260811SSHT02026/lineup",
+    "https://api-gw.sports.naver.com/schedule/games/20260811SSHT02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
+    "https://api-gw.sports.naver.com/schedule/games/20260811SSHT02026/preview",
+    "https://api-gw.sports.naver.com/schedule/games/20260811SSHT02026/record"
+  ],
+  "message": "네이버 스포츠 라인업 기준 자동 수집 (naver-schedule-api)",
   "away": {
-    "team": "",
-    "code": "",
-    "starter": "",
+    "code": "SS",
+    "team": "삼성",
+    "starter": "페덱",
     "starterThrows": ""
   },
   "home": {
-    "team": "삼성",
-    "code": "SS",
-    "starter": "",
+    "code": "HT",
+    "team": "KIA",
+    "starter": "올러",
     "starterThrows": ""
   },
   "lineupReady": false,
@@ -35,14 +40,14 @@
     },
     "starters": {
       "away": {
-        "name": "",
+        "name": "페덱",
         "throws": "",
-        "image": ""
+        "image": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/56459.jpg"
       },
       "home": {
-        "name": "",
+        "name": "올러",
         "throws": "",
-        "image": ""
+        "image": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/55633.jpg"
       }
     }
   }
