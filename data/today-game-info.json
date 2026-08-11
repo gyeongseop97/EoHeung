@@ -1,6 +1,6 @@
 {
   "date": "2026-08-11",
-  "updatedAt": "2026-08-11T09:32:58.103Z",
+  "updatedAt": "2026-08-11T10:47:28.743Z",
   "gameId": "20260811SSHT02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-11",
   "sourcePreview": "https://m.sports.naver.com/game/20260811SSHT02026/preview",
@@ -370,20 +370,20 @@
             "image": "data/player-images/68646.jpg"
           },
           {
-            "name": "이호연",
-            "playerCode": "68504",
-            "position": "1루수",
-            "batsThrows": "좌타",
-            "throws": "우투",
-            "image": "data/player-images/68504.jpg"
-          },
-          {
             "name": "윤도현",
             "playerCode": "52667",
             "position": "1루수",
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/52667.jpg"
+          },
+          {
+            "name": "이호연",
+            "playerCode": "68504",
+            "position": "1루수",
+            "batsThrows": "좌타",
+            "throws": "우투",
+            "image": "data/player-images/68504.jpg"
           },
           {
             "name": "정현창",
