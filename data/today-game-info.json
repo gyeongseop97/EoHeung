@@ -1,6 +1,6 @@
 {
   "date": "2026-08-13",
-  "updatedAt": "2026-08-13T09:39:41.728Z",
+  "updatedAt": "2026-08-13T10:58:02.457Z",
   "gameId": "20260813SSHT02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-13",
   "sourcePreview": "https://m.sports.naver.com/game/20260813SSHT02026/preview",
@@ -212,20 +212,20 @@
             "image": "data/player-images/74540.jpg"
           },
           {
-            "name": "박계범",
-            "playerCode": "64468",
-            "position": "유격수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/64468.jpg"
-          },
-          {
             "name": "이재현",
             "playerCode": "52415",
             "position": "유격수",
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/52415.jpg"
+          },
+          {
+            "name": "박계범",
+            "playerCode": "64468",
+            "position": "유격수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/64468.jpg"
           },
           {
             "name": "최형우",
@@ -362,14 +362,6 @@
       "home": {
         "fielders": [
           {
-            "name": "윤도현",
-            "playerCode": "52667",
-            "position": "1루수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/52667.jpg"
-          },
-          {
             "name": "오선우",
             "playerCode": "69636",
             "position": "1루수",
@@ -384,6 +376,14 @@
             "batsThrows": "좌타",
             "throws": "우투",
             "image": "data/player-images/68504.jpg"
+          },
+          {
+            "name": "윤도현",
+            "playerCode": "52667",
+            "position": "1루수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/52667.jpg"
           },
           {
             "name": "정현창",
