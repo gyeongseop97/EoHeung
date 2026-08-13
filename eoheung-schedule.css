@@ -1,0 +1,182 @@
+/* Desktop schedule fit: calendar and attendance panel share one viewport. */
+@media (min-width: 901px) {
+  body #schedule > .toolbar {
+    margin-bottom: 10px !important;
+  }
+
+  body #schedule > .toolbar select,
+  body #schedule > .toolbar .btn {
+    min-height: 36px;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  body #schedule .schedule-layout {
+    grid-template-columns: minmax(270px, 330px) minmax(0, 1fr) !important;
+    gap: 12px !important;
+    align-items: start !important;
+  }
+
+  body #schedule .schedule-layout > div:first-child {
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    min-width: 0;
+    max-height: calc(100vh - 150px);
+    overflow: hidden;
+  }
+
+  body #schedule .schedule-layout > div:first-child > .card.pad {
+    padding: 12px !important;
+  }
+
+  body #schedule #selectedDateTitle {
+    margin: 0 0 8px !important;
+    font-size: 17px !important;
+  }
+
+  body #schedule #dateDetail {
+    max-height: calc(100vh - 385px);
+    overflow: auto;
+    scrollbar-width: thin;
+  }
+
+  body #schedule #dateDetail .card.pad {
+    padding: 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  body #schedule #dateDetail .toolbar {
+    margin-bottom: 8px !important;
+  }
+
+  body #schedule #dateDetail h3 {
+    font-size: 15px !important;
+  }
+
+  body #schedule #dateDetail h4 {
+    margin: 10px 0 7px !important;
+  }
+
+  body #schedule .check-row {
+    min-height: 34px;
+    padding: 6px 9px !important;
+  }
+
+  body #schedule .member-checks {
+    gap: 5px !important;
+  }
+
+  body #schedule .schedule-layout > div:first-child > h3 {
+    margin: 10px 0 4px !important;
+    font-size: 16px !important;
+  }
+
+  body #schedule .schedule-layout > div:first-child > .note {
+    margin: 0 0 7px !important;
+    font-size: 11px !important;
+    line-height: 1.35 !important;
+  }
+
+  body #schedule #gameList {
+    min-height: 0;
+    max-height: none !important;
+    overflow: auto;
+    gap: 6px !important;
+    scrollbar-width: thin;
+  }
+
+  body #schedule .watch-item {
+    padding: 9px !important;
+  }
+
+  body #schedule .schedule-layout > .card:nth-child(2) {
+    min-width: 0 !important;
+    padding: 12px !important;
+  }
+
+  body #schedule .calendar-head {
+    margin-bottom: 7px !important;
+  }
+
+  body #schedule .calendar-head h3 {
+    font-size: 18px !important;
+  }
+
+  body #schedule .calendar-nav-controls {
+    gap: 5px !important;
+  }
+
+  body #schedule .calendar-nav-controls .calendar-nav-btn {
+    min-height: 32px !important;
+    padding: 6px 9px !important;
+    font-size: 12px !important;
+  }
+
+  body #schedule #calendar.calendar {
+    gap: 5px !important;
+  }
+
+  body #schedule #calendar .dow {
+    font-size: 11px !important;
+  }
+
+  body #schedule #calendar .day {
+    min-height: clamp(68px, 9vh, 88px) !important;
+    height: clamp(68px, 9vh, 88px) !important;
+    padding: 5px !important;
+  }
+
+  body #schedule #calendar .day-num {
+    margin-bottom: 3px !important;
+    font-size: 12px !important;
+    line-height: 1.1 !important;
+  }
+
+  body #schedule #calendar .game-chip {
+    min-height: 18px !important;
+    height: 18px !important;
+    max-height: 18px !important;
+    margin: 2px 0 !important;
+    padding: 2px 4px !important;
+    font-size: 10px !important;
+    line-height: 13px !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+  }
+
+  body #schedule #calendar .game-chip .chip-text {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  body #schedule #calendar .game-chip .team-logo {
+    width: 13px !important;
+    height: 13px !important;
+    margin-left: 2px !important;
+  }
+
+  body #schedule #calendar .watch-chip {
+    min-height: 17px !important;
+    max-height: 17px !important;
+    margin-top: 2px !important;
+    padding: 2px 4px !important;
+    font-size: 9px !important;
+    line-height: 12px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 760px) {
+  body #schedule #calendar .day {
+    min-height: 64px !important;
+    height: 64px !important;
+  }
+
+  body #schedule .schedule-layout > div:first-child {
+    max-height: calc(100vh - 130px);
+  }
+}
+

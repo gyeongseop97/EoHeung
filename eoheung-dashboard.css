@@ -145,6 +145,10 @@ body #dashboard .dashboard-grid > .card:hover {
   box-shadow: var(--dash-shadow) !important;
 }
 
+body #dashboard .dashboard-grid > .kbo-standings-card {
+  margin-top: 0 !important;
+}
+
 /* Groupware: preserve the compact square language, improve hierarchy only. */
 body.theme-groupware #dashboard {
   --dash-accent: #245e9e;
