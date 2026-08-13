@@ -12,7 +12,7 @@
   function systemNotificationsEnabled(){return storedBool(SYSTEM_NOTIFICATION_KEY,'Notification'in window&&Notification.permission==='granted')}
   function notificationSettings(){const supported='Notification'in window;return{inApp:inAppNotificationsEnabled(),system:systemNotificationsEnabled(),supported,permission:supported?Notification.permission:'unsupported'}}
   function emitNotificationSettings(){window.dispatchEvent(new CustomEvent('eoheung:chat-notification-settings',{detail:notificationSettings()}))}
-  function c(){if(window.state?.client)return window.state.client;if(!client&&window.supabase)client=window.supabase.createClient(URL,KEY);return client}
+  function c(){if(window.eoheungClient)return window.eoheungClient;if(!client&&window.supabase)client=window.supabase.createClient(URL,KEY);return client}
   function role(m){return m?.member_role||'associate'}
   function canChat(){return role(member)==='regular'||role(member)==='admin'}
   function nameOf(){return member?.name||user?.email?.split('@')[0]||'익명'}

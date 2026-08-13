@@ -34,7 +34,7 @@
     document.querySelectorAll('[data-theme-value]').forEach(btn=>{const v=btn.dataset.themeValue;if(labels[v])btn.textContent=labels[v]});
   }
   function loadScript(id,src){if(document.getElementById(id))return;const s=document.createElement('script');s.id=id;s.src=src;s.defer=true;document.head.appendChild(s)}
-  function loadChat(){loadScript('eoLiveChatScript','live-chat-widget.js?v=10')}
+  function loadChat(){loadScript('eoLiveChatScript','live-chat-widget.js?v=11')}
   function loadPhotoFrame(){loadScript('eoPhotoFrameWidget','photo-frame-widget.js?v=13')}
   function loadScheduleTodayFix(){loadScript('eoScheduleTodayFix','schedule-today-fix.js?v=1')}
   function loadInitialMobileFix(){loadScript('eoInitialMobileFix','initial-load-mobile-fix.js?v=1')}
