@@ -1,0 +1,265 @@
+Exit code: 0
+Wall time: 0.9 seconds
+Output:
+/* Dashboard-only refresh. Keep every rule inside #dashboard. */
+body #dashboard {
+  --dash-accent: #0b57a4;
+  --dash-accent-soft: #eaf3ff;
+  --dash-border: #c8d8e8;
+  --dash-shadow: 0 8px 24px rgba(24, 61, 94, .08);
+  --dash-radius: 16px;
+}
+
+body #dashboard .grid4 {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  margin-bottom: 16px !important;
+}
+
+body #dashboard .grid4 > .metric {
+  position: relative;
+  min-width: 0;
+  min-height: 116px;
+  padding: 17px 18px 16px !important;
+  overflow: hidden;
+  border: 1px solid var(--dash-border) !important;
+  border-radius: var(--dash-radius) !important;
+  background: rgba(255, 255, 255, .96) !important;
+  box-shadow: 0 2px 10px rgba(24, 61, 94, .045) !important;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease !important;
+}
+
+body #dashboard .grid4 > .metric::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--dash-accent);
+}
+
+body #dashboard .grid4 > .metric:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--dash-accent) 48%, var(--dash-border)) !important;
+  box-shadow: var(--dash-shadow) !important;
+}
+
+body #dashboard .grid4 > .metric .label {
+  margin-bottom: 9px !important;
+  color: #5a6b7d !important;
+  font-size: 12px !important;
+  font-weight: 750 !important;
+  letter-spacing: -.01em;
+}
+
+body #dashboard .grid4 > .metric .value {
+  color: #123a69 !important;
+  font-size: clamp(22px, 1.65vw, 29px) !important;
+  font-weight: 850 !important;
+  line-height: 1.15 !important;
+  letter-spacing: -.045em;
+}
+
+body #dashboard .grid4 > .metric .sub {
+  margin-top: 7px !important;
+  color: #718096 !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+body #dashboard .grid4 > .metric.today-game-clickable {
+  cursor: pointer !important;
+}
+
+body #dashboard .grid4 > .metric.today-game-clickable:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--dash-accent) 28%, transparent);
+  outline-offset: 3px;
+}
+
+body #dashboard #eoDashboardRankRow {
+  display: grid !important;
+  grid-template-columns: minmax(300px, 1.18fr) repeat(3, minmax(190px, 1fr)) !important;
+  gap: 14px !important;
+  margin: 0 0 16px !important;
+  align-items: stretch !important;
+}
+
+body #dashboard #eoDashboardRankRow > .card {
+  min-width: 0;
+  min-height: 174px;
+  padding: 17px 18px !important;
+  border: 1px solid var(--dash-border) !important;
+  border-radius: var(--dash-radius) !important;
+  background: rgba(255, 255, 255, .96) !important;
+  box-shadow: 0 2px 10px rgba(24, 61, 94, .045) !important;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease !important;
+}
+
+body #dashboard #eoDashboardRankRow > .card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--dash-accent) 42%, var(--dash-border)) !important;
+  box-shadow: var(--dash-shadow) !important;
+}
+
+body #dashboard #eoDashboardRankRow h3 {
+  margin: 0 0 11px !important;
+  font-size: 15px !important;
+  letter-spacing: -.025em;
+}
+
+body #dashboard #eoDashboardRankRow .rank-list li {
+  padding: 7px 4px !important;
+  border-bottom: 1px solid #e8eff6 !important;
+  transition: background-color .15s ease, padding-left .15s ease;
+}
+
+body #dashboard #eoDashboardRankRow .rank-list li:hover {
+  padding-left: 8px !important;
+  background: var(--dash-accent-soft);
+}
+
+body #dashboard #eoNextWatch {
+  background: linear-gradient(145deg, #0d3f79, #176fc1) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+body #dashboard #eoNextWatch:hover {
+  border-color: transparent !important;
+  box-shadow: 0 12px 28px rgba(11, 87, 164, .22) !important;
+}
+
+body #dashboard #eoNextWatch * {
+  color: inherit;
+}
+
+body #dashboard .dashboard-grid {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+}
+
+body #dashboard .dashboard-grid > .card {
+  grid-column: span 4;
+  min-width: 0;
+  border: 1px solid var(--dash-border) !important;
+  border-radius: var(--dash-radius) !important;
+  background: rgba(255, 255, 255, .97) !important;
+  box-shadow: 0 2px 10px rgba(24, 61, 94, .045) !important;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease !important;
+}
+
+body #dashboard .dashboard-grid > .card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--dash-accent) 42%, var(--dash-border)) !important;
+  box-shadow: var(--dash-shadow) !important;
+}
+
+body #dashboard .dashboard-grid > .card:first-child {
+  grid-column: span 6;
+}
+
+body #dashboard .dashboard-grid > .card:nth-child(2),
+body #dashboard .dashboard-grid > .card:nth-child(3) {
+  grid-column: span 3;
+}
+
+body #dashboard .dashboard-grid > .card:nth-child(n+4) {
+  grid-column: span 12;
+}
+
+/* Groupware: preserve the compact square language, improve hierarchy only. */
+body.theme-groupware #dashboard {
+  --dash-accent: #245e9e;
+  --dash-accent-soft: #edf4fb;
+  --dash-border: #b8cadc;
+  --dash-radius: 5px;
+  --dash-shadow: 0 5px 14px rgba(29, 62, 95, .10);
+}
+
+body.theme-groupware #dashboard .grid4 > .metric,
+body.theme-groupware #dashboard #eoDashboardRankRow > .card,
+body.theme-groupware #dashboard .dashboard-grid > .card {
+  border-radius: 5px !important;
+}
+
+/* Excel: retain the worksheet feel while making interactive areas obvious. */
+body.theme-excel #dashboard,
+body.theme-excel-work #dashboard {
+  --dash-accent: #217346;
+  --dash-accent-soft: #e9f5ee;
+  --dash-border: #b8c9bf;
+  --dash-radius: 3px;
+  --dash-shadow: 0 5px 14px rgba(25, 73, 48, .10);
+}
+
+body.theme-excel #dashboard .grid4 > .metric,
+body.theme-excel #dashboard #eoDashboardRankRow > .card,
+body.theme-excel #dashboard .dashboard-grid > .card,
+body.theme-excel-work #dashboard .grid4 > .metric,
+body.theme-excel-work #dashboard #eoDashboardRankRow > .card,
+body.theme-excel-work #dashboard .dashboard-grid > .card {
+  border-radius: 3px !important;
+}
+
+@media (max-width: 1180px) {
+  body #dashboard .grid4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body #dashboard #eoDashboardRankRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body #dashboard .dashboard-grid > .card,
+  body #dashboard .dashboard-grid > .card:first-child,
+  body #dashboard .dashboard-grid > .card:nth-child(2),
+  body #dashboard .dashboard-grid > .card:nth-child(3) {
+    grid-column: span 6;
+  }
+
+  body #dashboard .dashboard-grid > .card:nth-child(n+4) {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 720px) {
+  body #dashboard .grid4,
+  body #dashboard #eoDashboardRankRow {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  body #dashboard .grid4 > .metric {
+    min-height: 102px;
+    padding: 15px 16px !important;
+  }
+
+  body #dashboard #eoDashboardRankRow > .card {
+    min-height: auto;
+  }
+
+  body #dashboard .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  body #dashboard .dashboard-grid > .card,
+  body #dashboard .dashboard-grid > .card:first-child,
+  body #dashboard .dashboard-grid > .card:nth-child(2),
+  body #dashboard .dashboard-grid > .card:nth-child(3),
+  body #dashboard .dashboard-grid > .card:nth-child(n+4) {
+    grid-column: 1 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body #dashboard .grid4 > .metric,
+  body #dashboard #eoDashboardRankRow > .card,
+  body #dashboard .dashboard-grid > .card,
+  body #dashboard #eoDashboardRankRow .rank-list li {
+    transition: none !important;
+  }
+}
+
