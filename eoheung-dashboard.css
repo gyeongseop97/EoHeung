@@ -130,15 +130,7 @@ body #dashboard #eoNextWatch * {
   color: inherit;
 }
 
-body #dashboard .dashboard-grid {
-  display: grid !important;
-  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
-  gap: 14px !important;
-  align-items: stretch !important;
-}
-
 body #dashboard .dashboard-grid > .card {
-  grid-column: span 4;
   min-width: 0;
   border: 1px solid var(--dash-border) !important;
   border-radius: var(--dash-radius) !important;
@@ -151,19 +143,6 @@ body #dashboard .dashboard-grid > .card:hover {
   transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--dash-accent) 42%, var(--dash-border)) !important;
   box-shadow: var(--dash-shadow) !important;
-}
-
-body #dashboard .dashboard-grid > .card:first-child {
-  grid-column: span 6;
-}
-
-body #dashboard .dashboard-grid > .card:nth-child(2),
-body #dashboard .dashboard-grid > .card:nth-child(3) {
-  grid-column: span 3;
-}
-
-body #dashboard .dashboard-grid > .card:nth-child(n+4) {
-  grid-column: span 12;
 }
 
 /* Groupware: preserve the compact square language, improve hierarchy only. */
@@ -209,16 +188,6 @@ body.theme-excel-work #dashboard .dashboard-grid > .card {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
-  body #dashboard .dashboard-grid > .card,
-  body #dashboard .dashboard-grid > .card:first-child,
-  body #dashboard .dashboard-grid > .card:nth-child(2),
-  body #dashboard .dashboard-grid > .card:nth-child(3) {
-    grid-column: span 6;
-  }
-
-  body #dashboard .dashboard-grid > .card:nth-child(n+4) {
-    grid-column: span 12;
-  }
 }
 
 @media (max-width: 720px) {
@@ -237,18 +206,6 @@ body.theme-excel-work #dashboard .dashboard-grid > .card {
     min-height: auto;
   }
 
-  body #dashboard .dashboard-grid {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
-  }
-
-  body #dashboard .dashboard-grid > .card,
-  body #dashboard .dashboard-grid > .card:first-child,
-  body #dashboard .dashboard-grid > .card:nth-child(2),
-  body #dashboard .dashboard-grid > .card:nth-child(3),
-  body #dashboard .dashboard-grid > .card:nth-child(n+4) {
-    grid-column: 1 !important;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
