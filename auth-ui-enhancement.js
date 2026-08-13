@@ -4,7 +4,7 @@
   const RESET_FLAG='eoheung_password_reset_pending';
   const $=(s,r=document)=>r.querySelector(s);
   let client=null, guardTimer=null;
-  function c(){if(window.state?.client)return window.state.client;if(!client&&window.supabase)client=window.supabase.createClient(URL,KEY);return client}
+  function c(){if(window.eoheungClient)return window.eoheungClient;if(!client&&window.supabase)client=window.supabase.createClient(URL,KEY);return client}
   function toast(m){const el=$('#toast');if(el){const d=document.createElement('div');d.textContent=m;el.appendChild(d);setTimeout(()=>d.remove(),3200)}else alert(m)}
   function setPending(v){try{if(v){localStorage.setItem(RESET_FLAG,'1');sessionStorage.setItem(RESET_FLAG,'1')}else{localStorage.removeItem(RESET_FLAG);sessionStorage.removeItem(RESET_FLAG)}}catch(e){}}
   function hasPending(){try{return localStorage.getItem(RESET_FLAG)==='1'||sessionStorage.getItem(RESET_FLAG)==='1'}catch(e){return false}}

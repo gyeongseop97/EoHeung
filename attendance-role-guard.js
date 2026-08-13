@@ -94,7 +94,7 @@
   },true);
 
   function boot(){
-    loadScript('eoLiveChatScript','live-chat-widget.js?v=10');
+    loadScript('eoLiveChatScript','live-chat-widget.js?v=11');
     loadScript('eoDashboardCountFinal','dashboard-count-final.js?v=10');
     loadScript('eoPhotoFrameWidgetDirect','photo-frame-widget.js?v=13');
     apply();
