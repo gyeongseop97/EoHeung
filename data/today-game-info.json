@@ -1,6 +1,6 @@
 {
   "date": "2026-08-14",
-  "updatedAt": "2026-08-14T09:56:57.329Z",
+  "updatedAt": "2026-08-14T10:57:54.156Z",
   "gameId": "20260814HHSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-14",
   "sourcePreview": "https://m.sports.naver.com/game/20260814HHSS02026/preview",
@@ -485,19 +485,19 @@
           },
           {
             "name": "이승현",
-            "playerCode": "51454",
-            "position": "투수",
-            "batsThrows": "",
-            "throws": "",
-            "image": "data/player-images/51454.jpg"
-          },
-          {
-            "name": "이승현",
             "playerCode": "60146",
             "position": "투수",
             "batsThrows": "",
             "throws": "",
             "image": "data/player-images/60146.jpg"
+          },
+          {
+            "name": "이승현",
+            "playerCode": "51454",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "data/player-images/51454.jpg"
           },
           {
             "name": "임기영",
