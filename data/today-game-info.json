@@ -1,6 +1,6 @@
 {
   "date": "2026-08-15",
-  "updatedAt": "2026-08-15T09:48:42.858Z",
+  "updatedAt": "2026-08-15T10:18:46.286Z",
   "gameId": "20260815HHSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-15",
   "sourcePreview": "https://m.sports.naver.com/game/20260815HHSS02026/preview",
@@ -220,14 +220,6 @@
             "image": "data/player-images/64006.jpg"
           },
           {
-            "name": "김태연",
-            "playerCode": "66704",
-            "position": "좌익수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/66704.jpg"
-          },
-          {
             "name": "최인호",
             "playerCode": "50707",
             "position": "좌익수",
@@ -242,6 +234,14 @@
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/55767.jpg"
+          },
+          {
+            "name": "김태연",
+            "playerCode": "66704",
+            "position": "좌익수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/66704.jpg"
           },
           {
             "name": "이진영",
@@ -362,20 +362,20 @@
       "home": {
         "fielders": [
           {
-            "name": "김도환",
-            "playerCode": "69442",
-            "position": "포수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/69442.jpg"
-          },
-          {
             "name": "장승현",
             "playerCode": "63202",
             "position": "포수",
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/63202.jpg"
+          },
+          {
+            "name": "김도환",
+            "playerCode": "69442",
+            "position": "포수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/69442.jpg"
           },
           {
             "name": "박계범",
@@ -477,19 +477,19 @@
           },
           {
             "name": "이승현",
-            "playerCode": "51454",
-            "position": "투수",
-            "batsThrows": "",
-            "throws": "",
-            "image": "data/player-images/51454.jpg"
-          },
-          {
-            "name": "이승현",
             "playerCode": "60146",
             "position": "투수",
             "batsThrows": "",
             "throws": "",
             "image": "data/player-images/60146.jpg"
+          },
+          {
+            "name": "이승현",
+            "playerCode": "51454",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "data/player-images/51454.jpg"
           },
           {
             "name": "임기영",
