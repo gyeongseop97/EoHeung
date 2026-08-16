@@ -1,6 +1,6 @@
 {
   "date": "2026-08-16",
-  "updatedAt": "2026-08-16T12:31:44.151Z",
+  "updatedAt": "2026-08-16T13:27:37.537Z",
   "gameId": "20260816HHSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-16",
   "sourcePreview": "https://m.sports.naver.com/game/20260816HHSS02026/preview",
@@ -72,20 +72,20 @@
             "image": "data/player-images/65703.jpg"
           },
           {
-            "name": "정은원",
-            "playerCode": "68743",
-            "position": "3루수",
-            "batsThrows": "좌타",
-            "throws": "우투",
-            "image": "data/player-images/68743.jpg"
-          },
-          {
             "name": "노시환",
             "playerCode": "69737",
             "position": "3루수",
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/69737.jpg"
+          },
+          {
+            "name": "정은원",
+            "playerCode": "68743",
+            "position": "3루수",
+            "batsThrows": "좌타",
+            "throws": "우투",
+            "image": "data/player-images/68743.jpg"
           },
           {
             "name": "박정현",
@@ -102,6 +102,14 @@
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/64006.jpg"
+          },
+          {
+            "name": "문현빈",
+            "playerCode": "53764",
+            "position": "좌익수",
+            "batsThrows": "좌타",
+            "throws": "우투",
+            "image": "data/player-images/53764.jpg"
           },
           {
             "name": "김태연",
@@ -128,12 +136,12 @@
             "image": "data/player-images/55767.jpg"
           },
           {
-            "name": "문현빈",
-            "playerCode": "53764",
-            "position": "좌익수",
-            "batsThrows": "좌타",
+            "name": "이진영",
+            "playerCode": "66657",
+            "position": "중견수",
+            "batsThrows": "우타",
             "throws": "우투",
-            "image": "data/player-images/53764.jpg"
+            "image": "data/player-images/66657.jpg"
           },
           {
             "name": "이원석",
@@ -142,14 +150,6 @@
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/68700.jpg"
-          },
-          {
-            "name": "이진영",
-            "playerCode": "66657",
-            "position": "중견수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/66657.jpg"
           },
           {
             "name": "페라자",
