@@ -1,6 +1,6 @@
 {
   "date": "2026-08-18",
-  "updatedAt": "2026-08-18T09:58:49.200Z",
+  "updatedAt": "2026-08-18T10:34:52.207Z",
   "gameId": "20260818SKSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-18",
   "sourcePreview": "https://m.sports.naver.com/game/20260818SKSS02026/preview",
@@ -220,14 +220,6 @@
             "image": "data/player-images/55897.jpg"
           },
           {
-            "name": "임근우",
-            "playerCode": "52807",
-            "position": "우익수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/52807.jpg"
-          },
-          {
             "name": "오태곤",
             "playerCode": "60558",
             "position": "우익수",
@@ -242,6 +234,14 @@
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/69804.jpg"
+          },
+          {
+            "name": "임근우",
+            "playerCode": "52807",
+            "position": "우익수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/52807.jpg"
           }
         ],
         "bullpen": [
@@ -362,20 +362,20 @@
       "home": {
         "fielders": [
           {
-            "name": "김도환",
-            "playerCode": "69442",
-            "position": "포수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/69442.jpg"
-          },
-          {
             "name": "장승현",
             "playerCode": "63202",
             "position": "포수",
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/63202.jpg"
+          },
+          {
+            "name": "김도환",
+            "playerCode": "69442",
+            "position": "포수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/69442.jpg"
           },
           {
             "name": "양우현",
@@ -402,20 +402,20 @@
             "image": "data/player-images/51417.jpg"
           },
           {
-            "name": "김태훈",
-            "playerCode": "65040",
-            "position": "우익수",
-            "batsThrows": "좌타",
-            "throws": "우투",
-            "image": "data/player-images/65040.jpg"
-          },
-          {
             "name": "김성윤",
             "playerCode": "67449",
             "position": "우익수",
             "batsThrows": "좌타",
             "throws": "좌투",
             "image": "data/player-images/67449.jpg"
+          },
+          {
+            "name": "김태훈",
+            "playerCode": "65040",
+            "position": "우익수",
+            "batsThrows": "좌타",
+            "throws": "우투",
+            "image": "data/player-images/65040.jpg"
           }
         ],
         "bullpen": [
