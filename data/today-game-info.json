@@ -1,6 +1,6 @@
 {
   "date": "2026-08-20",
-  "updatedAt": "2026-08-20T09:30:03.984Z",
+  "updatedAt": "2026-08-20T10:02:25.978Z",
   "gameId": "20260820SKSS02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-20",
   "sourcePreview": "https://m.sports.naver.com/game/20260820SKSS02026/preview",
@@ -386,20 +386,20 @@
             "image": "data/player-images/69403.jpg"
           },
           {
-            "name": "김현준",
-            "playerCode": "51417",
-            "position": "중견수",
-            "batsThrows": "좌타",
-            "throws": "좌투",
-            "image": "data/player-images/51417.jpg"
-          },
-          {
             "name": "김지찬",
             "playerCode": "50458",
             "position": "중견수",
             "batsThrows": "좌타",
             "throws": "우투",
             "image": "data/player-images/50458.jpg"
+          },
+          {
+            "name": "김현준",
+            "playerCode": "51417",
+            "position": "중견수",
+            "batsThrows": "좌타",
+            "throws": "좌투",
+            "image": "data/player-images/51417.jpg"
           },
           {
             "name": "김태훈",
@@ -477,19 +477,19 @@
           },
           {
             "name": "이승현",
-            "playerCode": "51454",
-            "position": "투수",
-            "batsThrows": "",
-            "throws": "",
-            "image": "data/player-images/51454.jpg"
-          },
-          {
-            "name": "이승현",
             "playerCode": "60146",
             "position": "투수",
             "batsThrows": "",
             "throws": "",
             "image": "data/player-images/60146.jpg"
+          },
+          {
+            "name": "이승현",
+            "playerCode": "51454",
+            "position": "투수",
+            "batsThrows": "",
+            "throws": "",
+            "image": "data/player-images/51454.jpg"
           },
           {
             "name": "임기영",
