@@ -1,6 +1,6 @@
 {
   "date": "2026-08-22",
-  "updatedAt": "2026-08-22T09:26:16.470Z",
+  "updatedAt": "2026-08-22T09:51:09.826Z",
   "gameId": "20260822SSNC02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-22",
   "sourcePreview": "https://m.sports.naver.com/game/20260822SSNC02026/preview",
@@ -236,20 +236,20 @@
             "image": "data/player-images/51417.jpg"
           },
           {
-            "name": "박승규",
-            "playerCode": "69418",
-            "position": "우익수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/69418.jpg"
-          },
-          {
             "name": "김성윤",
             "playerCode": "67449",
             "position": "우익수",
             "batsThrows": "좌타",
             "throws": "좌투",
             "image": "data/player-images/67449.jpg"
+          },
+          {
+            "name": "박승규",
+            "playerCode": "69418",
+            "position": "우익수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/69418.jpg"
           }
         ],
         "bullpen": [
