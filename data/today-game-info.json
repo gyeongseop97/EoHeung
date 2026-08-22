@@ -1,6 +1,6 @@
 {
   "date": "2026-08-22",
-  "updatedAt": "2026-08-22T08:25:54.527Z",
+  "updatedAt": "2026-08-22T08:56:46.387Z",
   "gameId": "20260822SSNC02026",
   "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-22",
   "sourcePreview": "https://m.sports.naver.com/game/20260822SSNC02026/preview",
@@ -32,6 +32,14 @@
       "away": {
         "fielders": [
           {
+            "name": "강민호",
+            "playerCode": "74540",
+            "position": "포수",
+            "batsThrows": "우타",
+            "throws": "우투",
+            "image": "data/player-images/74540.jpg"
+          },
+          {
             "name": "김재성",
             "playerCode": "65132",
             "position": "포수",
@@ -46,14 +54,6 @@
             "batsThrows": "우타",
             "throws": "우투",
             "image": "data/player-images/69442.jpg"
-          },
-          {
-            "name": "강민호",
-            "playerCode": "74540",
-            "position": "포수",
-            "batsThrows": "우타",
-            "throws": "우투",
-            "image": "data/player-images/74540.jpg"
           },
           {
             "name": "디아즈",
