@@ -9,7 +9,7 @@ on:
       - ".github/workflows/sync-kbo-schedule.yml"
       - "scripts/sync_kbo_schedule.py"
   schedule:
-    - cron: "0 15 * * *"
+    - cron: "0 */6 * * *"
 
 jobs:
   sync:
