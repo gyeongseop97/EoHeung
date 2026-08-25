@@ -7,6 +7,7 @@
   const TERMINAL=new Set(['FINISHED','POSTPONED','CANCELLED']);
   let refreshing=false;
   let realtimeChannel=null;
+  let labelObserver=null;
 
   function startTime(game){
     const date=String(game&&game.game_date||'').slice(0,10);
@@ -69,11 +70,27 @@
     }
   }
 
+  function patchLineupRefreshLabels(){
+    document.querySelectorAll('.lineup-empty,.metric .sub').forEach(el=>{
+      if(el.textContent&&el.textContent.includes('30분마다')){
+        el.textContent=el.textContent.replace(/30분마다/g,'10분마다');
+      }
+    });
+  }
+
+  function installLineupLabelPatch(){
+    patchLineupRefreshLabels();
+    if(labelObserver||typeof MutationObserver==='undefined')return;
+    labelObserver=new MutationObserver(patchLineupRefreshLabels);
+    labelObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
+  }
+
   function install(){
-    setTimeout(()=>{subscribeRealtime();refreshResults(false)},5000);
+    setTimeout(()=>{subscribeRealtime();refreshResults(false);installLineupLabelPatch()},5000);
     setInterval(()=>refreshResults(false),POLL_MS);
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshResults(false)});
-    window.addEventListener('focus',()=>refreshResults(false));
+    setInterval(patchLineupRefreshLabels,POLL_MS);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){refreshResults(false);patchLineupRefreshLabels()}});
+    window.addEventListener('focus',()=>{refreshResults(false);patchLineupRefreshLabels()});
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
