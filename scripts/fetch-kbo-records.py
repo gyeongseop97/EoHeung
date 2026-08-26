@@ -2,14 +2,14 @@ import json
 import re
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 BASE = "https://www.koreabaseball.com"
 URLS = {
-    # Counting-stat sorts deliberately expose the full player pool instead of only rate-stat qualifiers.
+    # Counting-stat sorts expose the full player pool rather than only rate-stat qualifiers.
     "hitter1": f"{BASE}/Record/Player/HitterBasic/Basic1.aspx?sort=TB_CN",
     "hitter2": f"{BASE}/Record/Player/HitterBasic/Basic2.aspx?sort=BB_CN",
     "pitcher": f"{BASE}/Record/Player/PitcherBasic/Basic1.aspx?sort=SV_CN",
@@ -22,7 +22,8 @@ HEADERS = {
     "Referer": f"{BASE}/Record/Player/HitterBasic/Basic1.aspx",
 }
 KST = timezone(timedelta(hours=9))
-MAX_PLAYER_PAGES = 30
+MAX_PLAYER_PAGES = 40
+POSTBACK_RE = re.compile(r"__doPostBack\(['\"]([^'\"]+)['\"],['\"]([^'\"]*)['\"]\)")
 
 
 def clean(value):
@@ -39,11 +40,21 @@ def number(value):
         return s
 
 
-def fetch_html(url):
-    response = requests.get(url, headers=HEADERS, timeout=25)
+def new_session():
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    return session
+
+
+def get_response(session, url):
+    response = session.get(url, timeout=30)
     response.raise_for_status()
     response.encoding = response.apparent_encoding or "utf-8"
-    return response.text
+    return response
+
+
+def fetch_html(url):
+    return get_response(new_session(), url).text
 
 
 def parse_table_html(html, required_headers):
@@ -83,100 +94,112 @@ def row_identity(row):
     return (clean(row.get("선수명")), clean(row.get("팀명")))
 
 
-def wait_after_pager(page):
-    try:
-        page.wait_for_load_state("networkidle", timeout=7000)
-    except PlaywrightTimeoutError:
-        page.wait_for_timeout(1000)
-
-
-def click_exact_page_link(page, page_number):
-    # KBO uses ASP.NET postback pagination. Numeric pager links keep the selected filters/sort.
-    candidates = page.locator('a[href*="__doPostBack"]')
-    for idx in range(candidates.count()):
-        a = candidates.nth(idx)
-        try:
-            if clean(a.inner_text()) == str(page_number) and a.is_visible():
-                a.click(timeout=5000)
-                wait_after_pager(page)
-                return True
-        except Exception:
+def form_payload(soup, event_target, event_argument):
+    form = soup.find("form")
+    if not form:
+        raise RuntimeError("KBO ASP.NET form not found")
+    payload = {}
+    for inp in form.find_all("input"):
+        name = inp.get("name")
+        if not name:
             continue
-    return False
+        typ = (inp.get("type") or "text").lower()
+        if typ in {"submit", "button", "image", "file"}:
+            continue
+        if typ in {"checkbox", "radio"} and not inp.has_attr("checked"):
+            continue
+        payload[name] = inp.get("value", "")
+    for select in form.find_all("select"):
+        name = select.get("name")
+        if not name:
+            continue
+        selected = select.find("option", selected=True) or select.find("option")
+        if selected:
+            payload[name] = selected.get("value", clean(selected.get_text(" ", strip=True)))
+    payload["__EVENTTARGET"] = event_target
+    payload["__EVENTARGUMENT"] = event_argument
+    return form, payload
 
 
-def click_next_pager_group(page):
-    # When the next numeric page is outside the current 1~5 block, KBO exposes an image button named '다음'.
-    selectors = [
-        'a[href*="__doPostBack"]:has(img[alt="다음"])',
-        'a[href*="__doPostBack"]:has(img[alt*="다음"])',
-        'a[href*="__doPostBack"]:has(img[src*="paging_next"])',
-    ]
-    for selector in selectors:
-        links = page.locator(selector)
-        for idx in range(links.count()):
-            link = links.nth(idx)
-            try:
-                if link.is_visible():
-                    link.click(timeout=5000)
-                    wait_after_pager(page)
-                    return True
-            except Exception:
-                continue
-    return False
+def pager_postback(soup, wanted_page):
+    # First prefer an exact numeric page link.
+    for a in soup.find_all("a"):
+        href = a.get("href", "")
+        match = POSTBACK_RE.search(href)
+        if not match:
+            continue
+        if clean(a.get_text(" ", strip=True)) == str(wanted_page):
+            return match.group(1), match.group(2), "number"
+
+    # At 5-page boundaries KBO hides the next number behind the '다음' pager button.
+    for a in soup.find_all("a"):
+        href = a.get("href", "")
+        match = POSTBACK_RE.search(href)
+        if not match:
+            continue
+        img = a.find("img")
+        alt = clean(img.get("alt")) if img else ""
+        src = clean(img.get("src")) if img else ""
+        if "다음" in alt or "paging_next" in src:
+            return match.group(1), match.group(2), "next"
+    return None
 
 
-def fetch_all_player_pages(browser, url, required_headers, label):
-    page = browser.new_page(
-        user_agent=HEADERS["User-Agent"],
-        locale="ko-KR",
-        extra_http_headers={"Accept-Language": HEADERS["Accept-Language"]},
-    )
-    print(f"[{label}] open {url}")
-    page.goto(url, wait_until="domcontentloaded", timeout=45000)
-    wait_after_pager(page)
+def postback(session, current_url, html, event_target, event_argument):
+    soup = BeautifulSoup(html, "html.parser")
+    form, payload = form_payload(soup, event_target, event_argument)
+    action = clean(form.get("action"))
+    post_url = urljoin(current_url, action) if action else current_url
+    response = session.post(post_url, data=payload, timeout=35, headers={**HEADERS, "Referer": current_url})
+    response.raise_for_status()
+    response.encoding = response.apparent_encoding or "utf-8"
+    return response.url or post_url, response.text
 
+
+def fetch_all_player_pages(url, required_headers, label):
+    session = new_session()
+    response = get_response(session, url)
+    current_url, html = response.url, response.text
     collected = {}
-    seen_page_signatures = set()
+    seen_signatures = set()
     page_number = 1
 
-    try:
-        while page_number <= MAX_PLAYER_PAGES:
-            rows = parse_table_html(page.content(), required_headers)
-            if not rows:
-                raise RuntimeError(f"[{label}] record table missing at page {page_number}")
-
-            signature = tuple(row_identity(r) for r in rows)
-            if signature in seen_page_signatures:
-                print(f"[{label}] repeated page detected at {page_number}; stop")
-                break
-            seen_page_signatures.add(signature)
-
-            before = len(collected)
-            for row in rows:
-                key = row_identity(row)
-                if key[0] and key[1]:
-                    collected[key] = row
-            print(f"[{label}] page={page_number} rows={len(rows)} unique={len(collected)} (+{len(collected)-before})")
-
-            target_page = page_number + 1
-            if click_exact_page_link(page, target_page):
-                page_number = target_page
-                continue
-
-            # At page 5/10/15... the next number can be hidden behind the next pager group.
-            if click_next_pager_group(page):
-                page_number = target_page
-                continue
-
+    while page_number <= MAX_PLAYER_PAGES:
+        rows = parse_table_html(html, required_headers)
+        if not rows:
+            raise RuntimeError(f"[{label}] record table missing at page {page_number}")
+        signature = tuple(row_identity(r) for r in rows)
+        if signature in seen_signatures:
+            print(f"[{label}] repeated page at {page_number}; stop")
             break
-    finally:
-        page.close()
+        seen_signatures.add(signature)
+
+        before = len(collected)
+        for row in rows:
+            key = row_identity(row)
+            if key[0] and key[1]:
+                collected[key] = row
+        print(f"[{label}] page={page_number} rows={len(rows)} unique={len(collected)} (+{len(collected)-before})")
+
+        soup = BeautifulSoup(html, "html.parser")
+        target_page = page_number + 1
+        pager = pager_postback(soup, target_page)
+        if not pager:
+            break
+        event_target, event_argument, kind = pager
+        next_url, next_html = postback(session, current_url, html, event_target, event_argument)
+        next_rows = parse_table_html(next_html, required_headers)
+        next_signature = tuple(row_identity(r) for r in next_rows)
+        if not next_rows or next_signature == signature:
+            print(f"[{label}] pager {kind} did not advance after page {page_number}; stop")
+            break
+        current_url, html = next_url, next_html
+        page_number = target_page
 
     if not collected:
         raise RuntimeError(f"[{label}] no player rows collected")
-    print(f"[{label}] completed: {len(collected)} players across {len(seen_page_signatures)} pages")
-    return list(collected.values())
+    print(f"[{label}] completed: players={len(collected)} pages={len(seen_signatures)}")
+    return list(collected.values()), len(seen_signatures)
 
 
 def i(row, key):
@@ -224,15 +247,9 @@ def map_team_pitching(rows):
 
 
 def main():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        try:
-            hitter1 = fetch_all_player_pages(browser, URLS["hitter1"], ["순위", "선수명", "팀명", "AVG", "HR", "RBI"], "hitter-basic1")
-            hitter2 = fetch_all_player_pages(browser, URLS["hitter2"], ["순위", "선수명", "팀명", "OBP", "SLG", "OPS"], "hitter-basic2")
-            pitcher = fetch_all_player_pages(browser, URLS["pitcher"], ["순위", "선수명", "팀명", "ERA", "SV", "HLD", "WHIP"], "pitcher-basic1")
-        finally:
-            browser.close()
-
+    hitter1, hitter1_pages = fetch_all_player_pages(URLS["hitter1"], ["순위", "선수명", "팀명", "AVG", "HR", "RBI"], "hitter-basic1")
+    hitter2, hitter2_pages = fetch_all_player_pages(URLS["hitter2"], ["순위", "선수명", "팀명", "OBP", "SLG", "OPS"], "hitter-basic2")
+    pitcher, pitcher_pages = fetch_all_player_pages(URLS["pitcher"], ["순위", "선수명", "팀명", "ERA", "SV", "HLD", "WHIP"], "pitcher-basic1")
     team_hitting = parse_table(URLS["team_hitting"], ["순위", "팀명", "AVG", "HR", "RBI"])
     team_pitching = parse_table(URLS["team_pitching"], ["순위", "팀명", "ERA", "W", "L"])
 
@@ -243,12 +260,13 @@ def main():
         "updatedAt": now.isoformat(timespec="seconds"),
         "season": now.year,
         "source": "KBO 공식 기록실",
-        "scopeNote": "KBO 1군 정규시즌 기록이 있는 타자·투수 전체 페이지를 순회해 수집합니다.",
+        "scopeNote": "KBO 1군 정규시즌에서 기록이 있는 타자·투수의 전체 페이지를 순회해 수집합니다.",
         "playerCoverage": {
             "hitters": len(hitters),
             "pitchers": len(pitchers),
-            "hitterBasicPages": None,
-            "pitcherBasicPages": None,
+            "hitterBasic1Pages": hitter1_pages,
+            "hitterBasic2Pages": hitter2_pages,
+            "pitcherPages": pitcher_pages,
         },
         "sourceUrls": URLS,
         "hitters": hitters,
@@ -259,7 +277,7 @@ def main():
     target = Path("data/kbo-records.json")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"KBO records updated: hitters={len(hitters)}, pitchers={len(pitchers)}, teams={len(payload['teamHitting'])}/{len(payload['teamPitching'])}")
+    print(f"KBO records updated: hitters={len(hitters)} ({hitter1_pages}/{hitter2_pages} pages), pitchers={len(pitchers)} ({pitcher_pages} pages), teams={len(payload['teamHitting'])}/{len(payload['teamPitching'])}")
 
 
 if __name__ == "__main__":
