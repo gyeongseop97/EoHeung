@@ -73,9 +73,11 @@
     const tbody=table.tBodies[0];if(!tbody)return;
     const prevCol=Number(table.dataset.sortCol);
     const prevDir=table.dataset.sortDir;
+    const th=table.tHead?.querySelectorAll('th')?.[col];
+    const lowerByColumn=th?.dataset?.lowerIsBetter==='1';
     let dir;
     if(prevCol===col)dir=prevDir==='asc'?'desc':'asc';
-    else dir=LOWER_IS_BETTER.has(header)||header==='팀'||header==='선수'?'asc':'desc';
+    else dir=lowerByColumn||LOWER_IS_BETTER.has(header)||header==='팀'||header==='선수'?'asc':'desc';
 
     const rows=[...tbody.rows];
     rows.sort((a,b)=>{
@@ -107,7 +109,9 @@
         th.textContent=label;
       }
       th.classList.add('eo-sortable-head');
-      th.title=`${label} 기준 정렬`;
+      const metricTitle=th.dataset.metricTitle||th.getAttribute('title')||'';
+      if(metricTitle&&!th.dataset.metricTitle)th.dataset.metricTitle=metricTitle;
+      th.title=metricTitle?`${metricTitle} · 클릭하여 정렬`:`${label} 기준 정렬`;
       if(th.dataset.sortBound!=='1'){
         th.dataset.sortBound='1';
         th.tabIndex=0;
