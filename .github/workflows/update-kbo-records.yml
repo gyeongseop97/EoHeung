@@ -1,0 +1,35 @@
+name: Update KBO records
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/update-kbo-records.yml"
+      - "scripts/fetch-kbo-records.py"
+  schedule:
+    - cron: '15 * * * *'
+
+concurrency:
+  group: update-kbo-records
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests beautifulsoup4
+      - run: python scripts/fetch-kbo-records.py
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add data/kbo-records.json
+          git diff --cached --quiet || git commit -m "Update KBO records cache"
+          git push
