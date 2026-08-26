@@ -8,6 +8,7 @@
   let refreshing=false;
   let realtimeChannel=null;
   let labelObserver=null;
+  let rankTrendObserver=null;
 
   function startTime(game){
     const date=String(game&&game.game_date||'').slice(0,10);
@@ -85,12 +86,55 @@
     labelObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
   }
 
+  function ensureRankTrendPositionStyle(){
+    let style=document.getElementById('eoRankTrendPositionFix');
+    if(!style){
+      style=document.createElement('style');
+      style.id='eoRankTrendPositionFix';
+      document.head.appendChild(style);
+    }
+    style.textContent=`
+      #dashboard .dashboard-grid > #kboRankTrendCard{
+        grid-column:4!important;
+        order:5!important;
+        margin-top:0!important;
+        min-width:0!important;
+        align-self:start!important;
+      }
+      @media(max-width:1300px){
+        #dashboard .dashboard-grid > #kboRankTrendCard{grid-column:1!important;}
+      }
+    `;
+  }
+
+  function fixRankTrendPosition(){
+    ensureRankTrendPositionStyle();
+    const grid=document.querySelector('#dashboard .dashboard-grid');
+    const standings=document.getElementById('kboStandings')?.closest('.kbo-standings-card,.card');
+    const trend=document.getElementById('kboRankTrendCard');
+    if(!grid||!standings||!trend)return;
+    if(standings.parentElement!==grid)return;
+    if(trend.parentElement!==grid||trend.previousElementSibling!==standings){
+      standings.insertAdjacentElement('afterend',trend);
+    }
+  }
+
+  function installRankTrendPositionFix(){
+    fixRankTrendPosition();
+    if(rankTrendObserver||typeof MutationObserver==='undefined')return;
+    const dash=document.getElementById('dashboard');
+    if(!dash)return;
+    rankTrendObserver=new MutationObserver(fixRankTrendPosition);
+    rankTrendObserver.observe(dash,{childList:true,subtree:true});
+  }
+
   function install(){
-    setTimeout(()=>{subscribeRealtime();refreshResults(false);installLineupLabelPatch()},5000);
+    installRankTrendPositionFix();
+    setTimeout(()=>{subscribeRealtime();refreshResults(false);installLineupLabelPatch();fixRankTrendPosition()},5000);
     setInterval(()=>refreshResults(false),POLL_MS);
     setInterval(patchLineupRefreshLabels,POLL_MS);
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){refreshResults(false);patchLineupRefreshLabels()}});
-    window.addEventListener('focus',()=>{refreshResults(false);patchLineupRefreshLabels()});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){refreshResults(false);patchLineupRefreshLabels();fixRankTrendPosition()}});
+    window.addEventListener('focus',()=>{refreshResults(false);patchLineupRefreshLabels();fixRankTrendPosition()});
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
