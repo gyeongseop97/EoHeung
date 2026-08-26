@@ -1,169 +1,168 @@
 (()=>{
   'use strict';
 
-  const TEAMS=['삼성','LG','KT','SSG','KIA','두산','한화','롯데','키움','NC'];
-  const state={mode:'basic',team:'ALL',search:'',cache:null,base:null,loading:false,observer:null};
+  const state={cache:null,loading:false,observer:null,scheduled:false};
   const $=(s,r=document)=>r.querySelector(s);
-  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const norm=name=>{const raw=String(name||'').trim();const map={'SAMSUNG':'삼성','LIONS':'삼성','삼성':'삼성','LG':'LG','엘지':'LG','KT':'KT','SSG':'SSG','KIA':'KIA','기아':'KIA','두산':'두산','DOOSAN':'두산','한화':'한화','HANWHA':'한화','롯데':'롯데','LOTTE':'롯데','키움':'키움','KIWOOM':'키움','HEROES':'키움','NC':'NC'};return map[raw]||map[raw.toUpperCase()]||raw};
-  const num=v=>{const n=Number(v);return Number.isFinite(n)?n:null};
-  const fmt=(v,d=1)=>v==null||!Number.isFinite(Number(v))?'-':Number(v).toFixed(d);
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const fmt=(v,d)=>v==null||!Number.isFinite(Number(v))?'-':Number(v).toFixed(d);
 
   const HITTER_COLS=[
-    ['name','선수','text',null],['team','팀','text',null],['G','경기','num',0],['PA','타석','num',0],
-    ['WAR','승리기여도 (WAR)','num',2],['wRC+','조정득점생산력 (wRC+)','num',1],['BABIP','인플레이 타율 (BABIP)','num',3],
-    ['wOBA','가중출루율 (wOBA)','num',3],['ISO','순수장타율 (ISO)','num',3],['BB%','볼넷률 (BB%)','num',1],
-    ['K%','삼진률 (K%)','num',1],['RC','득점생산 (RC)','num',1],['SecA','2차 타율 (SecA)','num',3]
+    {key:'WAR',label:'WAR',title:'승리기여도 (WAR)',digits:2},
+    {key:'wRC+',label:'wRC+',title:'조정득점생산력 (wRC+)',digits:1},
+    {key:'BABIP',label:'BABIP',title:'인플레이 타율 (BABIP)',digits:3},
+    {key:'wOBA',label:'wOBA',title:'가중출루율 (wOBA)',digits:3},
+    {key:'ISO',label:'ISO',title:'순수장타율 (ISO)',digits:3},
+    {key:'BB%',label:'BB%',title:'볼넷률 (BB%)',digits:1},
+    {key:'K%',label:'K%',title:'삼진률 (K%)',digits:1,lower:true},
+    {key:'RC',label:'RC',title:'득점생산 (RC)',digits:1},
+    {key:'SecA',label:'SecA',title:'2차 타율 (SecA)',digits:3}
   ];
+
   const PITCHER_COLS=[
-    ['name','선수','text',null],['team','팀','text',null],['G','경기','num',0],['IP','이닝','text',null],
-    ['WAR','승리기여도 (WAR)','num',2],['FIP','수비무관 평균자책 (FIP)','num',2],['ERA-','조정 평균자책 (ERA-)','num',1],
-    ['FIP-','조정 FIP (FIP-)','num',1],['BABIP','인플레이 피안타율 (BABIP)','num',3],['K/9','9이닝당 탈삼진 (K/9)','num',2],
-    ['BB/9','9이닝당 볼넷 (BB/9)','num',2],['K/BB','삼진/볼넷 (K/BB)','num',2],['K%','삼진률 (K%)','num',1],
-    ['BB%','볼넷률 (BB%)','num',1],['HR/9','9이닝당 피홈런 (HR/9)','num',2],['H/9','9이닝당 피안타 (H/9)','num',2],['LOB%','잔루율 (LOB%)','num',1]
+    {key:'WAR',label:'WAR',title:'승리기여도 (WAR)',digits:2},
+    {key:'FIP',label:'FIP',title:'수비무관 평균자책 (FIP)',digits:2,lower:true},
+    {key:'ERA-',label:'ERA-',title:'조정 평균자책 (ERA-)',digits:1,lower:true},
+    {key:'FIP-',label:'FIP-',title:'조정 FIP (FIP-)',digits:1,lower:true},
+    {key:'BABIP',label:'BABIP',title:'인플레이 피안타율 (BABIP)',digits:3,lower:true},
+    {key:'K/9',label:'K/9',title:'9이닝당 탈삼진 (K/9)',digits:2},
+    {key:'BB/9',label:'BB/9',title:'9이닝당 볼넷 (BB/9)',digits:2,lower:true},
+    {key:'K/BB',label:'K/BB',title:'삼진/볼넷 (K/BB)',digits:2},
+    {key:'K%',label:'K%',title:'삼진률 (K%)',digits:1},
+    {key:'BB%',label:'BB%',title:'볼넷률 (BB%)',digits:1,lower:true},
+    {key:'HR/9',label:'HR/9',title:'9이닝당 피홈런 (HR/9)',digits:2,lower:true},
+    {key:'H/9',label:'H/9',title:'9이닝당 피안타 (H/9)',digits:2,lower:true},
+    {key:'LOB%',label:'LOB%',title:'잔루율 (LOB%)',digits:1}
   ];
 
   function installStyle(){
     if($('#eoAdvancedRecordsStyle'))return;
     const s=document.createElement('style');s.id='eoAdvancedRecordsStyle';s.textContent=`
-#records .eo-advanced-view-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}
-#records .eo-advanced-view-tabs button{padding:8px 12px;border-radius:9px;background:#f6f8fb;border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:900;cursor:pointer}
-#records .eo-advanced-view-tabs button.active{color:var(--blue);background:#eef5ff;border-color:#bcd6fa}
-#records .eo-advanced-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0}
-#records .eo-advanced-toolbar select,#records .eo-advanced-toolbar input{height:38px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:0 10px;color:var(--text)}
-#records .eo-advanced-toolbar input{min-width:190px}
-#records .eo-advanced-source{font-size:11px;color:var(--muted);margin-left:auto}
-#records .eo-advanced-summary{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
-#records .eo-advanced-chip{font-size:11px;font-weight:800;color:#43546c;background:#f5f8fc;border:1px solid var(--line);padding:6px 9px;border-radius:999px}
-body.theme-excel #records .eo-advanced-view-tabs button,body.theme-excel #records .eo-advanced-toolbar select,body.theme-excel #records .eo-advanced-toolbar input{border-radius:0!important}
-body.theme-groupware #records .eo-advanced-view-tabs button,body.theme-groupware #records .eo-advanced-toolbar select,body.theme-groupware #records .eo-advanced-toolbar input{border-radius:2px!important}
-@media(max-width:900px){#records .eo-advanced-toolbar input{width:100%;min-width:0}.eo-advanced-source{width:100%;margin-left:0!important}}
+#records .eo-merged-player-wrap{position:relative}
+#records .eo-merged-player-table{width:max-content!important;min-width:100%!important}
+#records .eo-merged-player-table th,#records .eo-merged-player-table td{min-width:62px}
+#records .eo-merged-player-table th:first-child,#records .eo-merged-player-table td:first-child{position:sticky;left:0;min-width:112px;max-width:150px;z-index:3;box-shadow:5px 0 8px -8px rgba(20,39,68,.65)}
+#records .eo-merged-player-table th:first-child{z-index:7;background:#f1f6fd}
+#records .eo-merged-player-table td:first-child{background:#fff}
+#records .eo-merged-player-table tr.samsung-row td:first-child{background:#f4f9ff}
+#records .eo-merged-player-table tr:hover td:first-child{background:#f8fbff}
+#records .eo-merged-player-table .eo-advanced-first{border-left:2px solid #bfd3ea!important;padding-left:12px!important}
+#records .eo-merged-player-table th[data-advanced-key]{background:#e9f2fd;color:#244d7d}
+#records .eo-merged-player-table td[data-advanced-key]{font-variant-numeric:tabular-nums}
+#records .eo-advanced-inline-note{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:8px 2px 0;font-size:11px;color:var(--muted);line-height:1.5}
+#records .eo-advanced-inline-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;background:#eef5ff;border:1px solid #cbdff6;color:#315b8a;font-weight:800}
+body.theme-excel #records .eo-advanced-inline-badge{border-radius:0!important}
+body.theme-groupware #records .eo-advanced-inline-badge{border-radius:2px!important}
+@media(max-width:900px){#records .eo-merged-player-table th:first-child,#records .eo-merged-player-table td:first-child{min-width:96px;max-width:120px}}
 `;
     document.head.appendChild(s);
   }
 
+  function cleanupLegacy(){
+    $('#eoAdvancedViewTabs')?.remove();
+    $('#eoAdvancedRecordsPane')?.remove();
+    const body=$('#eoKboRecordBody');
+    if(body){
+      [...body.children].forEach(el=>{
+        if(el.dataset?.eoAdvancedHidden==='1'){
+          el.style.display=el.dataset.eoAdvancedDisplay||'';
+          delete el.dataset.eoAdvancedHidden;
+          delete el.dataset.eoAdvancedDisplay;
+        }
+      });
+    }
+  }
+
   function currentType(body){
-    return body.querySelector('[data-player-type].active')?.dataset.playerType || 'hitter';
+    return body.querySelector('[data-player-type].active')?.dataset.playerType||null;
   }
 
-  function restoreBasic(body){
-    [...body.children].forEach(el=>{
-      if(el.id==='eoAdvancedViewTabs'||el.id==='eoAdvancedRecordsPane')return;
-      if(el.dataset.eoAdvancedHidden==='1'){
-        el.style.display=el.dataset.eoAdvancedDisplay||'';
-        delete el.dataset.eoAdvancedHidden;delete el.dataset.eoAdvancedDisplay;
-      }
-    });
-    $('#eoAdvancedRecordsPane',body)?.remove();
-  }
-
-  function hideBasic(body){
-    [...body.children].forEach(el=>{
-      if(el.id==='eoAdvancedViewTabs'||el.id==='eoAdvancedRecordsPane')return;
-      if(el.querySelector?.('[data-player-type]'))return;
-      if(el.dataset.eoAdvancedHidden!=='1'){
-        el.dataset.eoAdvancedDisplay=el.style.display||'';
-        el.dataset.eoAdvancedHidden='1';
-        el.style.display='none';
-      }
-    });
-  }
-
-  function teamFallbackMap(type){
-    const rows=type==='hitter'?(state.base?.hitters||[]):(state.base?.pitchers||[]);
+  function buildMap(type){
+    const rows=type==='hitter'?(state.cache?.hitters||[]):(state.cache?.pitchers||[]);
     const map=new Map();
-    rows.forEach(r=>{if(r?.name&&r?.team&&!map.has(r.name))map.set(r.name,norm(r.team))});
+    rows.forEach(r=>{
+      const team=norm(r?.team),name=String(r?.name||'').trim();
+      if(team&&name)map.set(`${team}|${name}`,r);
+    });
     return map;
   }
 
-  function rowsFor(type){
-    const source=type==='hitter'?(state.cache?.hitters||[]):(state.cache?.pitchers||[]);
-    const fallback=teamFallbackMap(type);
-    const q=state.search.trim().toLowerCase();
-    return source.map(r=>({...r,team:norm(r.team)||fallback.get(r.name)||''}))
-      .filter(r=>(state.team==='ALL'||r.team===state.team)&&(!q||String(r.name||'').toLowerCase().includes(q)))
-      .sort((a,b)=>(num(b.WAR)??-999)-(num(a.WAR)??-999)||String(a.name).localeCompare(String(b.name),'ko-KR'));
+  function valueHtml(row,col){
+    const v=row?.[col.key];
+    return `<span title="${esc(col.title)}">${fmt(v,col.digits)}</span>`;
   }
 
-  function formatValue(row,key,type,digits){
-    if(key==='name'||key==='team'||key==='IP')return esc(row[key]??'-');
-    const v=row[key];
-    if(type==='num')return fmt(v,digits??1);
-    return esc(v??'-');
+  function advancedHeader(col,index){
+    return `<th data-advanced-key="${esc(col.key)}" data-lower-is-better="${col.lower?'1':'0'}" class="${index===0?'eo-advanced-first':''}" title="${esc(col.title)}">${esc(col.label)}</th>`;
   }
 
-  function tableHtml(type,rows){
-    const cols=type==='hitter'?HITTER_COLS:PITCHER_COLS;
-    if(!rows.length)return '<div class="eo-record-empty">조건에 맞는 고급 기록이 없습니다.</div>';
-    return `<div class="eo-record-table-wrap"><table class="eo-record-table eo-advanced-table"><thead><tr>${cols.map(c=>`<th>${esc(c[1])}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr class="${r.team==='삼성'?'samsung-row':''}">${cols.map(([key,,kind,digits],i)=>`<td class="${i===0?'name-cell':''}">${formatValue(r,key,kind,digits)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
-  }
-
-  function renderAdvanced(body){
-    hideBasic(body);
-    let pane=$('#eoAdvancedRecordsPane',body);
-    if(!pane){pane=document.createElement('div');pane.id='eoAdvancedRecordsPane';body.appendChild(pane)}
-    if(state.loading&&!state.cache){pane.innerHTML='<div class="eo-record-empty">고급지표 데이터를 불러오는 중입니다.</div>';return}
-    if(!state.cache){pane.innerHTML='<div class="eo-record-empty">고급지표 데이터를 불러오지 못했습니다.</div>';return}
-    const type=currentType(body),rows=rowsFor(type),coverage=type==='hitter'?state.cache?.coverage?.hitters:state.cache?.coverage?.pitchers;
-    const updated=state.cache?.updatedAt?new Date(state.cache.updatedAt).toLocaleString('ko-KR'):'';
-    pane.innerHTML=`<div class="eo-advanced-toolbar"><select id="eoAdvancedTeam"><option value="ALL">전체 팀</option>${TEAMS.map(t=>`<option value="${t}" ${state.team===t?'selected':''}>${t}</option>`).join('')}</select><input id="eoAdvancedSearch" type="search" placeholder="선수 이름 검색" value="${esc(state.search)}"><span class="eo-advanced-source">${esc(state.cache.source||'세이버메트릭스')} · ${esc(updated)}</span></div><div class="eo-advanced-summary"><span class="eo-advanced-chip">전체 수집 ${coverage??'-'}명</span><span class="eo-advanced-chip">현재 표시 ${rows.length}명</span><span class="eo-advanced-chip">컬럼명 클릭 정렬</span></div>${tableHtml(type,rows)}<div class="eo-record-note">${esc(state.cache.sourceNote||'WAR·wRC+·FIP 등은 분석 사이트의 산식 기준이며 KBO 공식 기본기록과 출처가 다를 수 있습니다.')}</div>`;
-  }
-
-  function ensureTabs(){
-    const body=$('#eoKboRecordBody');if(!body)return;
-    const playerTabs=body.querySelector('.eo-record-mini-tabs [data-player-type]')?.closest('.eo-record-mini-tabs');
-    if(!playerTabs){state.mode='basic';return}
-    let tabs=$('#eoAdvancedViewTabs',body);
-    if(!tabs){
-      tabs=document.createElement('div');tabs.id='eoAdvancedViewTabs';tabs.className='eo-advanced-view-tabs';
-      tabs.innerHTML='<button type="button" data-advanced-mode="basic">기본 기록</button><button type="button" data-advanced-mode="advanced">고급 지표</button>';
-      playerTabs.insertAdjacentElement('afterend',tabs);
+  function markSource(body){
+    const source=body.querySelector('.eo-record-toolbar .eo-kbo-source');
+    if(source&&state.cache){
+      source.textContent='기본: KBO 공식 · 고급: 네이버 KBO/공식기록 계산';
+      source.title=state.cache.sourceNote||'';
     }
-    tabs.querySelectorAll('[data-advanced-mode]').forEach(b=>b.classList.toggle('active',b.dataset.advancedMode===state.mode));
-    if(state.mode==='advanced')renderAdvanced(body);else restoreBasic(body);
+    const existing=$('#eoAdvancedInlineNote',body);
+    if(existing)return;
+    const wrap=body.querySelector('.eo-record-table-wrap');
+    if(!wrap)return;
+    const note=document.createElement('div');
+    note.id='eoAdvancedInlineNote';note.className='eo-advanced-inline-note';
+    note.innerHTML=`<span class="eo-advanced-inline-badge">기본 + 고급지표 통합</span><span>선수명 열은 고정되며, 표를 좌우로 스크롤해 고급지표를 확인할 수 있습니다.</span>`;
+    wrap.insertAdjacentElement('afterend',note);
+  }
+
+  function mergeIntoPlayerTable(){
+    cleanupLegacy();
+    const body=$('#eoKboRecordBody');if(!body||!state.cache)return;
+    const type=currentType(body);if(!type)return;
+    const table=body.querySelector('.eo-record-table');if(!table||!table.tHead||!table.tBodies[0])return;
+    const cols=type==='hitter'?HITTER_COLS:PITCHER_COLS;
+    const headRow=table.tHead.rows[0];if(!headRow)return;
+
+    table.classList.add('eo-merged-player-table');
+    table.closest('.eo-record-table-wrap')?.classList.add('eo-merged-player-wrap');
+
+    headRow.querySelectorAll('th[data-advanced-key]').forEach(th=>th.remove());
+    [...table.tBodies[0].rows].forEach(tr=>tr.querySelectorAll('td[data-advanced-key]').forEach(td=>td.remove()));
+    headRow.insertAdjacentHTML('beforeend',cols.map(advancedHeader).join(''));
+
+    const map=buildMap(type);
+    [...table.tBodies[0].rows].forEach(tr=>{
+      const name=String(tr.cells[0]?.textContent||'').trim();
+      const team=norm(String(tr.cells[1]?.textContent||'').trim());
+      const data=map.get(`${team}|${name}`)||null;
+      tr.insertAdjacentHTML('beforeend',cols.map((col,index)=>`<td data-advanced-key="${esc(col.key)}" class="${index===0?'eo-advanced-first':''}">${valueHtml(data,col)}</td>`).join(''));
+    });
+
+    markSource(body);
+  }
+
+  function scheduleMerge(){
+    if(state.scheduled)return;state.scheduled=true;
+    requestAnimationFrame(()=>{state.scheduled=false;mergeIntoPlayerTable()});
   }
 
   async function load(){
     if(state.loading||state.cache)return;
     state.loading=true;
     try{
-      const stamp=Date.now();
-      const [a,b]=await Promise.all([
-        fetch(`data/kbo-advanced-records.json?t=${stamp}`,{cache:'no-store'}),
-        fetch(`data/kbo-records.json?t=${stamp}`,{cache:'no-store'})
-      ]);
-      if(!a.ok)throw new Error(`advanced ${a.status}`);
-      state.cache=await a.json();
-      if(b.ok)state.base=await b.json();
-    }catch(e){console.warn('KBO advanced records load failed',e)}finally{state.loading=false;ensureTabs()}
-  }
-
-  function bind(){
-    if(document.body.dataset.eoAdvancedRecordsBound==='1')return;
-    document.body.dataset.eoAdvancedRecordsBound='1';
-    document.body.addEventListener('click',e=>{
-      const m=e.target.closest('[data-advanced-mode]');
-      if(m){state.mode=m.dataset.advancedMode;if(state.mode==='advanced')load();ensureTabs();return}
-      if(e.target.closest('[data-player-type]'))setTimeout(ensureTabs,0);
-    });
-    document.body.addEventListener('change',e=>{
-      if(e.target.id==='eoAdvancedTeam'){state.team=e.target.value;ensureTabs()}
-    });
-    document.body.addEventListener('input',e=>{
-      if(e.target.id==='eoAdvancedSearch'){
-        state.search=e.target.value;const pos=e.target.selectionStart;ensureTabs();
-        const n=$('#eoAdvancedSearch');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}
-      }
-    });
+      const r=await fetch(`data/kbo-advanced-records.json?t=${Date.now()}`,{cache:'no-store'});
+      if(!r.ok)throw new Error(`advanced ${r.status}`);
+      state.cache=await r.json();
+    }catch(e){console.warn('KBO advanced records load failed',e)}finally{state.loading=false;scheduleMerge()}
   }
 
   function install(){
-    installStyle();bind();ensureTabs();
+    installStyle();cleanupLegacy();load();
     const records=$('#records');
     if(records&&typeof MutationObserver!=='undefined'){
-      state.observer=new MutationObserver(()=>requestAnimationFrame(ensureTabs));
+      state.observer=new MutationObserver(scheduleMerge);
       state.observer.observe(records,{childList:true,subtree:true});
     }
+    document.body.addEventListener('click',e=>{
+      if(e.target.closest('[data-player-type],[data-kbo-main],[data-record-main]'))setTimeout(scheduleMerge,0);
+    });
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
