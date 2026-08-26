@@ -9,7 +9,11 @@
     ER:'자책점', RA:'실점', BF:'상대한 타자', QS:'퀄리티스타트'
   };
 
-  const LOWER_IS_BETTER=new Set(['순위','평균자책점','이닝당 출루허용률 (WHIP)','실점','경기당 실점','패','실책','도루실패','병살타']);
+  const LOWER_IS_BETTER=new Set([
+    '순위','평균자책점','이닝당 출루허용률 (WHIP)','실점','경기당 실점','패','실책','도루실패','병살타',
+    '수비무관 평균자책 (FIP)','조정 평균자책 (ERA-)','조정 FIP (FIP-)','인플레이 피안타율 (BABIP)',
+    '9이닝당 볼넷 (BB/9)','볼넷률 (BB%)','9이닝당 피홈런 (HR/9)','9이닝당 피안타 (H/9)'
+  ]);
   let observer=null;
 
   function translateHeader(raw){
