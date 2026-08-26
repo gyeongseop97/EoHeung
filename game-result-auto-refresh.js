@@ -19,6 +19,15 @@
     document.head.appendChild(s);
   }
 
+  function loadKboRecordsEnhancement(){
+    if(document.getElementById('eoKboRecordsSortable'))return;
+    const s=document.createElement('script');
+    s.id='eoKboRecordsSortable';
+    s.src='kbo-records-table-enhancement.js?v=20260826';
+    s.defer=true;
+    document.head.appendChild(s);
+  }
+
   function startTime(game){
     const date=String(game&&game.game_date||'').slice(0,10);
     const time=String(game&&game.game_time||'').slice(0,5);
@@ -139,6 +148,7 @@
 
   function install(){
     loadKboRecordsModule();
+    loadKboRecordsEnhancement();
     installRankTrendPositionFix();
     setTimeout(()=>{subscribeRealtime();refreshResults(false);installLineupLabelPatch();fixRankTrendPosition()},5000);
     setInterval(()=>refreshResults(false),POLL_MS);
