@@ -119,9 +119,12 @@ body.theme-groupware #records .eo-advanced-inline-badge{border-radius:2px!import
     const table=body.querySelector('.eo-record-table');if(!table||!table.tHead||!table.tBodies[0])return;
     const cols=type==='hitter'?HITTER_COLS:PITCHER_COLS;
     const headRow=table.tHead.rows[0];if(!headRow)return;
+    const rowCount=table.tBodies[0].rows.length;
+    const mergeKey=`${type}|${state.cache.updatedAt||''}|${rowCount}`;
 
     table.classList.add('eo-merged-player-table');
     table.closest('.eo-record-table-wrap')?.classList.add('eo-merged-player-wrap');
+    if(table.dataset.eoAdvancedMergeKey===mergeKey){markSource(body);return}
 
     headRow.querySelectorAll('th[data-advanced-key]').forEach(th=>th.remove());
     [...table.tBodies[0].rows].forEach(tr=>tr.querySelectorAll('td[data-advanced-key]').forEach(td=>td.remove()));
@@ -135,6 +138,7 @@ body.theme-groupware #records .eo-advanced-inline-badge{border-radius:2px!import
       tr.insertAdjacentHTML('beforeend',cols.map((col,index)=>`<td data-advanced-key="${esc(col.key)}" class="${index===0?'eo-advanced-first':''}">${valueHtml(data,col)}</td>`).join(''));
     });
 
+    table.dataset.eoAdvancedMergeKey=mergeKey;
     markSource(body);
   }
 
