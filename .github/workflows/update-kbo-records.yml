@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/update-kbo-records.yml"
       - "scripts/fetch-kbo-records.py"
+      - "scripts/fetch-kbo-advanced-records.py"
   schedule:
     - cron: '15 * * * *'
 
@@ -27,9 +28,10 @@ jobs:
           python-version: '3.12'
       - run: pip install requests beautifulsoup4
       - run: python scripts/fetch-kbo-records.py
+      - run: python scripts/fetch-kbo-advanced-records.py
       - run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add data/kbo-records.json
+          git add data/kbo-records.json data/kbo-advanced-records.json
           git diff --cached --quiet || git commit -m "Update KBO records cache"
           git push
