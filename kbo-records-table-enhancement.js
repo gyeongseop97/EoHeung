@@ -14,7 +14,14 @@
     '수비무관 평균자책 (FIP)','조정 평균자책 (ERA-)','조정 FIP (FIP-)','인플레이 피안타율 (BABIP)',
     '9이닝당 볼넷 (BB/9)','볼넷률 (BB%)','9이닝당 피홈런 (HR/9)','9이닝당 피안타 (H/9)'
   ]);
+
+  const HITTER_QUALIFIED_KEYS=new Set(['AVG','OBP','SLG','OPS','RISP','wRC+','BABIP','wOBA','ISO','BB%','K%','SecA']);
+  const PITCHER_QUALIFIED_KEYS=new Set(['ERA','WHIP','FIP','ERA-','FIP-','BABIP','K/9','BB/9','K/BB','K%','BB%','HR/9','H/9','LOB%']);
+  const TEAM_NAMES=new Set(['삼성','LG','KT','SSG','KIA','두산','한화','롯데','키움','NC']);
   let observer=null;
+
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const normTeam=name=>{const raw=String(name||'').trim();const map={'SAMSUNG':'삼성','LIONS':'삼성','삼성':'삼성','LG':'LG','엘지':'LG','KT':'KT','SSG':'SSG','KIA':'KIA','기아':'KIA','두산':'두산','DOOSAN':'두산','한화':'한화','HANWHA':'한화','롯데':'롯데','LOTTE':'롯데','키움':'키움','KIWOOM':'키움','HEROES':'키움','NC':'NC'};return map[raw]||map[raw.toUpperCase()]||raw};
 
   function translateHeader(raw){
     const text=String(raw||'').trim();
@@ -43,6 +50,9 @@
     if(m)return Number(m[1])+Number(m[2])/3;
     m=s.match(/^(\d+)\.(1|2)$/);
     if(m)return Number(m[1])+Number(m[2])/3;
+    m=s.match(/^(\d+)\s*([⅓⅔])$/);
+    if(m)return Number(m[1])+(m[2]==='⅓'?1/3:2/3);
+    if(/^\d+(?:\.\d+)?$/.test(s))return Number(s);
     return null;
   }
 
@@ -54,9 +64,75 @@
     if(header==='이닝'){
       const innings=parseInnings(s);if(innings!=null)return {type:'number',value:innings};
     }
-    const cleaned=s.replace(/,/g,'').replace(/위$/,'').replace(/^\+/,'');
+    const cleaned=s.replace(/,/g,'').replace(/위$/,'').replace(/^\+/,'').replace(/%$/,'');
     if(cleaned!==''&&/^[-+]?\d+(?:\.\d+)?$/.test(cleaned))return {type:'number',value:Number(cleaned)};
     return {type:'text',value:s.toLocaleLowerCase('ko-KR')};
+  }
+
+  function playerTypeForTable(table){
+    const body=table.closest('#eoKboRecordBody');
+    return body?.querySelector('[data-player-type].active')?.dataset.playerType||null;
+  }
+
+  function metricKey(th){
+    return String(th?.dataset?.advancedKey||th?.dataset?.metricKey||'').trim();
+  }
+
+  function requiresQualification(table,th){
+    const type=playerTypeForTable(table),key=metricKey(th);
+    if(type==='hitter')return HITTER_QUALIFIED_KEYS.has(key);
+    if(type==='pitcher')return PITCHER_QUALIFIED_KEYS.has(key);
+    return false;
+  }
+
+  function teamGameCounts(){
+    const counts=Object.fromEntries([...TEAM_NAMES].map(t=>[t,0]));
+    if(typeof state==='undefined'||!Array.isArray(state.allGames))return counts;
+    const year=String(new Date().getFullYear());
+    state.allGames.forEach(g=>{
+      if(!String(g?.game_date||'').startsWith(`${year}-`))return;
+      if(String(g?.status||'').toUpperCase()!=='FINISHED')return;
+      const away=normTeam(g?.away_team),home=normTeam(g?.home_team);
+      if(TEAM_NAMES.has(away))counts[away]++;
+      if(TEAM_NAMES.has(home))counts[home]++;
+    });
+    return counts;
+  }
+
+  function headerIndex(table,key){
+    const headers=[...(table.tHead?.querySelectorAll('th')||[])];
+    return headers.findIndex(th=>metricKey(th)===key||String(th.dataset.sortLabel||'').trim()===key||String(th.textContent||'').replace(/[▲▼]/g,'').trim()===key);
+  }
+
+  function qualificationForRow(table,row,type,counts){
+    const teamIdx=headerIndex(table,'팀');
+    const team=normTeam(row.cells[teamIdx>=0?teamIdx:1]?.textContent||'');
+    const games=Number(counts[team]||0);
+    if(!games)return null;
+    if(type==='hitter'){
+      const paIdx=headerIndex(table,'PA')>=0?headerIndex(table,'PA'):headerIndex(table,'타석');
+      const pa=Number(String(row.cells[paIdx]?.textContent||'').replace(/,/g,''));
+      if(!Number.isFinite(pa))return null;
+      return pa>=games*3.1;
+    }
+    if(type==='pitcher'){
+      let ipIdx=headerIndex(table,'IP');
+      if(ipIdx<0)ipIdx=headerIndex(table,'이닝');
+      const ip=parseInnings(row.cells[ipIdx]?.textContent||'');
+      if(ip==null)return null;
+      return ip+1e-9>=games;
+    }
+    return null;
+  }
+
+  function markQualifications(table){
+    const type=playerTypeForTable(table);if(!type||!table.tBodies[0])return;
+    const counts=teamGameCounts();
+    [...table.tBodies[0].rows].forEach(row=>{
+      const q=qualificationForRow(table,row,type,counts);
+      if(q==null)delete row.dataset.eoQualified;
+      else row.dataset.eoQualified=q?'1':'0';
+    });
   }
 
   function updateArrows(table,col,dir){
@@ -69,25 +145,29 @@
     });
   }
 
-  function sortTable(table,col,header){
+  function sortRows(table,col,header,dir){
     const tbody=table.tBodies[0];if(!tbody)return;
-    const prevCol=Number(table.dataset.sortCol);
-    const prevDir=table.dataset.sortDir;
     const th=table.tHead?.querySelectorAll('th')?.[col];
-    const lowerByColumn=th?.dataset?.lowerIsBetter==='1';
-    let dir;
-    if(prevCol===col)dir=prevDir==='asc'?'desc':'asc';
-    else dir=lowerByColumn||LOWER_IS_BETTER.has(header)||header==='팀'||header==='선수'?'asc':'desc';
-
+    markQualifications(table);
+    const qualificationFirst=requiresQualification(table,th);
     const rows=[...tbody.rows];
     rows.sort((a,b)=>{
+      if(qualificationFirst){
+        const aq=a.dataset.eoQualified,bq=b.dataset.eoQualified;
+        if(aq!==bq){
+          if(aq==='1')return -1;
+          if(bq==='1')return 1;
+          if(aq==='0')return -1;
+          if(bq==='0')return 1;
+        }
+      }
       const av=sortableValue(a.cells[col]?.textContent,header),bv=sortableValue(b.cells[col]?.textContent,header);
       let result=0;
       if(av.type==='number'&&bv.type==='number')result=av.value-bv.value;
       else result=String(av.value).localeCompare(String(bv.value),'ko-KR',{numeric:true,sensitivity:'base'});
       if(result===0){
-        const at=a.querySelector('.name-cell')?.textContent||a.cells[1]?.textContent||'';
-        const bt=b.querySelector('.name-cell')?.textContent||b.cells[1]?.textContent||'';
+        const at=a.querySelector('.name-cell')?.textContent||a.cells[0]?.textContent||'';
+        const bt=b.querySelector('.name-cell')?.textContent||b.cells[0]?.textContent||'';
         result=at.localeCompare(bt,'ko-KR');
       }
       return dir==='asc'?result:-result;
@@ -97,6 +177,45 @@
     updateArrows(table,col,dir);
   }
 
+  function sortTable(table,col,header){
+    const prevCol=Number(table.dataset.sortCol),prevDir=table.dataset.sortDir;
+    const th=table.tHead?.querySelectorAll('th')?.[col];
+    const lowerByColumn=th?.dataset?.lowerIsBetter==='1';
+    let dir;
+    if(prevCol===col)dir=prevDir==='asc'?'desc':'asc';
+    else dir=lowerByColumn||LOWER_IS_BETTER.has(header)||header==='팀'||header==='선수'?'asc':'desc';
+    sortRows(table,col,header,dir);
+  }
+
+  function refreshLeaderStrip(table,col){
+    const body=table.closest('#eoKboRecordBody'),strip=body?.querySelector('.eo-leader-strip');
+    if(!strip||!table.tBodies[0])return;
+    const rows=[...table.tBodies[0].rows].slice(0,3);
+    strip.innerHTML=rows.map((row,i)=>{
+      const name=String(row.cells[0]?.textContent||'').trim();
+      const team=normTeam(row.cells[1]?.textContent||'');
+      const value=String(row.cells[col]?.textContent||'-').trim();
+      return `<div class="eo-leader ${team==='삼성'?'samsung':''}"><div class="rank">${i+1}위 · ${esc(team)}</div><b>${esc(name)}</b><strong>${esc(value)}</strong></div>`;
+    }).join('');
+  }
+
+  function applySelectedQualificationSort(table){
+    const body=table.closest('#eoKboRecordBody'),select=body?.querySelector('#eoPlayerSort');
+    if(!select||!playerTypeForTable(table))return;
+    const selectedKey=String(select.value||'').trim();
+    if(table.dataset.eoQualificationDefaultApplied===selectedKey)return;
+    const headers=[...(table.tHead?.querySelectorAll('th')||[])];
+    const col=headers.findIndex(th=>metricKey(th)===selectedKey);
+    if(col<0){table.dataset.eoQualificationDefaultApplied=selectedKey;return}
+    const th=headers[col];
+    if(!requiresQualification(table,th)){table.dataset.eoQualificationDefaultApplied=selectedKey;return}
+    const header=th.dataset.sortLabel||String(th.textContent||'').replace(/[▲▼]/g,'').trim();
+    const dir=(th.dataset.lowerIsBetter==='1'||LOWER_IS_BETTER.has(header))?'asc':'desc';
+    sortRows(table,col,header,dir);
+    refreshLeaderStrip(table,col);
+    table.dataset.eoQualificationDefaultApplied=selectedKey;
+  }
+
   function enhanceTable(table){
     if(!table||!table.tHead)return;
     const headers=[...table.tHead.querySelectorAll('th')];
@@ -104,14 +223,18 @@
       let label=th.dataset.sortLabel;
       if(!label){
         const original=String(th.textContent||'').replace(/[▲▼]/g,'').trim();
+        if(!th.dataset.metricKey)th.dataset.metricKey=th.dataset.advancedKey||original;
         label=translateHeader(original);
         th.dataset.sortLabel=label;
         th.textContent=label;
+      }else if(!th.dataset.metricKey){
+        th.dataset.metricKey=th.dataset.advancedKey||String(label||'').trim();
       }
       th.classList.add('eo-sortable-head');
       const metricTitle=th.dataset.metricTitle||th.getAttribute('title')||'';
       if(metricTitle&&!th.dataset.metricTitle)th.dataset.metricTitle=metricTitle;
-      th.title=metricTitle?`${metricTitle} · 클릭하여 정렬`:`${label} 기준 정렬`;
+      const qual=requiresQualification(table,th);
+      th.title=metricTitle?`${metricTitle}${qual?' · 규정 충족 선수 우선':''} · 클릭하여 정렬`:`${label} 기준 정렬${qual?' · 규정 충족 선수 우선':''}`;
       if(th.dataset.sortBound!=='1'){
         th.dataset.sortBound='1';
         th.tabIndex=0;
@@ -121,11 +244,24 @@
       }
       if(!th.querySelector('.eo-sort-arrow')){const marker=document.createElement('span');marker.className='eo-sort-arrow';th.appendChild(marker)}
     });
+    markQualifications(table);
+    applySelectedQualificationSort(table);
+  }
+
+  function updateQualificationNote(root){
+    const body=root.querySelector('#eoKboRecordBody');
+    if(!body?.querySelector('[data-player-type].active'))return;
+    const notes=[...body.querySelectorAll('.eo-record-note')];
+    const note=notes.find(n=>String(n.textContent||'').includes('선수 기록'))||notes[0];
+    if(note&&!String(note.textContent||'').includes('규정타석')){
+      note.textContent=`${String(note.textContent||'').trim()} 비율지표 정렬은 규정타석(팀 경기×3.1)·규정이닝(팀 경기×1) 충족 선수를 우선 표시합니다.`;
+    }
   }
 
   function translateVisibleLabels(root){
     translateMetricOptions(root);
     root.querySelectorAll('.eo-record-table').forEach(enhanceTable);
+    updateQualificationNote(root);
   }
 
   function installStyle(){
