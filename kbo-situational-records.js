@@ -65,6 +65,11 @@
     table.querySelectorAll('th[data-situational-key],td[data-situational-key]').forEach(el=>el.remove());
   }
 
+  function alreadyMerged(table,kind,cols){
+    const version=String(state.cache?.updatedAt||'');
+    return table.dataset.eoSituational===kind&&table.dataset.eoSituationalVersion===version&&table.querySelectorAll('thead th[data-situational-key]').length===cols.length;
+  }
+
   function insertHeaders(headRow,cols){
     const anchor=headRow.querySelector('th[data-advanced-key]');
     const html=cols.map(headerHtml).join('');
@@ -79,6 +84,7 @@
 
   function mergePlayer(body,table){
     if(currentPlayerType(body)!=='hitter')return;
+    if(alreadyMerged(table,'player',PLAYER_COLS)){addNote(body,'선수 세부기록: 희생번트·희생플라이·병살타·고의4구·멀티히트·득점권 타율·대타 타율을 KBO 공식 기록에서 표시합니다.');return}
     const map=playerMap();
     const head=table.tHead?.rows?.[0],tbody=table.tBodies?.[0];if(!head||!tbody)return;
     removeOld(table);insertHeaders(head,PLAYER_COLS);
@@ -88,12 +94,14 @@
       insertCells(row,PLAYER_COLS,map.get(`${team}|${name}`)||null);
     });
     table.dataset.eoSituational='player';
+    table.dataset.eoSituationalVersion=String(state.cache?.updatedAt||'');
     addNote(body,'선수 세부기록: 희생번트·희생플라이·병살타·고의4구·멀티히트·득점권 타율·대타 타율을 KBO 공식 기록에서 표시합니다.');
   }
 
   function mergeTeam(body,table){
     const active=body.querySelector('[data-team-tab].active')?.dataset.teamTab;
     if(active!=='hitting')return;
+    if(alreadyMerged(table,'team',TEAM_COLS)){addNote(body,'팀 타격 세부기록에도 희생타·병살타·득점권 타율·대타 타율을 함께 표시합니다.');return}
     const map=teamMap();
     const head=table.tHead?.rows?.[0],tbody=table.tBodies?.[0];if(!head||!tbody)return;
     removeOld(table);insertHeaders(head,TEAM_COLS);
@@ -102,6 +110,7 @@
       insertCells(row,TEAM_COLS,map.get(team)||null);
     });
     table.dataset.eoSituational='team';
+    table.dataset.eoSituationalVersion=String(state.cache?.updatedAt||'');
     addNote(body,'팀 타격 세부기록에도 희생타·병살타·득점권 타율·대타 타율을 함께 표시합니다.');
   }
 
@@ -113,7 +122,6 @@
 
   function merge(){
     const body=$('#eoKboRecordBody');if(!body||!state.cache)return;
-    $('#eoSituationalNote',body)?.remove();
     const table=body.querySelector('.eo-record-table');if(!table)return;
     const type=currentPlayerType(body);
     if(type)mergePlayer(body,table);else mergeTeam(body,table);
