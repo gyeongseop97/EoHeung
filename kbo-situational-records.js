@@ -132,6 +132,14 @@
     requestAnimationFrame(()=>{state.scheduled=false;merge()});
   }
 
+  function isMeaningfulMutation(mutations){
+    return mutations.some(m=>{
+      if(m.type!=='childList'||!m.addedNodes.length)return false;
+      if(m.target?.id==='eoKboRecordBody')return true;
+      return [...m.addedNodes].some(node=>node.nodeType===1&&(node.matches?.('.eo-record-table')||node.querySelector?.('.eo-record-table')));
+    });
+  }
+
   async function load(){
     if(state.loading)return;state.loading=true;
     try{
@@ -145,7 +153,7 @@
     installStyle();load();
     const records=$('#records');
     if(records&&typeof MutationObserver!=='undefined'){
-      state.observer=new MutationObserver(schedule);
+      state.observer=new MutationObserver(mutations=>{if(isMeaningfulMutation(mutations))schedule()});
       state.observer.observe(records,{childList:true,subtree:true});
     }
     document.body.addEventListener('click',e=>{if(e.target.closest('[data-player-type],[data-team-tab],[data-kbo-main],[data-record-main]'))setTimeout(schedule,0)});
