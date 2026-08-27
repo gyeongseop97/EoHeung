@@ -35,3 +35,5 @@ jobs:
           git add data/kbo-records.json data/kbo-advanced-records.json
           git diff --cached --quiet || git commit -m "Update KBO records cache"
           git push
+
+# Situational hitting fields enabled: SAC, SF, GDP, IBB, MH, RISP, PH-BA
