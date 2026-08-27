@@ -14,6 +14,7 @@ URLS = {
     "hitter2": f"{BASE}/Record/Player/HitterBasic/Basic2.aspx?sort=BB_CN",
     "pitcher": f"{BASE}/Record/Player/PitcherBasic/Basic1.aspx?sort=SV_CN",
     "team_hitting": f"{BASE}/Record/Team/Hitter/BasicOld.aspx",
+    "team_hitting2": f"{BASE}/Record/Team/Hitter/Basic2.aspx",
     "team_pitching": f"{BASE}/Record/Team/Pitcher/BasicOld.aspx",
 }
 HEADERS = {
@@ -122,7 +123,6 @@ def form_payload(soup, event_target, event_argument):
 
 
 def pager_postback(soup, wanted_page):
-    # First prefer an exact numeric page link.
     for a in soup.find_all("a"):
         href = a.get("href", "")
         match = POSTBACK_RE.search(href)
@@ -130,8 +130,6 @@ def pager_postback(soup, wanted_page):
             continue
         if clean(a.get_text(" ", strip=True)) == str(wanted_page):
             return match.group(1), match.group(2), "number"
-
-    # At 5-page boundaries KBO hides the next number behind the '다음' pager button.
     for a in soup.find_all("a"):
         href = a.get("href", "")
         match = POSTBACK_RE.search(href)
@@ -173,14 +171,12 @@ def fetch_all_player_pages(url, required_headers, label):
             print(f"[{label}] repeated page at {page_number}; stop")
             break
         seen_signatures.add(signature)
-
         before = len(collected)
         for row in rows:
             key = row_identity(row)
             if key[0] and key[1]:
                 collected[key] = row
         print(f"[{label}] page={page_number} rows={len(rows)} unique={len(collected)} (+{len(collected)-before})")
-
         soup = BeautifulSoup(html, "html.parser")
         target_page = page_number + 1
         pager = pager_postback(soup, target_page)
@@ -217,8 +213,9 @@ def map_hitters(basic1, basic2):
             "AVG": i(r, "AVG"), "G": i(r, "G"), "PA": i(r, "PA"), "AB": i(r, "AB"),
             "R": i(r, "R"), "H": i(r, "H"), "2B": i(r, "2B"), "3B": i(r, "3B"),
             "HR": i(r, "HR"), "TB": i(r, "TB"), "RBI": i(r, "RBI"), "SAC": i(r, "SAC"), "SF": i(r, "SF"),
-            "BB": i(e, "BB"), "HBP": i(e, "HBP"), "SO": i(e, "SO"), "GDP": i(e, "GDP"),
-            "SLG": i(e, "SLG"), "OBP": i(e, "OBP"), "OPS": i(e, "OPS"), "RISP": i(e, "RISP"),
+            "BB": i(e, "BB"), "IBB": i(e, "IBB"), "HBP": i(e, "HBP"), "SO": i(e, "SO"), "GDP": i(e, "GDP"),
+            "SLG": i(e, "SLG"), "OBP": i(e, "OBP"), "OPS": i(e, "OPS"), "MH": i(e, "MH"),
+            "RISP": i(e, "RISP"), "PH-BA": i(e, "PH-BA"),
         })
     return out
 
@@ -236,9 +233,30 @@ def map_pitchers(rows):
     return out
 
 
-def map_team_hitting(rows):
-    fields = ["AVG", "G", "AB", "R", "H", "2B", "3B", "HR", "TB", "RBI", "SB", "CS", "BB", "HBP", "SO", "GDP", "E"]
-    return [{"rank": i(r, "순위"), "team": r.get("팀명", ""), **{f: i(r, f) for f in fields}} for r in rows]
+def map_team_hitting(rows, detail_rows, hitters):
+    details = {clean(r.get("팀명")): r for r in detail_rows}
+    sacrifices = {}
+    for p in hitters:
+        team = clean(p.get("team"))
+        if not team:
+            continue
+        s = sacrifices.setdefault(team, {"SAC": 0, "SF": 0})
+        s["SAC"] += p.get("SAC") or 0
+        s["SF"] += p.get("SF") or 0
+    base_fields = ["AVG", "G", "AB", "R", "H", "2B", "3B", "HR", "TB", "RBI", "SB", "CS", "BB", "HBP", "SO", "GDP", "E"]
+    detail_fields = ["IBB", "SLG", "OBP", "OPS", "MH", "RISP", "PH-BA"]
+    out = []
+    for r in rows:
+        team = clean(r.get("팀명"))
+        d = details.get(team, {})
+        out.append({
+            "rank": i(r, "순위"), "team": team,
+            **{f: i(r, f) for f in base_fields},
+            "SAC": sacrifices.get(team, {}).get("SAC", 0),
+            "SF": sacrifices.get(team, {}).get("SF", 0),
+            **{f: i(d, f) for f in detail_fields},
+        })
+    return out
 
 
 def map_team_pitching(rows):
@@ -247,10 +265,11 @@ def map_team_pitching(rows):
 
 
 def main():
-    hitter1, hitter1_pages = fetch_all_player_pages(URLS["hitter1"], ["순위", "선수명", "팀명", "AVG", "HR", "RBI"], "hitter-basic1")
-    hitter2, hitter2_pages = fetch_all_player_pages(URLS["hitter2"], ["순위", "선수명", "팀명", "OBP", "SLG", "OPS"], "hitter-basic2")
+    hitter1, hitter1_pages = fetch_all_player_pages(URLS["hitter1"], ["순위", "선수명", "팀명", "AVG", "HR", "RBI", "SAC", "SF"], "hitter-basic1")
+    hitter2, hitter2_pages = fetch_all_player_pages(URLS["hitter2"], ["순위", "선수명", "팀명", "OBP", "SLG", "OPS", "GDP", "PH-BA"], "hitter-basic2")
     pitcher, pitcher_pages = fetch_all_player_pages(URLS["pitcher"], ["순위", "선수명", "팀명", "ERA", "SV", "HLD", "WHIP"], "pitcher-basic1")
-    team_hitting = parse_table(URLS["team_hitting"], ["순위", "팀명", "AVG", "HR", "RBI"])
+    team_hitting = parse_table(URLS["team_hitting"], ["순위", "팀명", "AVG", "HR", "RBI", "GDP"])
+    team_hitting2 = parse_table(URLS["team_hitting2"], ["순위", "팀명", "OPS", "GDP", "RISP", "PH-BA"])
     team_pitching = parse_table(URLS["team_pitching"], ["순위", "팀명", "ERA", "W", "L"])
 
     hitters = map_hitters(hitter1, hitter2)
@@ -260,7 +279,7 @@ def main():
         "updatedAt": now.isoformat(timespec="seconds"),
         "season": now.year,
         "source": "KBO 공식 기록실",
-        "scopeNote": "KBO 1군 정규시즌에서 기록이 있는 타자·투수의 전체 페이지를 순회해 수집합니다.",
+        "scopeNote": "KBO 1군 정규시즌에서 기록이 있는 타자·투수의 전체 페이지를 순회해 수집합니다. 타자 세부기록과 팀 대타·득점권 기록도 함께 수집합니다.",
         "playerCoverage": {
             "hitters": len(hitters),
             "pitchers": len(pitchers),
@@ -271,7 +290,7 @@ def main():
         "sourceUrls": URLS,
         "hitters": hitters,
         "pitchers": pitchers,
-        "teamHitting": map_team_hitting(team_hitting),
+        "teamHitting": map_team_hitting(team_hitting, team_hitting2, hitters),
         "teamPitching": map_team_pitching(team_pitching),
     }
     target = Path("data/kbo-records.json")
