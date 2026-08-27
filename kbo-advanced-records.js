@@ -4,7 +4,7 @@
   const state={cache:null,loading:false,observer:null,scheduled:false};
   const $=(s,r=document)=>r.querySelector(s);
   const norm=name=>{const raw=String(name||'').trim();const map={'SAMSUNG':'삼성','LIONS':'삼성','삼성':'삼성','LG':'LG','엘지':'LG','KT':'KT','SSG':'SSG','KIA':'KIA','기아':'KIA','두산':'두산','DOOSAN':'두산','한화':'한화','HANWHA':'한화','롯데':'롯데','LOTTE':'롯데','키움':'키움','KIWOOM':'키움','HEROES':'키움','NC':'NC'};return map[raw]||map[raw.toUpperCase()]||raw};
-  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]));
   const fmt=(v,d)=>v==null||!Number.isFinite(Number(v))?'-':Number(v).toFixed(d);
 
   const HITTER_COLS=[
@@ -147,6 +147,14 @@ body.theme-groupware #records .eo-advanced-inline-badge{border-radius:2px!import
     requestAnimationFrame(()=>{state.scheduled=false;mergeIntoPlayerTable()});
   }
 
+  function isMeaningfulMutation(mutations){
+    return mutations.some(m=>{
+      if(m.type!=='childList'||!m.addedNodes.length)return false;
+      if(m.target?.id==='eoKboRecordBody')return true;
+      return [...m.addedNodes].some(node=>node.nodeType===1&&(node.matches?.('.eo-record-table')||node.querySelector?.('.eo-record-table')));
+    });
+  }
+
   async function load(){
     if(state.loading||state.cache)return;
     state.loading=true;
@@ -161,7 +169,7 @@ body.theme-groupware #records .eo-advanced-inline-badge{border-radius:2px!import
     installStyle();cleanupLegacy();load();
     const records=$('#records');
     if(records&&typeof MutationObserver!=='undefined'){
-      state.observer=new MutationObserver(scheduleMerge);
+      state.observer=new MutationObserver(mutations=>{if(isMeaningfulMutation(mutations))scheduleMerge()});
       state.observer.observe(records,{childList:true,subtree:true});
     }
     document.body.addEventListener('click',e=>{
