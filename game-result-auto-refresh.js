@@ -41,7 +41,7 @@
     if(document.getElementById('eoKboSituationalRecordsModule'))return;
     const s=document.createElement('script');
     s.id='eoKboSituationalRecordsModule';
-    s.src='kbo-situational-records.js?v=20260827-1';
+    s.src='kbo-situational-records.js?v=20260827-2';
     s.defer=true;
     document.head.appendChild(s);
   }
