@@ -4,6 +4,7 @@
   const HEADER_LABELS={
     AVG:'타율', G:'경기', PA:'타석', AB:'타수', R:'득점', H:'안타', '2B':'2루타', '3B':'3루타', HR:'홈런', TB:'루타', RBI:'타점',
     SAC:'희생번트', SF:'희생플라이', BB:'볼넷', HBP:'몸에 맞는 공', SO:'탈삼진', GDP:'병살타', SB:'도루', CS:'도루실패', E:'실책',
+    IBB:'고의4구', MH:'멀티히트', 'PH-BA':'대타 타율',
     OBP:'출루율', SLG:'장타율', OPS:'OPS (출루율+장타율)', RISP:'득점권 타율',
     ERA:'평균자책점', W:'승', L:'패', SV:'세이브', HLD:'홀드', IP:'이닝', WHIP:'이닝당 출루허용률 (WHIP)',
     ER:'자책점', RA:'실점', BF:'상대한 타자', QS:'퀄리티스타트'
@@ -18,7 +19,7 @@
   const HITTER_QUALIFIED_KEYS=new Set(['AVG','OBP','SLG','OPS','RISP','wRC+','BABIP','wOBA','ISO','BB%','K%','SecA']);
   const PITCHER_QUALIFIED_KEYS=new Set(['ERA','WHIP','FIP','ERA-','FIP-','BABIP','K/9','BB/9','K/BB','K%','BB%','HR/9','H/9','LOB%']);
   const TEAM_NAMES=new Set(['삼성','LG','KT','SSG','KIA','두산','한화','롯데','키움','NC']);
-  let observer=null;
+  let observer=null,scheduled=false;
 
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const normTeam=name=>{const raw=String(name||'').trim();const map={'SAMSUNG':'삼성','LIONS':'삼성','삼성':'삼성','LG':'LG','엘지':'LG','KT':'KT','SSG':'SSG','KIA':'KIA','기아':'KIA','두산':'두산','DOOSAN':'두산','한화':'한화','HANWHA':'한화','롯데':'롯데','LOTTE':'롯데','키움':'키움','KIWOOM':'키움','HEROES':'키움','NC':'NC'};return map[raw]||map[raw.toUpperCase()]||raw};
@@ -104,34 +105,26 @@
     return headers.findIndex(th=>metricKey(th)===key||String(th.dataset.sortLabel||'').trim()===key||String(th.textContent||'').replace(/[▲▼]/g,'').trim()===key);
   }
 
-  function qualificationForRow(table,row,type,counts){
-    const teamIdx=headerIndex(table,'팀');
-    const team=normTeam(row.cells[teamIdx>=0?teamIdx:1]?.textContent||'');
-    const games=Number(counts[team]||0);
-    if(!games)return null;
-    if(type==='hitter'){
-      const paIdx=headerIndex(table,'PA')>=0?headerIndex(table,'PA'):headerIndex(table,'타석');
-      const pa=Number(String(row.cells[paIdx]?.textContent||'').replace(/,/g,''));
-      if(!Number.isFinite(pa))return null;
-      return pa>=games*3.1;
-    }
-    if(type==='pitcher'){
-      let ipIdx=headerIndex(table,'IP');
-      if(ipIdx<0)ipIdx=headerIndex(table,'이닝');
-      const ip=parseInnings(row.cells[ipIdx]?.textContent||'');
-      if(ip==null)return null;
-      return ip+1e-9>=games;
-    }
-    return null;
-  }
-
   function markQualifications(table){
     const type=playerTypeForTable(table);if(!type||!table.tBodies[0])return;
     const counts=teamGameCounts();
+    const teamIdx=headerIndex(table,'팀');
+    let valueIdx=-1;
+    if(type==='hitter')valueIdx=headerIndex(table,'PA')>=0?headerIndex(table,'PA'):headerIndex(table,'타석');
+    else valueIdx=headerIndex(table,'IP')>=0?headerIndex(table,'IP'):headerIndex(table,'이닝');
     [...table.tBodies[0].rows].forEach(row=>{
-      const q=qualificationForRow(table,row,type,counts);
-      if(q==null)delete row.dataset.eoQualified;
-      else row.dataset.eoQualified=q?'1':'0';
+      const team=normTeam(row.cells[teamIdx>=0?teamIdx:1]?.textContent||'');
+      const games=Number(counts[team]||0);
+      if(!games||valueIdx<0){delete row.dataset.eoQualified;return}
+      if(type==='hitter'){
+        const pa=Number(String(row.cells[valueIdx]?.textContent||'').replace(/,/g,''));
+        if(!Number.isFinite(pa)){delete row.dataset.eoQualified;return}
+        row.dataset.eoQualified=pa>=games*3.1?'1':'0';
+      }else{
+        const ip=parseInnings(row.cells[valueIdx]?.textContent||'');
+        if(ip==null){delete row.dataset.eoQualified;return}
+        row.dataset.eoQualified=ip+1e-9>=games?'1':'0';
+      }
     });
   }
 
@@ -150,29 +143,28 @@
     const th=table.tHead?.querySelectorAll('th')?.[col];
     markQualifications(table);
     const qualificationFirst=requiresQualification(table,th);
-    const rows=[...tbody.rows];
+    const rows=[...tbody.rows].map(row=>({
+      row,
+      sort:sortableValue(row.cells[col]?.textContent,header),
+      qualified:row.dataset.eoQualified,
+      name:row.querySelector('.name-cell')?.textContent||row.cells[0]?.textContent||''
+    }));
     rows.sort((a,b)=>{
-      if(qualificationFirst){
-        const aq=a.dataset.eoQualified,bq=b.dataset.eoQualified;
-        if(aq!==bq){
-          if(aq==='1')return -1;
-          if(bq==='1')return 1;
-          if(aq==='0')return -1;
-          if(bq==='0')return 1;
-        }
+      if(qualificationFirst&&a.qualified!==b.qualified){
+        if(a.qualified==='1')return -1;
+        if(b.qualified==='1')return 1;
+        if(a.qualified==='0')return -1;
+        if(b.qualified==='0')return 1;
       }
-      const av=sortableValue(a.cells[col]?.textContent,header),bv=sortableValue(b.cells[col]?.textContent,header);
       let result=0;
-      if(av.type==='number'&&bv.type==='number')result=av.value-bv.value;
-      else result=String(av.value).localeCompare(String(bv.value),'ko-KR',{numeric:true,sensitivity:'base'});
-      if(result===0){
-        const at=a.querySelector('.name-cell')?.textContent||a.cells[0]?.textContent||'';
-        const bt=b.querySelector('.name-cell')?.textContent||b.cells[0]?.textContent||'';
-        result=at.localeCompare(bt,'ko-KR');
-      }
+      if(a.sort.type==='number'&&b.sort.type==='number')result=a.sort.value-b.sort.value;
+      else result=String(a.sort.value).localeCompare(String(b.sort.value),'ko-KR',{numeric:true,sensitivity:'base'});
+      if(result===0)result=String(a.name).localeCompare(String(b.name),'ko-KR');
       return dir==='asc'?result:-result;
     });
-    rows.forEach(row=>tbody.appendChild(row));
+    const frag=document.createDocumentFragment();
+    rows.forEach(item=>frag.appendChild(item.row));
+    tbody.appendChild(frag);
     table.dataset.sortCol=String(col);table.dataset.sortDir=dir;
     updateArrows(table,col,dir);
   }
@@ -283,11 +275,27 @@
     installStyle();translateVisibleLabels(root);
   }
 
+  function scheduleApply(){
+    if(scheduled)return;scheduled=true;
+    requestAnimationFrame(()=>{scheduled=false;apply()});
+  }
+
+  function isMeaningfulMutation(mutations){
+    return mutations.some(m=>{
+      if(m.type!=='childList'||!m.addedNodes.length)return false;
+      if(m.target?.id==='eoKboRecordBody')return true;
+      return [...m.addedNodes].some(node=>{
+        if(node.nodeType!==1)return false;
+        return node.matches?.('th[data-advanced-key],th[data-situational-key],.eo-record-table')||node.querySelector?.('th[data-advanced-key],th[data-situational-key],.eo-record-table');
+      });
+    });
+  }
+
   function install(){
     installStyle();apply();
     const records=document.getElementById('records');
     if(records&&typeof MutationObserver!=='undefined'){
-      observer=new MutationObserver(()=>requestAnimationFrame(apply));
+      observer=new MutationObserver(mutations=>{if(isMeaningfulMutation(mutations))scheduleApply()});
       observer.observe(records,{childList:true,subtree:true});
     }
   }
