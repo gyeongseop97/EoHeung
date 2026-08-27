@@ -23,6 +23,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -34,6 +36,7 @@ jobs:
           git config user.email github-actions@github.com
           git add data/kbo-records.json data/kbo-advanced-records.json
           git diff --cached --quiet || git commit -m "Update KBO records cache"
+          git pull --rebase origin main
           git push
 
 # Situational hitting fields enabled: SAC, SF, GDP, IBB, MH, RISP, PH-BA
