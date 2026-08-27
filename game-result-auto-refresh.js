@@ -23,7 +23,7 @@
     if(document.getElementById('eoKboRecordsSortable'))return;
     const s=document.createElement('script');
     s.id='eoKboRecordsSortable';
-    s.src='kbo-records-table-enhancement.js?v=20260826-3';
+    s.src='kbo-records-table-enhancement.js?v=20260827-1';
     s.defer=true;
     document.head.appendChild(s);
   }
