@@ -1,0 +1,33 @@
+name: Fix index literal newlines
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-index-literal-newlines.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove literal newline text from index
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          before = s.count('\\n  <')
+          s = s.replace('\\n  <', '\n  <')
+          p.write_text(s, encoding='utf-8')
+          print(f'replaced={before}')
+          PY
+      - name: Commit cleanup
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add index.html
+          git diff --cached --quiet || git commit -m "Remove stray literal newline text"
+          git push
