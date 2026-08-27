@@ -4,7 +4,7 @@
   const TEAMS=['삼성','LG','KT','SSG','KIA','두산','한화','롯데','키움','NC'];
   const TEAM_COLORS={삼성:'#074CA1',LG:'#C30452',KT:'#111111',SSG:'#CE0E2D',KIA:'#EA0029',두산:'#131230',한화:'#FF6600',롯데:'#041E42',키움:'#820024',NC:'#315288'};
   const ui={main:'eoheung',kbo:'team',team:'overall',player:'hitter',teamFilter:'ALL',search:'',sort:'AVG'};
-  let cache=null,cacheLoading=false,observer=null,lastGameFingerprint='';
+  let cache=null,cacheLoading=false,lastGameFingerprint='',searchTimer=null;
   const $=(s,r=document)=>r.querySelector(s);
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const norm=name=>{const raw=String(name||'').trim();const map={'SAMSUNG':'삼성','LIONS':'삼성','삼성':'삼성','LG':'LG','엘지':'LG','KT':'KT','SSG':'SSG','KIA':'KIA','기아':'KIA','두산':'두산','DOOSAN':'두산','한화':'한화','HANWHA':'한화','롯데':'롯데','LOTTE':'롯데','키움':'키움','KIWOOM':'키움','HEROES':'키움','NC':'NC'};return map[raw]||map[raw.toUpperCase()]||raw};
@@ -174,11 +174,20 @@ body.theme-groupware #records .eo-record-main-tabs,body.theme-groupware #records
       if(e.target.id==='eoPlayerTeam'){ui.teamFilter=e.target.value;renderKbo()}
       if(e.target.id==='eoPlayerSort'){ui.sort=e.target.value;renderKbo()}
     });
-    document.body.addEventListener('input',e=>{if(e.target.id==='eoPlayerSearch'){ui.search=e.target.value;const pos=e.target.selectionStart;playerView();const n=$('#eoPlayerSearch');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}}});
+    document.body.addEventListener('input',e=>{
+      if(e.target.id!=='eoPlayerSearch')return;
+      ui.search=e.target.value;
+      const pos=e.target.selectionStart;
+      if(searchTimer)clearTimeout(searchTimer);
+      searchTimer=setTimeout(()=>{
+        playerView();
+        const n=$('#eoPlayerSearch');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}
+      },140);
+    });
   }
 
   function gameFingerprint(){const rows=gameRows(),last=rows[rows.length-1];return `${rows.length}|${last?.game_date||''}|${last?.away_score||''}|${last?.home_score||''}`}
   function normalize(){const x=ensureStructure();if(!x)return;[...x.rec.children].forEach(child=>{if(child!==x.tabs&&child!==x.eo&&child!==x.kbo)x.eo.appendChild(child)});const fp=gameFingerprint();if(fp!==lastGameFingerprint){lastGameFingerprint=fp;if(ui.main==='kbo'&&ui.kbo==='team'&&ui.team==='overall')renderKbo()}}
-  function install(){installStyle();ensureStructure();bind();normalize();setInterval(normalize,1500);if(typeof MutationObserver!=='undefined'){observer=new MutationObserver(()=>requestAnimationFrame(normalize));observer.observe($('#records'),{childList:true})}}
+  function install(){installStyle();ensureStructure();bind();normalize();setInterval(()=>{if(ui.main==='kbo'&&ui.kbo==='team'&&ui.team==='overall'&&$('#records')?.classList.contains('active'))normalize()},30000)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
