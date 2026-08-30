@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-31T06:06:44+09:00",
+  "updatedAt": "2026-08-31T08:30:29+09:00",
   "season": 2026,
   "source": "네이버 스포츠 KBO + KBO 공식 기록실",
   "sourceNote": "WAR·wRC+·wOBA는 네이버 스포츠 KBO 시즌 기록값, BABIP·ISO·BB%·K%와 투수 FIP·K/9 등은 KBO 공식 누적기록을 이용해 계산했습니다. 투수 BABIP는 네이버 직접값이 없을 때 BIP-outs 방식 추정값입니다.",
