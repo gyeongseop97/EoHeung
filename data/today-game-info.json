@@ -1,25 +1,30 @@
 {
-  "date": "2026-08-31",
-  "updatedAt": "2026-08-30T17:59:28.398Z",
-  "gameId": "",
-  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-08-31",
-  "sourcePreview": "",
-  "sourceLineup": "",
-  "checkedApis": [],
-  "message": "오늘 삼성 경기 ID를 찾지 못했습니다.",
+  "date": "2026-09-01",
+  "updatedAt": "2026-08-31T20:30:39.062Z",
+  "gameId": "20260901LTSS02026",
+  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-09-01",
+  "sourcePreview": "https://m.sports.naver.com/game/20260901LTSS02026/preview",
+  "sourceLineup": "https://m.sports.naver.com/game/20260901LTSS02026/lineup",
+  "checkedApis": [
+    "https://api-gw.sports.naver.com/schedule/games/20260901LTSS02026/lineup",
+    "https://api-gw.sports.naver.com/schedule/games/20260901LTSS02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
+    "https://api-gw.sports.naver.com/schedule/games/20260901LTSS02026/preview",
+    "https://api-gw.sports.naver.com/schedule/games/20260901LTSS02026/record"
+  ],
+  "message": "네이버 스포츠 라인업 기준 자동 수집 (naver-schedule-api)",
   "away": {
-    "team": "",
-    "code": "",
-    "starter": "",
+    "code": "LT",
+    "team": "롯데",
+    "starter": "로드리게스",
     "starterThrows": "",
-    "starterImage": ""
+    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/56531.jpg"
   },
   "home": {
-    "team": "삼성",
     "code": "SS",
-    "starter": "",
+    "team": "삼성",
+    "starter": "보스",
     "starterThrows": "",
-    "starterImage": ""
+    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/56402.jpg"
   },
   "lineupReady": false,
   "lineups": {
@@ -37,16 +42,16 @@
     },
     "starters": {
       "away": {
-        "name": "",
+        "name": "로드리게스",
         "throws": "",
-        "image": "",
-        "playerCode": ""
+        "image": "data/player-images/56531.jpg",
+        "playerCode": "56531"
       },
       "home": {
-        "name": "",
+        "name": "보스",
         "throws": "",
-        "image": "",
-        "playerCode": ""
+        "image": "data/player-images/56402.jpg",
+        "playerCode": "56402"
       }
     }
   }
