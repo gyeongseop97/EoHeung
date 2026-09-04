@@ -1,30 +1,30 @@
 {
-  "date": "2026-09-04",
-  "updatedAt": "2026-09-03T17:10:14.646Z",
-  "gameId": "20260904SSLG02026",
-  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-09-04",
-  "sourcePreview": "https://m.sports.naver.com/game/20260904SSLG02026/preview",
-  "sourceLineup": "https://m.sports.naver.com/game/20260904SSLG02026/lineup",
+  "date": "2026-09-05",
+  "updatedAt": "2026-09-04T18:11:18.937Z",
+  "gameId": "20260905SSLG02026",
+  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-09-05",
+  "sourcePreview": "https://m.sports.naver.com/game/20260905SSLG02026/preview",
+  "sourceLineup": "https://m.sports.naver.com/game/20260905SSLG02026/lineup",
   "checkedApis": [
-    "https://api-gw.sports.naver.com/schedule/games/20260904SSLG02026/lineup",
-    "https://api-gw.sports.naver.com/schedule/games/20260904SSLG02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
-    "https://api-gw.sports.naver.com/schedule/games/20260904SSLG02026/preview",
-    "https://api-gw.sports.naver.com/schedule/games/20260904SSLG02026/record"
+    "https://api-gw.sports.naver.com/schedule/games/20260905SSLG02026/lineup",
+    "https://api-gw.sports.naver.com/schedule/games/20260905SSLG02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
+    "https://api-gw.sports.naver.com/schedule/games/20260905SSLG02026/preview",
+    "https://api-gw.sports.naver.com/schedule/games/20260905SSLG02026/record"
   ],
   "message": "네이버 스포츠 라인업 기준 자동 수집 (naver-schedule-api)",
   "away": {
     "code": "SS",
     "team": "삼성",
-    "starter": "페덱",
+    "starter": "이승현",
     "starterThrows": "",
-    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/56459.jpg"
+    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/51454.jpg"
   },
   "home": {
     "code": "LG",
     "team": "LG",
-    "starter": "카라스코",
+    "starter": "톨허스트",
     "starterThrows": "",
-    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/56103.jpg"
+    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/55130.jpg"
   },
   "lineupReady": false,
   "lineups": {
@@ -42,16 +42,16 @@
     },
     "starters": {
       "away": {
-        "name": "페덱",
+        "name": "이승현",
         "throws": "",
-        "image": "data/player-images/56459.jpg",
-        "playerCode": "56459"
+        "image": "data/player-images/51454.jpg",
+        "playerCode": "51454"
       },
       "home": {
-        "name": "카라스코",
+        "name": "톨허스트",
         "throws": "",
-        "image": "data/player-images/56103.jpg",
-        "playerCode": "56103"
+        "image": "data/player-images/55130.jpg",
+        "playerCode": "55130"
       }
     }
   }
