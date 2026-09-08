@@ -1,30 +1,30 @@
 {
-  "date": "2026-09-08",
-  "updatedAt": "2026-09-07T16:53:40.697Z",
-  "gameId": "20260908HTSS02026",
-  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-09-08",
-  "sourcePreview": "https://m.sports.naver.com/game/20260908HTSS02026/preview",
-  "sourceLineup": "https://m.sports.naver.com/game/20260908HTSS02026/lineup",
+  "date": "2026-09-09",
+  "updatedAt": "2026-09-08T17:53:24.240Z",
+  "gameId": "20260909KTSS02026",
+  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-09-09",
+  "sourcePreview": "https://m.sports.naver.com/game/20260909KTSS02026/preview",
+  "sourceLineup": "https://m.sports.naver.com/game/20260909KTSS02026/lineup",
   "checkedApis": [
-    "https://api-gw.sports.naver.com/schedule/games/20260908HTSS02026/lineup",
-    "https://api-gw.sports.naver.com/schedule/games/20260908HTSS02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
-    "https://api-gw.sports.naver.com/schedule/games/20260908HTSS02026/preview",
-    "https://api-gw.sports.naver.com/schedule/games/20260908HTSS02026/record"
+    "https://api-gw.sports.naver.com/schedule/games/20260909KTSS02026/lineup",
+    "https://api-gw.sports.naver.com/schedule/games/20260909KTSS02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
+    "https://api-gw.sports.naver.com/schedule/games/20260909KTSS02026/preview",
+    "https://api-gw.sports.naver.com/schedule/games/20260909KTSS02026/record"
   ],
   "message": "네이버 스포츠 라인업 기준 자동 수집 (naver-schedule-api)",
   "away": {
-    "code": "HT",
-    "team": "KIA",
-    "starter": "시라카와",
+    "code": "KT",
+    "team": "KT",
+    "starter": "고영표",
     "starterThrows": "",
-    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/54843.jpg"
+    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/64001.jpg"
   },
   "home": {
     "code": "SS",
     "team": "삼성",
-    "starter": "최원태",
+    "starter": "원태인",
     "starterThrows": "",
-    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/65320.jpg"
+    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/69446.jpg"
   },
   "lineupReady": false,
   "lineups": {
@@ -42,16 +42,16 @@
     },
     "starters": {
       "away": {
-        "name": "시라카와",
+        "name": "고영표",
         "throws": "",
-        "image": "data/player-images/54843.jpg",
-        "playerCode": "54843"
+        "image": "data/player-images/64001.jpg",
+        "playerCode": "64001"
       },
       "home": {
-        "name": "최원태",
+        "name": "원태인",
         "throws": "",
-        "image": "data/player-images/65320.jpg",
-        "playerCode": "65320"
+        "image": "data/player-images/69446.jpg",
+        "playerCode": "69446"
       }
     }
   }
