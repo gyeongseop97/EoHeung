@@ -1,30 +1,25 @@
 {
-  "date": "2026-09-13",
-  "updatedAt": "2026-09-12T17:01:24.242Z",
-  "gameId": "20260913LGSS02026",
-  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-09-13",
-  "sourcePreview": "https://m.sports.naver.com/game/20260913LGSS02026/preview",
-  "sourceLineup": "https://m.sports.naver.com/game/20260913LGSS02026/lineup",
-  "checkedApis": [
-    "https://api-gw.sports.naver.com/schedule/games/20260913LGSS02026/lineup",
-    "https://api-gw.sports.naver.com/schedule/games/20260913LGSS02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
-    "https://api-gw.sports.naver.com/schedule/games/20260913LGSS02026/preview",
-    "https://api-gw.sports.naver.com/schedule/games/20260913LGSS02026/record"
-  ],
-  "message": "네이버 스포츠 라인업 기준 자동 수집 (naver-schedule-api)",
+  "date": "2026-09-14",
+  "updatedAt": "2026-09-13T17:37:58.230Z",
+  "gameId": "",
+  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-09-14",
+  "sourcePreview": "",
+  "sourceLineup": "",
+  "checkedApis": [],
+  "message": "오늘 삼성 경기 ID를 찾지 못했습니다.",
   "away": {
-    "code": "LG",
-    "team": "LG",
-    "starter": "임찬규",
+    "team": "",
+    "code": "",
+    "starter": "",
     "starterThrows": "",
-    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/61101.jpg"
+    "starterImage": ""
   },
   "home": {
-    "code": "SS",
     "team": "삼성",
-    "starter": "최원태",
+    "code": "SS",
+    "starter": "",
     "starterThrows": "",
-    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/65320.jpg"
+    "starterImage": ""
   },
   "lineupReady": false,
   "lineups": {
@@ -42,16 +37,16 @@
     },
     "starters": {
       "away": {
-        "name": "임찬규",
+        "name": "",
         "throws": "",
-        "image": "data/player-images/61101.jpg",
-        "playerCode": "61101"
+        "image": "",
+        "playerCode": ""
       },
       "home": {
-        "name": "최원태",
+        "name": "",
         "throws": "",
-        "image": "data/player-images/65320.jpg",
-        "playerCode": "65320"
+        "image": "",
+        "playerCode": ""
       }
     }
   }
