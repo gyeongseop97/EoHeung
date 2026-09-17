@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "trailingSlash": false,
-  "ignoreCommand": "BASE=\"${VERCEL_GIT_PREVIOUS_SHA:-HEAD^}\"; CHANGED=\"$(git diff --name-only \"$BASE\" HEAD 2>/dev/null || git diff --name-only HEAD^ HEAD)\"; [ -n \"$CHANGED\" ] && ! echo \"$CHANGED\" | grep -qv '^data/'",
+  "ignoreCommand": "BASE=\"${VERCEL_GIT_PREVIOUS_SHA:-HEAD^}\"; CHANGED=\"$(git diff --name-only \"$BASE\" HEAD 2>/dev/null || git diff --name-only HEAD^ HEAD)\"; ! echo \"$CHANGED\" | grep -qv '^data/'",
   "rewrites": [
     {
       "source": "/data/:path*",
