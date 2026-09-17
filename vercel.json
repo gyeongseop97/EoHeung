@@ -1,10 +1,26 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "trailingSlash": false,
+  "ignoreCommand": "BASE=\"${VERCEL_GIT_PREVIOUS_SHA:-HEAD^}\"; CHANGED=\"$(git diff --name-only \"$BASE\" HEAD 2>/dev/null || git diff --name-only HEAD^ HEAD)\"; [ -n \"$CHANGED\" ] && ! echo \"$CHANGED\" | grep -qv '^data/'",
   "rewrites": [
+    {
+      "source": "/data/:path*",
+      "destination": "https://raw.githubusercontent.com/gyeongseop97/EoHeung/main/data/:path*"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/data/:path*",
+      "headers": [
+        {
+          "key": "x-vercel-enable-rewrite-caching",
+          "value": "0"
+        }
+      ]
     }
   ]
 }
