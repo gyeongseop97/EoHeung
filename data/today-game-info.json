@@ -1,30 +1,25 @@
 {
-  "date": "2026-09-22",
-  "updatedAt": "2026-09-21T19:30:30.018Z",
-  "gameId": "20260922NCSS02026",
-  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-09-22",
-  "sourcePreview": "https://m.sports.naver.com/game/20260922NCSS02026/preview",
-  "sourceLineup": "https://m.sports.naver.com/game/20260922NCSS02026/lineup",
-  "checkedApis": [
-    "https://api-gw.sports.naver.com/schedule/games/20260922NCSS02026/lineup",
-    "https://api-gw.sports.naver.com/schedule/games/20260922NCSS02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
-    "https://api-gw.sports.naver.com/schedule/games/20260922NCSS02026/preview",
-    "https://api-gw.sports.naver.com/schedule/games/20260922NCSS02026/record"
-  ],
-  "message": "네이버 스포츠 라인업 기준 자동 수집 (naver-schedule-api)",
+  "date": "2026-09-23",
+  "updatedAt": "2026-09-22T15:44:30.598Z",
+  "gameId": "",
+  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-09-23",
+  "sourcePreview": "",
+  "sourceLineup": "",
+  "checkedApis": [],
+  "message": "오늘 삼성 경기 ID를 찾지 못했습니다.",
   "away": {
-    "code": "NC",
-    "team": "NC",
-    "starter": "클레빈저",
+    "team": "",
+    "code": "",
+    "starter": "",
     "starterThrows": "",
-    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/56939.jpg"
+    "starterImage": ""
   },
   "home": {
-    "code": "SS",
     "team": "삼성",
-    "starter": "페덱",
+    "code": "SS",
+    "starter": "",
     "starterThrows": "",
-    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/56459.jpg"
+    "starterImage": ""
   },
   "lineupReady": false,
   "lineups": {
@@ -42,16 +37,16 @@
     },
     "starters": {
       "away": {
-        "name": "클레빈저",
+        "name": "",
         "throws": "",
-        "image": "data/player-images/56939.jpg",
-        "playerCode": "56939"
+        "image": "",
+        "playerCode": ""
       },
       "home": {
-        "name": "페덱",
+        "name": "",
         "throws": "",
-        "image": "data/player-images/56459.jpg",
-        "playerCode": "56459"
+        "image": "",
+        "playerCode": ""
       }
     }
   }
