@@ -1,25 +1,30 @@
 {
-  "date": "2026-09-23",
-  "updatedAt": "2026-09-22T15:44:30.598Z",
-  "gameId": "",
-  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-09-23",
-  "sourcePreview": "",
-  "sourceLineup": "",
-  "checkedApis": [],
-  "message": "오늘 삼성 경기 ID를 찾지 못했습니다.",
+  "date": "2026-09-24",
+  "updatedAt": "2026-09-23T18:35:30.924Z",
+  "gameId": "20260924SSSK02026",
+  "sourceSchedule": "https://m.sports.naver.com/kbaseball/schedule/index?date=2026-09-24",
+  "sourcePreview": "https://m.sports.naver.com/game/20260924SSSK02026/preview",
+  "sourceLineup": "https://m.sports.naver.com/game/20260924SSSK02026/lineup",
+  "checkedApis": [
+    "https://api-gw.sports.naver.com/schedule/games/20260924SSSK02026/lineup",
+    "https://api-gw.sports.naver.com/schedule/games/20260924SSSK02026?fields=basic,schedule,score,relay,lineup,lineUp,preview,record",
+    "https://api-gw.sports.naver.com/schedule/games/20260924SSSK02026/preview",
+    "https://api-gw.sports.naver.com/schedule/games/20260924SSSK02026/record"
+  ],
+  "message": "네이버 스포츠 라인업 기준 자동 수집 (naver-schedule-api)",
   "away": {
-    "team": "",
-    "code": "",
-    "starter": "",
+    "code": "SS",
+    "team": "삼성",
+    "starter": "후라도",
     "starterThrows": "",
-    "starterImage": ""
+    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/53375.jpg"
   },
   "home": {
-    "team": "삼성",
-    "code": "SS",
-    "starter": "",
+    "code": "SK",
+    "team": "SSG",
+    "starter": "김민준",
     "starterThrows": "",
-    "starterImage": ""
+    "starterImage": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/56840.jpg"
   },
   "lineupReady": false,
   "lineups": {
@@ -37,16 +42,16 @@
     },
     "starters": {
       "away": {
-        "name": "",
+        "name": "후라도",
         "throws": "",
-        "image": "",
-        "playerCode": ""
+        "image": "data/player-images/53375.jpg",
+        "playerCode": "53375"
       },
       "home": {
-        "name": "",
+        "name": "김민준",
         "throws": "",
-        "image": "",
-        "playerCode": ""
+        "image": "data/player-images/56840.jpg",
+        "playerCode": "56840"
       }
     }
   }
