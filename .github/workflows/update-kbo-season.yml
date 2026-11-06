@@ -7,6 +7,8 @@ on:
         description: Season year (blank = current KST year)
         required: false
         type: string
+  schedule:
+    - cron: '*/30 * * * *'
 
 permissions:
   contents: write
