@@ -80,7 +80,7 @@ body.theme-groupware #records .eo-record-main-tabs,body.theme-groupware #records
   function gameRows(){
     if(typeof state==='undefined')return [];
     const yr=String(currentSeason());
-    return (state.allGames||[]).filter(g=>String(g.game_date||'').startsWith(yr+'-')&&String(g.status||'').toUpperCase()==='FINISHED'&&num(g.away_score)!=null&&num(g.home_score)!=null)
+    return (state.allGames||[]).filter(g=>EoSeason.isRegular(g,yr)&&String(g.status||'').toUpperCase()==='FINISHED'&&num(g.away_score)!=null&&num(g.home_score)!=null)
       .map(g=>({...g,away_team:norm(g.away_team),home_team:norm(g.home_team),away_score:Number(g.away_score),home_score:Number(g.home_score)}))
       .filter(g=>TEAMS.includes(g.away_team)&&TEAMS.includes(g.home_team));
   }
@@ -159,7 +159,7 @@ body.theme-groupware #records .eo-record-main-tabs,body.theme-groupware #records
 
   async function loadCache(force=false){
     if(cacheLoading)return;if(cache&&!force){updateSource();return}cacheLoading=true;updateSource();
-    try{const r=await fetch(`data/kbo-records.json?t=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));cache=await r.json()}catch(e){console.warn('KBO records cache load failed',e)}finally{cacheLoading=false;renderKbo()}
+    try{const r=await fetch(`data/kbo-records.json?t=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));cache=await r.json();window.EoKboRecordsData=cache;document.dispatchEvent(new Event('eo:kbo-records-loaded'));}catch(e){console.warn('KBO records cache load failed',e)}finally{cacheLoading=false;renderKbo()}
   }
 
   function bind(){

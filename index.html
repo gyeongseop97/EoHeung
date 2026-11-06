@@ -47,16 +47,20 @@ body.theme-excel .toolbar{gap:6px}
   <script src="attendance-permission-guard.js" defer></script>
   <script src="attendance-role-guard.js?v=2" defer></script>
   <script src="settings-hub.js?v=1" defer></script>
-  <script src="game-result-auto-refresh.js?v=3" defer></script>
+  <script src="kbo-record-utils.js?v=1" defer></script>
+  <script src="game-result-auto-refresh.js?v=4" defer></script>
   <script src="eoheung-fans.js?v=2" defer></script>
   <script src="eoheung-dashboard.js?v=2" defer></script>
   <link rel="stylesheet" href="eoheung-layout.css?v=1" />
   <script src="eoheung-layout.js?v=1" defer></script>
+  <link rel="stylesheet" href="records-ui.css?v=1" />
+  <script src="my-records-model.js?v=1" defer></script>
+  <script src="my-records.js?v=1" defer></script>
 </head>
 <body id="eoApp" class="eo-layout">
   <div id="authView" class="auth-wrap"><div class="card auth-card"><div class="brand" style="color:var(--text);margin-bottom:14px"><div class="logo" style="background:var(--blue);color:#fff">SL</div><div><h1>Samsung Lions Watch Party Manager</h1><p>Supabase 연동 버전</p></div></div><p>이메일과 비밀번호만 입력해 로그인하시면 됩니다.</p><div class="form-grid"><input id="loginEmail" class="input" placeholder="이메일" type="email" /><input id="loginPassword" class="input" placeholder="비밀번호" type="password" /></div><div class="toolbar" style="margin-top:14px"><button class="btn green" id="signInBtn">로그인</button><button class="btn secondary" id="signUpBtn">회원가입</button></div><p class="note">회원가입이 막혀 있으면 Supabase Dashboard &gt; Authentication에서 사용자를 먼저 생성해 주세요.</p></div></div>
 
-  <div id="appView" class="app hide"><aside class="sidebar"><div class="brand"><div class="logo"><img class="team-logo lg" src="logo/samsung.png" alt="삼성 로고" onerror="this.parentNode.textContent='SL'"></div><div><h1>삼성 직관 모임</h1><p>Watch Party Manager</p></div></div><div class="nav"><button data-page="dashboard" class="active">🏠 대시보드</button><button data-page="schedule">📅 경기 일정/결과</button><button data-page="members">👥 회원 관리</button><button data-page="records">🏆 기록실</button><button data-page="links">🔗 바로가기</button><button data-page="settings">⚙️ 설정</button></div><div class="syncbox"><b>DB 상태</b><span id="dbStatus">연결 확인 중...</span><br><br><button class="btn secondary" id="reloadAllBtn" style="width:100%">전체 새로고침</button></div></aside>
+  <div id="appView" class="app hide"><aside class="sidebar"><div class="brand"><div class="logo"><img class="team-logo lg" src="logo/samsung.png" alt="삼성 로고" onerror="this.parentNode.textContent='SL'"></div><div><h1>삼성 직관 모임</h1><p>Watch Party Manager</p></div></div><div class="nav"><button data-page="dashboard" class="active">🏠 대시보드</button><button data-page="schedule">📅 경기 일정/결과</button><button data-page="members">👥 회원 관리</button><button data-page="records">🏆 기록실</button><button data-page="myRecords">📖 내 기록</button><button data-page="links">🔗 바로가기</button><button data-page="settings">⚙️ 설정</button></div><div class="syncbox"><b>DB 상태</b><span id="dbStatus">연결 확인 중...</span><br><br><button class="btn secondary" id="reloadAllBtn" style="width:100%">전체 새로고침</button></div></aside>
     <main class="main"><div class="topbar"><div><h2 id="pageTitle">대시보드</h2><p id="pageSub">삼성 라이온즈 직관 모임 현황을 확인합니다.</p></div></div>
 
       <section id="dashboard" class="section active"><div class="grid4"><div class="card metric"><div class="label">활동 회원</div><div class="value" id="dashMembers">0</div><div class="sub">활동 상태 기준</div></div><div class="card metric"><div class="label">직관 경기</div><div class="value" id="dashGames">0</div><div class="sub">완료 경기 기준, 괄호는 예정</div></div><div class="card metric"><div class="label">직관 승률</div><div class="value" id="dashRate">-</div><div class="sub">직관 경기 기준, 무승부 제외</div></div><div class="card metric"><div class="label">오늘 경기 일정</div><div class="value" id="dashNext">-</div><div class="sub">삼성 경기 기준</div></div></div><div class="dashboard-grid"><div class="card pad schedule-card"><h3>삼성 최근/향후 7일 경기 + 예상 날씨</h3><div id="dashSamsungWeek"></div></div><div class="card pad schedule-card"><h3>당일 전체 경기 일정</h3><div id="dashTodayAll"></div></div><div class="card pad schedule-card"><h3>전일 경기 결과</h3><div id="dashYesterdayAll"></div></div><div class="card pad schedule-card kbo-standings-card"><h3>KBO 팀 순위</h3><div id="kboStandings" class="kbo-standings-wrap"><div class="empty">순위 데이터를 불러오는 중입니다...</div></div></div></div></section>
@@ -64,6 +68,7 @@ body.theme-excel .toolbar{gap:6px}
       <section id="schedule" class="section"><div class="toolbar"><select id="yearSelect"></select><select id="monthSelect"></select><button class="btn" id="openGameModalBtn">경기 수동 추가</button><button class="btn green" id="syncKboBtn">KBO 일정 동기화</button></div><div class="schedule-layout"><div><div class="card pad"><h3 id="selectedDateTitle">선택 날짜</h3><div id="dateDetail"></div></div><h3 style="margin-top:20px">직관 목록</h3><p class="note">캘린더에서 날짜를 클릭한 뒤 직관 회원을 체크하면 이곳에 모입니다.</p><div id="gameList" class="game-list"></div></div><div class="card pad"><div class="calendar-head"><h3 id="calendarTitle" style="margin:0"></h3><div class="toolbar" style="margin:0"><button class="btn secondary" id="prevMonthBtn">이전 달</button><button class="btn secondary" id="todayBtn">오늘</button><button class="btn secondary" id="nextMonthBtn">다음 달</button></div></div><div id="calendar" class="calendar"></div></div></div></section>
 
       <section id="members" class="section"><div class="toolbar"><button class="btn" id="openMemberModalBtn">회원 추가</button></div><div class="card pad table-wrap"><table><thead><tr><th>이름</th><th>부서</th><th>연락처</th><th>좋아하는 선수</th><th>상태</th><th></th></tr></thead><tbody id="memberRows"></tbody></table></div></section>
+      <section id="myRecords" class="section" aria-label="내 직관 기록"></section>
       <section id="records" class="section"><div class="grid4 rank-grid"><div class="card pad rank-card"><h3>직관 횟수 순</h3><ul id="recordAttendRank" class="rank-list"></ul></div><div class="card pad rank-card"><h3>승리요정 횟수 순</h3><ul id="recordWinRank" class="rank-list"></ul></div><div class="card pad rank-card"><h3>승률 순</h3><ul id="recordRateRank" class="rank-list"></ul></div><div class="card pad"><h3>전체 기록</h3><div class="table-wrap"><table><thead><tr><th>회원</th><th>직관</th><th>승</th><th>패</th><th>무</th><th>승률</th></tr></thead><tbody id="recordRows"></tbody></table></div></div></div></section>
 
       <section id="links" class="section"><div class="toolbar"><button class="btn" id="openLinkModalBtn">링크 추가</button></div><div id="linkList" class="dashboard-grid"></div></section>
@@ -112,8 +117,8 @@ body.theme-excel .toolbar{gap:6px}
     function showPasswordRecovery(){window.eoPasswordRecoveryActive=true;showAuth({rememberRoute:false,route:RESET_PASSWORD_PATH});setTimeout(()=>window.eoOpenPasswordReset?.(),0)}
     function showApp(){if(isPasswordRecoveryRoute()){showPasswordRecovery();return}qs('authView').classList.add('hide');qs('appView').classList.remove('hide');let targetPath=window.location.pathname;if(targetPath===LOGIN_PATH){targetPath=sessionStorage.getItem(LOGIN_RETURN_KEY)||ROUTE_PATHS.dashboard;sessionStorage.removeItem(LOGIN_RETURN_KEY)}const page=pageFromPath(targetPath),canonicalPath=ROUTE_PATHS[page];if(window.location.pathname!==canonicalPath)window.history.replaceState({page},'',canonicalPath);activatePage(page)}
     window.eoShowAuthRoute=showAuth;
-    async function loadAll(){qs('dbStatus').textContent='데이터 불러오는 중...';const [m,g,gm,l,ag]=await Promise.all([state.client.from('members').select('*').order('name'),EoSeason.loadTable(state.client,'games'),state.client.from('game_members').select('*'),state.client.from('quick_links').select('*').order('created_at'),EoSeason.loadTable(state.client,'kbo_all_games')]);if(m.error||g.error||gm.error){qs('dbStatus').textContent='오류 발생';toast('데이터 로딩 오류');return}state.members=m.data||[];state.games=g.data||[];state.gameMembers=gm.data||[];state.links=l.data||[];state.allGames=ag.data||[];qs('dbStatus').textContent='연결됨';renderAll();renderWeatherForUpcoming()}
-    function renderAll(){renderDashboard();renderCalendar();renderWatchList();renderDateDetail();renderMembers();renderRecords();renderLinks();renderSettings();window.renderSeasonCenter?.()}
+    async function loadAll(){qs('dbStatus').textContent='데이터 불러오는 중...';const [m,g,gm,l,ag]=await Promise.all([state.client.from('members').select('*').order('name'),EoSeason.loadTable(state.client,'games'),EoSeason.loadTable(state.client,'game_members'),state.client.from('quick_links').select('*').order('created_at'),EoSeason.loadTable(state.client,'kbo_all_games')]);if(m.error||g.error||gm.error){qs('dbStatus').textContent='오류 발생';toast('데이터 로딩 오류');return}state.members=m.data||[];state.games=g.data||[];state.gameMembers=gm.data||[];state.links=l.data||[];state.allGames=ag.data||[];qs('dbStatus').textContent='연결됨';renderAll();renderWeatherForUpcoming()}
+    function renderAll(){renderDashboard();renderCalendar();renderWatchList();renderDateDetail();renderMembers();renderRecords();renderLinks();renderSettings();window.renderSeasonCenter?.();window.renderMyRecords?.()}
     function renderDashboard(){qs('dashMembers').textContent=state.members.filter(m=>m.status!=='dormant').length;const ranks=buildRankings();const total=ranks.rows.reduce((a,b)=>a+b.attended,0);const planned=ranks.rows.reduce((a,b)=>a+b.planned,0);qs('dashGames').textContent=watchCountText(total,planned);const wins=state.gameMembers.filter(e=>e.attended).reduce((acc,e)=>{const g=state.games.find(x=>x.id===e.game_id);return acc+(isActualWatchGame(g)&&g.result==='W'?1:0)},0);const losses=state.gameMembers.filter(e=>e.attended).reduce((acc,e)=>{const g=state.games.find(x=>x.id===e.game_id);return acc+(isActualWatchGame(g)&&g.result==='L'?1:0)},0);qs('dashRate').textContent=(wins+losses)?`${Math.round(wins/(wins+losses)*100)}%`:'-';const upcoming=state.games.filter(g=>g.game_date>=toYmd(new Date())&&g.status!=='FINISHED').sort((a,b)=>(a.game_date+(a.game_time||'')).localeCompare(b.game_date+(b.game_time||'')))[0];qs('dashNext').innerHTML=upcoming?`${upcoming.game_time?.slice(0,5)||''} ${upcoming.home_away==='HOME'?'vs':'@'} ${esc(upcoming.opponent)} ${teamLogo(upcoming.opponent,'team-logo')}`:'-';renderRank('dashAttendRank',ranks.byAttend,'attendanceText','');
   renderRank('dashWinRank',ranks.byWins,'wins','회');
   renderRank('dashRateRank',ranks.byRate,'rateText','');
@@ -171,12 +176,13 @@ function renderSettings(){qs('themeSelect').value=state.theme;renderThemePreview
 const LOGIN_PATH='/login';
 const RESET_PASSWORD_PATH='/reset-password';
 const LOGIN_RETURN_KEY='eoheung_login_return_path';
-const ROUTE_PATHS={dashboard:'/dashboard',schedule:'/schedule',members:'/members',records:'/records',links:'/links',about:'/about',photoFrame:'/photo-frame',settings:'/settings'};
+const ROUTE_PATHS={dashboard:'/dashboard',schedule:'/schedule',members:'/members',records:'/records',myRecords:'/my-records',links:'/links',about:'/about',photoFrame:'/photo-frame',settings:'/settings'};
 const PAGE_META={
   dashboard:{title:'대시보드',sub:'삼성 라이온즈 직관 모임 현황을 확인합니다.'},
   schedule:{title:'경기 일정/결과',sub:'경기 일정과 직관 기록을 관리합니다.'},
   members:{title:'회원 관리',sub:'모임 회원 정보를 관리합니다.'},
   records:{title:'기록실',sub:'직관 횟수와 승률 기록을 확인합니다.'},
+  myRecords:{title:'내 기록',sub:'내가 함께한 경기와 나만의 직관 통계를 확인합니다.'},
   links:{title:'바로가기',sub:'야구 관련 링크를 모아둡니다.'},
   about:{title:'모임 소개',sub:'어흥의 모임 소개와 운영 기준입니다.'},
   photoFrame:{title:'포토프레임',sub:'직관 사진에 어흥 포토프레임을 적용합니다.'},
@@ -210,6 +216,7 @@ function activatePage(page,{updateUrl=false,replaceUrl=false}={}){
   document.title=`${meta.title} | 삼성 직관 모임`;
   if(target==='schedule')renderWeatherForUpcoming();
   if(target==='settings')renderSettings();
+  if(target==='myRecords')window.renderMyRecords?.();
   if(updateUrl){
     const path=ROUTE_PATHS[target];
     const method=replaceUrl||window.location.pathname===path?'replaceState':'pushState';
