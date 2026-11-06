@@ -13,7 +13,7 @@
 
   function isMobileLike(){return window.innerWidth<=900||window.matchMedia('(hover:none) and (pointer:coarse) and (max-width:920px)').matches}
   function safeEsc(s){return String(s??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
-  function getEmail(){try{if(typeof state!=='undefined'&&state.user?.email)return state.user.email}catch(e){} return window.currentUserEmail||''}
+  function getEmail(){return window.EoAccess?.displayName()||'회원님'}
   async function doLogout(){
     try{if(typeof state!=='undefined'&&state.client){await state.client.auth.signOut();state.user=null}}catch(e){}
     try{if(typeof showAuth==='function')showAuth();else location.reload()}catch(e){location.reload()}

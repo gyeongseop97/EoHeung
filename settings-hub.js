@@ -198,7 +198,7 @@
     const button=$('#settingsProfileSave');
     if(button)button.disabled=true;
     try{
-      const {data,error}=await client.from('members').update({name,phone}).eq('id',member.id).select().single();
+      const {data,error}=await client.rpc('eo_update_my_profile',{p_name:name,p_phone:phone});
       if(error)throw error;
       const index=(appState()?.members||[]).findIndex(item=>String(item.id)===String(member.id));
       if(index>=0)appState().members[index]=data;
