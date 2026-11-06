@@ -141,7 +141,10 @@
     // Supabase's default 1000-row limit otherwise truncates multi-year results.
     const rows = [];
     for (let from=0;;from+=1000) {
-      const result = await client.from(table).select('*').order('game_date').order('id').range(from,from+999);
+      let query = client.from(table).select('*');
+      // Attendance rows reference a game; they do not have their own game_date.
+      if (table !== 'game_members') query = query.order('game_date');
+      const result = await query.order('id').range(from,from+999);
       if (result.error) return result;
       rows.push(...(result.data || []));
       if ((result.data || []).length < 1000) return {data:rows,error:null};
