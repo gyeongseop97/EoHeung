@@ -1,7 +1,7 @@
 {
   "year": 2026,
   "source": "KBO 공식 게임센터",
-  "updatedAt": "2026-11-06T21:19:48+09:00",
+  "updatedAt": "2026-11-07T04:37:31+09:00",
   "games": [
     {
       "gameId": "20260312SSHH0",
@@ -2610,6 +2610,22 @@
       "walkoffWin": false,
       "walkoffLoss": false,
       "sourceUrl": "https://www.koreabaseball.com/Schedule/GameCenter/Main.aspx?gameDate=20261104&gameId=20261104SSKT0&section=REVIEW"
+    },
+    {
+      "gameId": "20261106KTSS0",
+      "game_date": "2026-11-06",
+      "game_time": "18:30",
+      "away_team": "KT",
+      "home_team": "삼성",
+      "away_score": 1,
+      "home_score": 5,
+      "homeRuns": 1,
+      "homeRunsAllowed": 0,
+      "strikeouts": 9,
+      "struckOut": 7,
+      "walkoffWin": false,
+      "walkoffLoss": false,
+      "sourceUrl": "https://www.koreabaseball.com/Schedule/GameCenter/Main.aspx?gameDate=20261106&gameId=20261106KTSS0&section=REVIEW"
     }
   ],
   "unavailable": []
