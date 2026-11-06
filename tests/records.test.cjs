@@ -75,3 +75,20 @@ test('attendance pagination orders by its own ID and never asks for a nonexisten
   const result=await S.loadTable({from:table=>{assert.equal(table,'game_members');return query}},'game_members');
   assert.equal(result.data.length,1105);assert.deepEqual(orders,['id','id']);
 });
+test('official game details attach only to a unique matching date, teams, time and score',()=>{
+  const rows=M.personalGames([games[0]],[entries[0]],'me');
+  const detail={game_date:'2026-04-01',game_time:'18:30',away_team:'KT',home_team:'삼성',away_score:2,home_score:5,homeRuns:2,strikeouts:8,walkoffWin:false};
+  assert.equal(M.attachDetails(rows,{2026:{games:[detail]}})[0].details.homeRuns,2);
+  assert.equal(M.attachDetails(rows,{2026:{games:[{...detail,home_score:7}]}})[0].details,null);
+  assert.equal(M.attachDetails(rows,{2026:{games:[{...detail,game_time:'14:00'}]}})[0].details,null);
+  assert.equal(M.attachDetails(rows,{2026:{games:[detail,{...detail}]}})[0].details,null);
+});
+test('home runs, pitching strikeouts and walkoffs retain missing-data coverage and known zero',()=>{
+  const rows=M.personalGames(games,entries,'me');
+  rows[0].details={homeRuns:2,homeRunsAllowed:0,strikeouts:10,struckOut:7,walkoffWin:true,walkoffLoss:false};
+  rows[1].details={homeRuns:0,homeRunsAllowed:1,strikeouts:6,struckOut:8,walkoffWin:false,walkoffLoss:false};
+  const e=M.summary(rows).events;
+  assert.equal(e.coverage,2);assert.equal(e.homeRuns,2);assert.equal(e.homeRunsAllowed,1);assert.equal(e.strikeouts,16);assert.equal(e.struckOut,15);
+  assert.equal(e.walkoffWins,1);assert.equal(e.walkoffLosses,0);assert.equal(e.maxStrikeouts.value,10);assert.equal(e.maxHomeRuns.games[0].id,rows[0].id);
+  assert.equal(M.summary([]).events.homeRuns,null);assert.equal(M.summary([]).events.walkoffWins,null);
+});
