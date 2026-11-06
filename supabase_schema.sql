@@ -1,5 +1,6 @@
 -- Samsung Lions Watch Party Manager - Supabase Schema
 -- 실행 위치: Supabase Dashboard > SQL Editor > New query
+-- 기존 설치의 시즌/포스트시즌 필드 추가: supabase/sql/season_postseason.sql 실행
 
 create extension if not exists pgcrypto;
 
@@ -30,6 +31,9 @@ create table if not exists public.games (
   ticket_url text,
   memo text,
   source text,
+  season_type text check (season_type in ('REGULAR','PRESEASON','POSTSEASON','UNKNOWN')),
+  postseason_round text check (postseason_round in ('WC','준PO','PO','KS')),
+  game_number integer check (game_number > 0),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -46,6 +50,9 @@ create table if not exists public.kbo_all_games (
   away_score int,
   home_score int,
   source text,
+  season_type text check (season_type in ('REGULAR','PRESEASON','POSTSEASON','UNKNOWN')),
+  postseason_round text check (postseason_round in ('WC','준PO','PO','KS')),
+  game_number integer check (game_number > 0),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

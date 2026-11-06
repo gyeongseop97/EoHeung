@@ -76,3 +76,27 @@ supabase secrets set SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 - `anon public key`는 클라이언트에 노출되어도 되는 키입니다.
 - `service_role key`는 절대 HTML에 넣으면 안 됩니다. GitHub Actions secrets 또는 Supabase Edge Function secrets에만 저장해야 합니다.
 - KBO 공식 사이트 구조가 바뀌면 크롤러 선택자도 수정해야 합니다.
+
+## 8. 시즌 종료와 포스트시즌
+
+대시보드 상단의 **시즌 기록**에서 연도를 선택하면 정규시즌 순위와 와일드카드·준플레이오프·플레이오프·한국시리즈 일정/결과를 함께 볼 수 있습니다. 가장 최근 진행된 라운드가 기본으로 열리며, 전체 또는 개별 라운드를 선택할 수 있습니다.
+
+- 정규시즌 종료 후 순위를 고정하고, 포스트시즌 경기는 순위·연승·최근 경기·순위 추이 계산에서 제외합니다.
+- 한국시리즈 4승 확정 시 우승 팀을 표시합니다. 모든 라운드 결과가 확인되면 **시즌 최종 / 정규시즌** 순위를 전환할 수 있습니다. 최종 순위는 포스트시즌 결과를 반영하며 승·무·패·승률은 정규시즌 기록입니다.
+- 와일드카드의 상위 팀 어드밴티지, 무승부, 우천 연기/취소와 시리즈 조기 종료 후 미개최 경기를 구분합니다.
+- 새 시즌과 다른 연도 경기가 섞이지 않으며, 다년간 DB 결과는 1,000건 단위로 끝까지 읽습니다.
+
+공식 자료는 `scripts/sync_kbo_season.py`가 `data/kbo-seasons/<연도>.json`에 보관합니다. KBO 영문 공식 페이지의 TYPE 셀과 rowspan을 읽으므로 `Playoff final game5`, `Korean Series game1`도 누락하지 않습니다. 종료 시즌은 정규시즌 720경기 결과와 공식 순위표를 검산합니다. 과거 연도 선택에도 현재 순위가 반환되는 경우에는 완전한 720경기 결과로 다시 집계하며, 동률로 공식 순위 판단이 필요하면 잘못된 자료를 덮어쓰지 않고 실패로 보고합니다.
+
+`.github/workflows/update-kbo-season.yml`은 30분 간격으로 현재 한국 날짜의 시즌 자료를 갱신합니다(GitHub Actions 실행 지연 가능). 과거 시즌은 Actions의 **Update KBO season and postseason → Run workflow → year**로 추가합니다. 공개 공식 자료만 읽으므로 Supabase 비밀키는 필요 없습니다. 브라우저는 5분 간격으로 새 자료를 확인하며 수집 실패 시 마지막 검증 자료를 유지합니다. 기존 Vercel `/data/` GitHub 원본 연결을 그대로 사용하므로 자료만 갱신할 때 사이트를 재빌드할 필요가 없습니다.
+
+기존 Supabase에는 `supabase/sql/season_postseason.sql`을 한 번 실행하면 경기 구분·라운드·차전 필드가 추가됩니다. 마이그레이션 전에도 공식 시즌 화면은 동작하고, 일정 동기화 및 수동 저장은 기존 source 필드에 구분 정보를 보존해 호환됩니다. 새 설치는 갱신된 `supabase_schema.sql`을 사용합니다.
+
+검증 명령:
+
+```text
+node --test tests/kbo-season.test.cjs
+python -m unittest discover -s tests -p "test_*.py"
+```
+
+테스트용 종료/진행 시즌 자료는 `tests/fixtures/`에 고정하여 실제 경기 결과가 업데이트되어도 검증 기준이 바뀌지 않습니다.

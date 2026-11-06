@@ -13,6 +13,7 @@ import os
 import re
 import time
 from datetime import date
+from kbo_season import parse_schedule_html
 
 import requests
 from playwright.sync_api import sync_playwright
@@ -123,6 +124,9 @@ def samsung_game_payload(all_game):
         result = "W" if samsung_score > opponent_score else "L" if samsung_score < opponent_score else "D"
     opponent = away if home == TARGET_TEAM else home
     return {
+        "season_type": all_game.get("season_type", "UNKNOWN"),
+        "postseason_round": all_game.get("postseason_round"),
+        "game_number": all_game.get("game_number"),
         "source_key": all_game["source_key"].replace("kbo-all-", "kbo-"),
         "game_date": all_game["game_date"],
         "game_time": all_game["game_time"],
@@ -242,7 +246,7 @@ def scrape_english_year():
         page.goto(KBO_EN_URL, wait_until="networkidle", timeout=45000)
 
         for _ in range(18):
-            games, y, m = parse_english_schedule_text(page_body_text(page))
+            games, y, m = parse_schedule_html(page.content())
             if y < TARGET_YEAR or (y == TARGET_YEAR and m <= 1):
                 break
             if not click_month_nav(page, "prev"):
@@ -250,7 +254,7 @@ def scrape_english_year():
             time.sleep(0.2)
 
         for _ in range(18):
-            games, y, m = parse_english_schedule_text(page_body_text(page))
+            games, y, m = parse_schedule_html(page.content())
             ym = (y, m)
             if ym not in seen_months:
                 seen_months.add(ym)
@@ -276,7 +280,7 @@ def scrape_english_month(target_date: str):
         page.goto(KBO_EN_URL, wait_until="networkidle", timeout=45000)
 
         for _ in range(18):
-            games, page_year, page_month = parse_english_schedule_text(page_body_text(page))
+            games, page_year, page_month = parse_schedule_html(page.content())
             current = (page_year, page_month)
             wanted = (target.year, target.month)
             if current == wanted:
@@ -307,6 +311,17 @@ def postgrest_upsert(table: str, rows, conflict_col="source_key", required=True)
         return 0
     url = f"{SUPABASE_URL}/rest/v1/{table}?on_conflict={conflict_col}"
     r = requests.post(url, headers=supabase_headers(), data=json.dumps(rows, ensure_ascii=False).encode("utf-8"), timeout=60)
+    if r.status_code == 400 and "PGRST204" in r.text and any(column in r.text for column in ("season_type", "postseason_round", "game_number")):
+        # Keep existing installations syncing until the optional SQL migration
+        # has run. TYPE remains readable by the frontend in the source tag.
+        compatible = []
+        for row in rows:
+            item = {k: v for k, v in row.items() if k not in ("season_type", "postseason_round", "game_number")}
+            item["source"] = " ".join(str(x) for x in (row.get("source"), row.get("season_type"), row.get("postseason_round"),
+                                                        f"game{row['game_number']}" if row.get("game_number") else None) if x)
+            compatible.append(item)
+        print(f"WARNING: {table} needs supabase/sql/season_postseason.sql; retaining season metadata in source.")
+        r = requests.post(url, headers=supabase_headers(), data=json.dumps(compatible, ensure_ascii=False).encode("utf-8"), timeout=60)
     if not r.ok:
         if (not required) and r.status_code == 404 and "PGRST205" in r.text:
             print(f"WARNING: table {table} does not exist in Supabase. Skipping this table. Run supabase_schema.sql to create it.")

@@ -23,6 +23,9 @@ type GameRow = {
   opponent_score: number | null;
   result: "W" | "L" | "D" | null;
   source: string;
+  season_type: "REGULAR" | "PRESEASON" | "POSTSEASON" | "UNKNOWN";
+  postseason_round: "WC" | "준PO" | "PO" | "KS" | null;
+  game_number: number | null;
 };
 
 const TEAM_KO: Record<string, string> = {
@@ -82,7 +85,11 @@ function parseGames(text: string): GameRow[] {
     if (status === "FINISHED" && samsungScore !== null && opponentScore !== null) {
       result = samsungScore > opponentScore ? "W" : samsungScore < opponentScore ? "L" : "D";
     }
-    const keyBase = `kbo-eng-${currentDate}-${away}-${home}`;
+    const typeText = body.slice(0, gameMatch.index).toUpperCase();
+    const round: GameRow["postseason_round"] = /KOREAN SERIES/.test(typeText) ? "KS" : /WILD/.test(typeText) ? "WC" : /SEMI/.test(typeText) ? "준PO" : /PLAYOFF|PLAY-OFF/.test(typeText) ? "PO" : null;
+    const seasonType: GameRow["season_type"] = round || /POSTSEASON/.test(typeText) ? "POSTSEASON" : /PRESEASON|EXHIBITION/.test(typeText) ? "PRESEASON" : /REGULAR/.test(typeText) ? "REGULAR" : "UNKNOWN";
+    const gameNumber = Number(typeText.match(/GAME\s*(\d+)/)?.[1]) || null;
+    const keyBase = `kbo-${currentDate}-${away}-${home}`;
     const n = (counts.get(keyBase) ?? 0) + 1;
     counts.set(keyBase, n);
     const opponent = isHome ? away : home;
@@ -98,6 +105,9 @@ function parseGames(text: string): GameRow[] {
       opponent_score: opponentScore,
       result,
       source: "kbo-eng-daily-schedule",
+      season_type: seasonType,
+      postseason_round: round,
+      game_number: gameNumber,
     });
   }
   return games;
@@ -114,7 +124,12 @@ Deno.serve(async (req) => {
     }).then((r) => r.text());
     const games = parseGames(htmlToText(html));
     if (games.length > 0) {
-      const { error } = await supabase.from("games").upsert(games, { onConflict: "source_key" });
+      let { error } = await supabase.from("games").upsert(games, { onConflict: "source_key" });
+      if (error?.code === "PGRST204" && /season_type|postseason_round|game_number/.test(error.message)) {
+        const compatible = games.map(({season_type,postseason_round,game_number,...game}) => ({...game,
+          source:[game.source,season_type,postseason_round,game_number ? `game${game_number}` : null].filter(Boolean).join(" ")}));
+        ({error} = await supabase.from("games").upsert(compatible, {onConflict:"source_key"}));
+      }
       if (error) throw error;
     }
     return new Response(JSON.stringify({ ok: true, upserted: games.length, note: "KBO English Daily Schedule current page synced." }), {

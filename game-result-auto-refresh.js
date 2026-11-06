@@ -68,7 +68,7 @@
   }
 
   function fingerprint(rows,allRows){
-    const shape=row=>[row.id||row.source_key,row.status,row.samsung_score,row.opponent_score,row.away_score,row.home_score,row.result].join(':');
+    const shape=row=>[row.id||row.source_key,row.status,row.samsung_score,row.opponent_score,row.away_score,row.home_score,row.result,row.season_type,row.postseason_round,row.game_number].join(':');
     return [...(rows||[]).map(shape),...(allRows||[]).map(shape)].join('|');
   }
 
@@ -79,8 +79,8 @@
     try{
       const before=fingerprint(state.games,state.allGames);
       const [gamesResult,allGamesResult]=await Promise.all([
-        state.client.from('games').select('*').order('game_date'),
-        state.client.from('kbo_all_games').select('*').order('game_date')
+        EoSeason.loadTable(state.client,'games'),
+        EoSeason.loadTable(state.client,'kbo_all_games')
       ]);
       if(gamesResult.error)return;
       state.games=gamesResult.data||[];

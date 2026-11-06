@@ -16,6 +16,7 @@
     const opp=norm(g.opponent);
     const isAway=g.home_away==='AWAY';
     return {
+      ...g,
       game_date:g.game_date,
       game_time:g.game_time,
       away_team:isAway?'삼성':opp,
@@ -38,7 +39,7 @@
       away_score:g.away_score===''||g.away_score==null?null:Number(g.away_score),
       home_score:g.home_score===''||g.home_score==null?null:Number(g.home_score)
     })).filter(g=>{
-      if(!g.game_date||String(g.game_date)<start)return false;
+      if(!EoSeason.isRegular(g,String((typeof state!=='undefined'&&state.year)||new Date().getFullYear())))return false;
       const statusText=String(g.status||'').toUpperCase();
       const sourceText=String(g.source||'')+' '+String(g.raw_status||'')+' '+String(g.note||'');
       if(/PRESEASON|EXHIBITION|시범/.test(statusText+' '+sourceText.toUpperCase()))return false;
@@ -107,6 +108,7 @@
     return `<table class="kbo-standings-table eo-standings-full eo-game-standings"><thead><tr><th>순위</th><th>팀명</th><th>승률</th><th>게임차</th><th>승</th><th>무</th><th>패</th><th>경기</th><th>연속</th><th>타율</th><th>평균자책</th><th>최근5경기</th><th>다음경기</th></tr></thead><tbody>${rows.map(r=>`<tr class="${r.team==='삼성'?'samsung-row':''}"><td class="rank-num">${r.rank}</td><td class="team-cell"><div class="team-cell-inner">${logo(r.team)}<span>${esc2(r.team)}</span></div></td><td class="pct">${r.pct.toFixed(3)}</td><td>${r.gb===0?'0.0':r.gb.toFixed(1)}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.g}</td><td>${esc2(r.streak)}</td><td>-</td><td>-</td><td>${esc2(r.recent5)}</td><td class="next-cell">${r.nextOpponent?`${logo(r.nextOpponent)}<span>${esc2(r.nextOpponent)}</span>`:'-'}</td></tr>`).join('')}</tbody></table><div class="eo-standings-foot"><span>KBO 정규리그 경기 결과 기반 자동 계산 · 반영 경기 ${totalGames}건 · 시작일 ${seasonStart()}</span><a href="https://sports.news.naver.com/kbaseball/record/index" target="_blank" rel="noopener">전체보기</a></div>`;
   }
   function render(){
+    if(window.renderKboStandings&&window.renderKboStandings!==render){window.renderKboStandings();return;}
     const root=document.getElementById('kboStandings');if(!root)return;
     root.innerHTML=renderGameBased();
     const note=document.querySelector('.kbo-standings-head .note');

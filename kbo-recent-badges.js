@@ -11,13 +11,13 @@
   const ymd=()=>String((typeof state!=='undefined'&&state.year)||new Date().getFullYear());
   const seasonStart=()=>START[ymd()]||`${ymd()}-03-22`;
   const key=g=>`${String(g.game_date||'')} ${String(g.game_time||'')}`;
-  function fromSamsung(g){if(!g)return null;const opp=norm(g.opponent);const away=g.home_away==='AWAY';return {game_date:g.game_date,game_time:g.game_time,away_team:away?'삼성':opp,home_team:away?opp:'삼성',status:g.status,away_score:g.status==='FINISHED'?(away?g.samsung_score:g.opponent_score):null,home_score:g.status==='FINISHED'?(away?g.opponent_score:g.samsung_score):null,source:g.source,raw_status:g.raw_status,note:g.note};}
+  function fromSamsung(g){if(!g)return null;const opp=norm(g.opponent);const away=g.home_away==='AWAY';return {...g,game_date:g.game_date,game_time:g.game_time,away_team:away?'삼성':opp,home_team:away?opp:'삼성',status:g.status,away_score:g.status==='FINISHED'?(away?g.samsung_score:g.opponent_score):null,home_score:g.status==='FINISHED'?(away?g.opponent_score:g.samsung_score):null,source:g.source,raw_status:g.raw_status,note:g.note};}
   function games(){
     if(typeof state==='undefined')return [];
     const src=(state.allGames&&state.allGames.length)?state.allGames:(state.games||[]).map(fromSamsung);
     const seen=new Set(),start=seasonStart();
     return (src||[]).filter(Boolean).map(g=>({...g,away_team:norm(g.away_team),home_team:norm(g.home_team),away_score:g.away_score===''||g.away_score==null?null:Number(g.away_score),home_score:g.home_score===''||g.home_score==null?null:Number(g.home_score)})).filter(g=>{
-      if(!g.game_date||String(g.game_date)<start)return false;
+      if(!EoSeason.isRegular(g,ymd()))return false;
       const chk=(String(g.status||'')+' '+String(g.source||'')+' '+String(g.raw_status||'')+' '+String(g.note||'')).toUpperCase();
       if(/PRESEASON|EXHIBITION|시범/.test(chk))return false;
       const k=[g.game_date,g.game_time||'',g.away_team,g.home_team,g.away_score,g.home_score,g.status].join('|');
@@ -26,7 +26,7 @@
     }).sort((a,b)=>key(a).localeCompare(key(b)));
   }
   const finished=()=>games().filter(g=>g.status==='FINISHED'&&Number.isFinite(g.away_score)&&Number.isFinite(g.home_score));
-  function scheduled(){const d=new Date();const today=typeof toYmd==='function'?toYmd(d):d.toISOString().slice(0,10);return games().filter(g=>g.status!=='FINISHED'&&String(g.game_date||'')>=today).sort((a,b)=>key(a).localeCompare(key(b)));}
+  function scheduled(){const d=new Date();const today=typeof toYmd==='function'?toYmd(d):d.toISOString().slice(0,10);return games().filter(g=>!['FINISHED','POSTPONED','CANCELLED'].includes(g.status)&&String(g.game_date||'')>=today).sort((a,b)=>key(a).localeCompare(key(b)));}
   function result(g,t){const a=norm(g.away_team),h=norm(g.home_team),as=Number(g.away_score),hs=Number(g.home_score);if(a!==t&&h!==t)return null;if(as===hs)return'D';return (as>hs?a:h)===t?'W':'L';}
   function nextOpp(t){const g=scheduled().find(x=>x.away_team===t||x.home_team===t);return g?(g.away_team===t?g.home_team:g.away_team):'';}
   function blankStats(){return Object.fromEntries(TEAMS.map(t=>[t,{team:t,g:0,w:0,d:0,l:0,pct:0,gb:0}]));}
@@ -42,14 +42,16 @@
   function rows(){
     const stats=blankStats(),gs=finished();
     gs.forEach(g=>applyGame(stats,g));
-    const arr=rankedStats(stats);
+    const official=EoSeason.archive.get(Number(ymd()))?.standings;
+    const arr=official?.length===10?official.map(r=>({...r})):rankedStats(stats);
     arr.forEach(r=>{const res=[];for(let i=gs.length-1;i>=0;i--){const v=result(gs[i],r.team);if(v)res.push(v)}const decisive=res.filter(v=>v!=='D');let type=decisive[0]||'',cnt=0;for(const v of decisive){if(v===type)cnt++;else break}r.streak=cnt?`${cnt}${label(type)}`:'-';r.recent5=res.slice(0,5).reverse();r.nextOpponent=nextOpp(r.team)});
     return arr;
   }
   function badges(list){return Array.isArray(list)&&list.length?`<div class="recent5-badges">${list.map(v=>`<span class="recent-badge ${cls(v)}">${label(v)}</span>`).join('')}</div>`:'-'}
   function render(){
     const root=document.getElementById('kboStandings');if(!root)return;const rs=rows();const total=finished().length;if(!rs.some(r=>r.g>0)){root.innerHTML='<div class="empty">순위 계산에 필요한 전체 경기 결과가 아직 없습니다.</div>';ensureTrendPanel();renderTrend(true);return}
-    root.innerHTML=`<table class="kbo-standings-table eo-standings-full eo-game-standings eo-badge-standings"><thead><tr><th>순위</th><th>팀명</th><th>승률</th><th>게임차</th><th>승</th><th>무</th><th>패</th><th>경기</th><th>연속</th><th>최근5경기</th><th>다음경기</th></tr></thead><tbody>${rs.map(r=>`<tr class="${r.team==='삼성'?'samsung-row':''}"><td class="rank-num">${r.rank}</td><td class="team-cell"><div class="team-cell-inner">${logo(r.team)}<span>${esc(r.team)}</span></div></td><td class="pct">${r.pct.toFixed(3)}</td><td>${r.gb===0?'0.0':r.gb.toFixed(1)}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.g}</td><td>${esc(r.streak)}</td><td class="recent5-cell">${badges(r.recent5)}</td><td class="next-cell">${r.nextOpponent?`${logo(r.nextOpponent)}<span>${esc(r.nextOpponent)}</span>`:'-'}</td></tr>`).join('')}</tbody></table><div class="eo-standings-foot"><span>KBO 정규리그 경기 결과 기반 자동 계산 · 반영 경기 ${total}건 · 시작일 ${seasonStart()}</span><a href="https://sports.news.naver.com/kbaseball/record/index" target="_blank" rel="noopener">전체보기</a></div>`;
+    root.innerHTML=`<table class="kbo-standings-table eo-standings-full eo-game-standings eo-badge-standings"><thead><tr><th>순위</th><th>팀명</th><th>승률</th><th>게임차</th><th>승</th><th>무</th><th>패</th><th>경기</th><th>연속</th><th>최근5경기</th><th>다음경기</th></tr></thead><tbody>${rs.map(r=>`<tr class="${r.team==='삼성'?'samsung-row':''}"><td class="rank-num">${r.rank}</td><td class="team-cell"><div class="team-cell-inner">${logo(r.team)}<span>${esc(r.team)}</span></div></td><td class="pct">${r.pct.toFixed(3)}</td><td>${r.gb===0?'0.0':r.gb.toFixed(1)}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.g}</td><td>${esc(r.streak)}</td><td class="recent5-cell">${badges(r.recent5)}</td><td class="next-cell">${r.nextOpponent?`${logo(r.nextOpponent)}<span>${esc(r.nextOpponent)}</span>`:'-'}</td></tr>`).join('')}</tbody></table><div class="eo-standings-foot"><span>${EoSeason.archive.has(Number(ymd()))?'KBO 공식 정규시즌 순위':'정규시즌 경기 결과 기반 참고 순위'} · ${ymd()}시즌 · 포스트시즌 제외</span><a href="https://sports.news.naver.com/kbaseball/record/index" target="_blank" rel="noopener">전체보기</a></div>`;
+    const heading=root.closest('.card')?.querySelector('h3');if(heading)heading.textContent=EoSeason.archive.get(Number(ymd()))?.regular_complete?'정규시즌 최종 순위':'KBO 정규시즌 순위';
     const note=document.querySelector('.kbo-standings-head .note');if(note)note.textContent='KBO 정규리그 경기 결과 기반 자동 계산';
     ensureTrendPanel();renderTrend(false);
   }
