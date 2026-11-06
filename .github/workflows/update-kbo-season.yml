@@ -1,0 +1,51 @@
+name: Update KBO season and postseason
+
+on:
+  workflow_dispatch:
+    inputs:
+      year:
+        description: Season year (blank = current KST year)
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kbo-season-archive
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests==2.32.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify season rules and parsers
+        run: |
+          node --test tests/kbo-season.test.cjs
+          python -m unittest discover -s tests -p 'test_*.py'
+      - name: Sync official season archive
+        env:
+          SEASON_YEAR: ${{ inputs.year }}
+        run: |
+          if [ -n "$SEASON_YEAR" ]; then
+            python scripts/sync_kbo_season.py --year "$SEASON_YEAR"
+          else
+            python scripts/sync_kbo_season.py
+          fi
+      - name: Save verified archive
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/kbo-seasons/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Update official KBO season archive'
+          git pull --rebase origin main
+          git push origin HEAD:main
