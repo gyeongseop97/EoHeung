@@ -3,6 +3,7 @@
   const TEAM_COLORS={삼성:'#074CA1',LG:'#C30452',KT:'#111111',SSG:'#CE0E2D',KIA:'#EA0029',두산:'#131230',한화:'#FF6600',롯데:'#041E42',키움:'#820024',NC:'#315288'};
   const START={2025:'2025-03-22',2026:'2026-03-28'};
   const trendState={mode:'game',selected:new Set(TEAMS),fingerprint:''};
+  let standingsFingerprint='';
   const norm=(name)=>{const raw=String(name||'').trim();const map={'SAMSUNG':'삼성','LIONS':'삼성','삼성':'삼성','LG':'LG','엘지':'LG','KT':'KT','SSG':'SSG','KIA':'KIA','두산':'두산','DOOSAN':'두산','한화':'한화','HANWHA':'한화','롯데':'롯데','LOTTE':'롯데','키움':'키움','KIWOOM':'키움','HEROES':'키움','NC':'NC'};return map[raw]||map[raw.toUpperCase()]||raw};
   const esc=s=>String(s??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
   const logo=t=>typeof teamLogo==='function'?teamLogo(t,'team-logo'):'';
@@ -49,11 +50,15 @@
   }
   function badges(list){return Array.isArray(list)&&list.length?`<div class="recent5-badges">${list.map(v=>`<span class="recent-badge ${cls(v)}">${label(v)}</span>`).join('')}</div>`:'-'}
   function render(){
+    const source=typeof state==='undefined'?[]:(state.allGames?.length?state.allGames:(state.games||[]));
+    const fingerprint=JSON.stringify([ymd(),EoSeason.archive.get(Number(ymd())),source.map(g=>[g.game_date,g.game_time,g.away_team,g.home_team,g.opponent,g.home_away,g.away_score,g.home_score,g.samsung_score,g.opponent_score,g.status,g.season_type,g.postseason_round,g.source,g.raw_status,g.note])]);
+    if(fingerprint===standingsFingerprint&&document.querySelector('#kboStandings table,#kboStandings .empty')){ensureTrendPanel();return;}
+    standingsFingerprint=fingerprint;
     const root=document.getElementById('kboStandings');if(!root)return;const rs=rows();const total=finished().length;if(!rs.some(r=>r.g>0)){root.innerHTML='<div class="empty">순위 계산에 필요한 전체 경기 결과가 아직 없습니다.</div>';ensureTrendPanel();renderTrend(true);return}
     root.innerHTML=`<table class="kbo-standings-table eo-standings-full eo-game-standings eo-badge-standings"><thead><tr><th>순위</th><th>팀명</th><th>승률</th><th>게임차</th><th>승</th><th>무</th><th>패</th><th>경기</th><th>연속</th><th>최근5경기</th><th>다음경기</th></tr></thead><tbody>${rs.map(r=>`<tr class="${r.team==='삼성'?'samsung-row':''}"><td class="rank-num">${r.rank}</td><td class="team-cell"><div class="team-cell-inner">${logo(r.team)}<span>${esc(r.team)}</span></div></td><td class="pct">${r.pct.toFixed(3)}</td><td>${r.gb===0?'0.0':r.gb.toFixed(1)}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.g}</td><td>${esc(r.streak)}</td><td class="recent5-cell">${badges(r.recent5)}</td><td class="next-cell">${r.nextOpponent?`${logo(r.nextOpponent)}<span>${esc(r.nextOpponent)}</span>`:'-'}</td></tr>`).join('')}</tbody></table><div class="eo-standings-foot"><span>${EoSeason.archive.has(Number(ymd()))?'KBO 공식 정규시즌 순위':'정규시즌 경기 결과 기반 참고 순위'} · ${ymd()}시즌 · 포스트시즌 제외</span><a href="https://sports.news.naver.com/kbaseball/record/index" target="_blank" rel="noopener">전체보기</a></div>`;
     const heading=root.closest('.card')?.querySelector('h3');if(heading)heading.textContent=EoSeason.archive.get(Number(ymd()))?.regular_complete?'정규시즌 최종 순위':'KBO 정규시즌 순위';
     const note=document.querySelector('.kbo-standings-head .note');if(note)note.textContent='KBO 정규리그 경기 결과 기반 자동 계산';
-    ensureTrendPanel();renderTrend(false);
+    ensureTrendPanel();renderTrend(true);
   }
   function historySnapshots(){
     const gs=finished(),stats=blankStats(),byDate=new Map();
@@ -141,5 +146,5 @@
   }
   function install(){style();window.buildKboStandings=rows;window.renderKboStandings=render;window.renderKboRankTrend=()=>renderTrend(true);render()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-  setInterval(render,1200);
+  setInterval(render,30000);
 })();
