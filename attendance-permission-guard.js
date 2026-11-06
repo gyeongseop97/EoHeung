@@ -69,7 +69,8 @@
     row.appendChild(makeCard('dashAttendCard','직관 횟수 순','dashAttendRank'));
     row.appendChild(makeCard('dashWinCard','승리요정 횟수 순','dashWinRank'));
     row.appendChild(makeCard('dashRateCard','승률 순','dashRateRank'));
-    [['#dashSamsungWeek',1],['#dashTodayAll',2],['#dashYesterdayAll',3],['#kboStandings',4]].forEach(function(x){var c=cardFor(x[0]);if(c){board.appendChild(c);c.style.order=x[1];c.style.gridColumn='auto';c.style.gridRow='auto'}});
+    if(typeof window.eoApplyDashboardLayout==='function')window.eoApplyDashboardLayout();
+    else [['#dashSamsungWeek',1],['#dashTodayAll',2],['#dashYesterdayAll',3],['#kboStandings',4]].forEach(function(x){var c=cardFor(x[0]);if(c){board.appendChild(c);c.style.order=x[1];c.style.gridColumn='auto';c.style.gridRow='auto'}});
     style();
   }
   function style(){

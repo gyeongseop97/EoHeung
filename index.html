@@ -6,7 +6,7 @@
   <title>Samsung Lions Watch Party Manager</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="kbo-season.js?v=1"></script>
-  <link rel="stylesheet" href="kbo-season.css?v=1" />
+  <link rel="stylesheet" href="kbo-season.css?v=2" />
   <link rel="stylesheet" href="kbo-standings-homeaway.css" />
   <link rel="stylesheet" href="kbo-standings-fix.css" />
   <link rel="stylesheet" href="default-topbar-theme.css" />
@@ -41,17 +41,19 @@ body.theme-excel .toolbar{gap:6px}
   <script src="eoheung-commandments.js" defer></script>
   <script src="kbo-standings-fix.js" defer></script>
   <script src="kbo-recent-badges.js?v=3" defer></script>
-  <script src="kbo-season-center.js?v=1" defer></script>
+  <script src="kbo-season-center.js?v=2" defer></script>
   <script src="ticketlink-clock-fix.js" defer></script>
   <script src="member-permission-control.js?v=2" defer></script>
   <script src="attendance-permission-guard.js" defer></script>
   <script src="attendance-role-guard.js?v=2" defer></script>
   <script src="settings-hub.js?v=1" defer></script>
-  <script src="game-result-auto-refresh.js?v=2" defer></script>
+  <script src="game-result-auto-refresh.js?v=3" defer></script>
   <script src="eoheung-fans.js?v=2" defer></script>
   <script src="eoheung-dashboard.js?v=2" defer></script>
+  <link rel="stylesheet" href="eoheung-layout.css?v=1" />
+  <script src="eoheung-layout.js?v=1" defer></script>
 </head>
-<body>
+<body id="eoApp" class="eo-layout">
   <div id="authView" class="auth-wrap"><div class="card auth-card"><div class="brand" style="color:var(--text);margin-bottom:14px"><div class="logo" style="background:var(--blue);color:#fff">SL</div><div><h1>Samsung Lions Watch Party Manager</h1><p>Supabase 연동 버전</p></div></div><p>이메일과 비밀번호만 입력해 로그인하시면 됩니다.</p><div class="form-grid"><input id="loginEmail" class="input" placeholder="이메일" type="email" /><input id="loginPassword" class="input" placeholder="비밀번호" type="password" /></div><div class="toolbar" style="margin-top:14px"><button class="btn green" id="signInBtn">로그인</button><button class="btn secondary" id="signUpBtn">회원가입</button></div><p class="note">회원가입이 막혀 있으면 Supabase Dashboard &gt; Authentication에서 사용자를 먼저 생성해 주세요.</p></div></div>
 
   <div id="appView" class="app hide"><aside class="sidebar"><div class="brand"><div class="logo"><img class="team-logo lg" src="logo/samsung.png" alt="삼성 로고" onerror="this.parentNode.textContent='SL'"></div><div><h1>삼성 직관 모임</h1><p>Watch Party Manager</p></div></div><div class="nav"><button data-page="dashboard" class="active">🏠 대시보드</button><button data-page="schedule">📅 경기 일정/결과</button><button data-page="members">👥 회원 관리</button><button data-page="records">🏆 기록실</button><button data-page="links">🔗 바로가기</button><button data-page="settings">⚙️ 설정</button></div><div class="syncbox"><b>DB 상태</b><span id="dbStatus">연결 확인 중...</span><br><br><button class="btn secondary" id="reloadAllBtn" style="width:100%">전체 새로고침</button></div></aside>
