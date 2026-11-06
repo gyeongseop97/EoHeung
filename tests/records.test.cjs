@@ -69,3 +69,9 @@ test('empty or draw-only records never show NaN, Infinity or a made-up win rate'
 test('planned-only attendance never counts as an actual completed visit',()=>{
   assert.equal(M.personalGames([games[0]],[{game_id:'1',member_id:'m',planned:true,attended:false}],'m').length,0);
 });
+test('attendance pagination orders by its own ID and never asks for a nonexistent game_date',async()=>{
+  const all=Array.from({length:1105},(_,id)=>({id,game_id:'g'+id,member_id:'me',attended:true})),orders=[];
+  const query={select(){return this},order(column){assert.equal(column,'id');orders.push(column);return this},async range(a,b){return {data:all.slice(a,b+1),error:null}}};
+  const result=await S.loadTable({from:table=>{assert.equal(table,'game_members');return query}},'game_members');
+  assert.equal(result.data.length,1105);assert.deepEqual(orders,['id','id']);
+});
