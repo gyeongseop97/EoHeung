@@ -40,7 +40,15 @@
       if(!scored.length)return null;
       const value=Math[mode](...scored.map(g=>g[key]));return {value,games:scored.filter(g=>g[key]===value)};
     };
-    return {games:games.length,scored:scored.length,pending:rows.filter(g=>!g.finished&&g.status!=='POSTPONED'&&g.status!=='CANCELED'&&g.status!=='CANCELLED').length,
+    const records=games.filter(g=>g.details);
+    const total=key=>{const known=records.map(g=>g.details[key]).filter(n=>typeof n==='number'&&Number.isFinite(n));return known.length?known.reduce((a,b)=>a+b,0):null;};
+    const eventExtreme=key=>{const known=records.filter(g=>typeof g.details[key]==='number');if(!known.length)return null;const value=Math.max(...known.map(g=>g.details[key]));return {value,games:known.filter(g=>g.details[key]===value)};};
+    const walkoffRecord=key=>{const known=records.filter(g=>typeof g.details[key]==='boolean');return known.length?{value:known.filter(g=>g.details[key]).length,games:known.filter(g=>g.details[key])}:null;};
+    const walkoffWins=walkoffRecord('walkoffWin'),walkoffLosses=walkoffRecord('walkoffLoss');
+    const events={coverage:records.length,homeRuns:total('homeRuns'),homeRunsAllowed:total('homeRunsAllowed'),strikeouts:total('strikeouts'),struckOut:total('struckOut'),
+      walkoffCoverage:records.filter(g=>typeof g.details.walkoffWin==='boolean').length,walkoffWins:walkoffWins?.value??null,walkoffLosses:walkoffLosses?.value??null,
+      maxHomeRuns:eventExtreme('homeRuns'),maxStrikeouts:eventExtreme('strikeouts'),walkoffWinRecord:walkoffWins,walkoffLossRecord:walkoffLosses};
+    return {events,games:games.length,scored:scored.length,pending:rows.filter(g=>!g.finished&&g.status!=='POSTPONED'&&g.status!=='CANCELED'&&g.status!=='CANCELLED').length,
       wins,losses,draws,unknown:games.length-wins-losses-draws,rate:wins+losses?wins/(wins+losses):null,
       rs,ra,diff:rs-ra,avgRs:scored.length?rs/scored.length:null,avgRa:scored.length?ra/scored.length:null,
       highRs:extreme('rs','max'),lowRs:extreme('rs','min'),highRa:extreme('ra','max'),lowRa:extreme('ra','min'),
@@ -56,5 +64,12 @@
   function filter(rows,{year='ALL',month='ALL',season='ALL'}={},kind=()=>null){
     return rows.filter(g=>(year==='ALL'||String(g.game_date).slice(0,4)===String(year))&&(month==='ALL'||Number(String(g.game_date).slice(5,7))===Number(month))&&(season==='ALL'||kind(g)===season));
   }
-  return {self,personalGames,summary,group,filter};
+  function attachDetails(rows,archives){
+    return rows.map(game=>{
+      const away=game.home_away==='HOME'?game.opponent:'삼성',home=game.home_away==='HOME'?'삼성':game.opponent;
+      const candidates=(archives?.[String(game.game_date).slice(0,4)]?.games||[]).filter(detail=>detail.game_date===game.game_date&&detail.away_team===away&&detail.home_team===home&&(!game.game_time||(detail.game_time||'').slice(0,5)===game.game_time.slice(0,5))&&game.scored&&detail.away_score===(game.home_away==='HOME'?game.ra:game.rs)&&detail.home_score===(game.home_away==='HOME'?game.rs:game.ra));
+      return {...game,details:candidates.length===1?candidates[0]:null};
+    });
+  }
+  return {self,personalGames,summary,group,filter,attachDetails};
 });

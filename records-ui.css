@@ -43,6 +43,9 @@ body#eoApp.eo-layout #myRecords{max-width:1460px;margin:0 auto}
 .my-fun-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px;padding-top:18px}
 .my-fun-stats span{font-size:11px;color:#7c8fa5;display:flex;gap:8px;justify-content:space-between}
 .my-fun-stats b{color:#385571}
+.my-event-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px;border-top:1px solid #e6eef7;margin-top:18px;padding-top:16px}
+.my-event-stats span{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#7089a3}.my-event-stats b{color:#074ca1}
+.my-detail-note{font-size:9px;line-height:1.7;color:#8b9caf;margin:14px 0 0}.my-game-detail{color:#5c84b0!important;font-size:9px!important}
 .my-month-list{display:grid;gap:13px;max-height:235px;overflow:auto;padding-right:5px;scrollbar-width:thin}
 .my-month{display:grid;grid-template-columns:58px minmax(0,1fr) 45px 43px;gap:10px;align-items:center;font-size:10px;color:#7d90a6}
 .my-month b{font-size:10px;color:#4c6683;text-align:right}
@@ -74,6 +77,14 @@ body#eoApp.eo-layout #myRecords .my-breakdown tbody th{background:transparent!im
 .my-date-link{border:0;background:transparent;color:#8b9eb3;font-size:10px;cursor:pointer;padding:8px 0;text-align:right}
 body#eoApp.eo-layout #myRecords .my-more{display:block;margin:18px auto 0;min-width:200px}
 .my-empty h3{margin:9px 0;color:#315170}.my-empty p{color:#8798ab;font-size:13px;line-height:1.8;max-width:650px;margin-bottom:20px}
+.my-head-actions{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}.my-head-actions .my-filter{width:auto}
+body#eoApp.eo-layout .my-share-dialog{border:1px solid #d2e0ef;border-radius:16px;padding:22px;max-width:670px;width:calc(100% - 24px);max-height:calc(100dvh - 24px);color:#153657;box-shadow:0 20px 80px #003b7a35;background:#fff;overflow:auto}
+.my-share-dialog::backdrop{background:#102a4caa;backdrop-filter:blur(3px)}
+.my-share-head{display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:18px}.my-share-head h3{font-size:18px;letter-spacing:-.04em;margin:0 0 5px}.my-share-head p{font-size:11px;color:#7890a9;margin:0}
+.my-share-preview{background:#eaf1fa;border-radius:10px;padding:16px;display:flex;justify-content:center}
+.my-share-preview img{display:block;width:auto;max-width:100%;max-height:calc(100dvh - 240px);height:auto;aspect-ratio:9/16;object-fit:contain;box-shadow:0 3px 12px #15365712}
+.my-share-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}.my-share-actions>span{font-size:11px;color:#7890a9}.my-share-actions a{text-decoration:none;display:inline-flex;align-items:center}
+@media(max-width:540px){.my-head-actions,.my-head-actions .my-filter{width:100%}.my-head-actions>[data-my-share]{width:100%}.my-share-actions a{width:100%;justify-content:center}.my-share-preview{padding:8px}}
 @media(max-width:1100px){.my-story-grid,.my-breakdown-grid{grid-template-columns:1fr}.my-record-head{align-items:flex-start!important;flex-direction:column;gap:16px!important}}
 @media(max-width:900px){body#eoApp.eo-layout #records .eo-table-tools{top:64px}.my-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.my-highlight-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.my-metric{padding:17px}.my-metric strong{font-size:27px}.my-diary-row{grid-template-columns:90px minmax(0,1fr) 85px;gap:10px}.my-diary-row time{font-size:11px}.my-date-link{grid-column:2/-1;text-align:left;padding:0}.my-diary-result{flex-direction:column;gap:4px;align-items:flex-end}.my-diary-match b{font-size:12px}.my-month{gap:7px}.my-filter{width:100%}.my-filter label{flex:1;min-width:85px}.my-filter select{min-width:0;width:100%}.my-card-head>span{max-width:150px;text-align:right}}
 @media(max-width:440px){.my-metric-grid{gap:8px}.my-metric{padding:14px}.my-metric>span{font-size:11px}.my-metric strong{font-size:25px}.my-fun-stats{gap:12px}.my-fun-stats span{font-size:10px}.my-score-totals strong{font-size:23px}.my-diary-row{grid-template-columns:80px minmax(0,1fr) 62px;gap:8px}.my-diary-result strong{font-size:15px}.my-diary-match img{width:18px!important;height:18px!important}.eo-table-tools-row>span{width:100%;margin-bottom:3px}.eo-table-tools-row label{margin-left:auto}}

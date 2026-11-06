@@ -1,0 +1,82 @@
+/* Samsung Lions-inspired interface palette. Auxiliary shades are UI colors. */
+body#eoApp.eo-layout.theme-lions{--lions-blue:#074ca1;--lions-deep:#003b7a;--lions-ice:#edf5ff;--lions-silver:#c5ced8;--blue:#074ca1;--navy:#102a4c;--bg:#f2f6fc;--card:#fff;--text:#152e4d;--muted:#60758e;--line:#d8e4f2;--green:#074ca1;--ui-accent:#074ca1;--ui-soft:#edf5ff;--ui-border:#d8e4f2;--ui-muted:#60758e;--ui-radius:12px;--shadow:0 4px 20px #003b7a08;background:#f2f6fc!important;color:#152e4d}
+body#eoApp.eo-layout.theme-lions .sidebar{background:#074ca1!important;border-bottom:3px solid #003b7a!important;color:#fff!important;box-shadow:0 3px 12px #003b7a12!important}
+body#eoApp.eo-layout.theme-lions .sidebar .brand{background:transparent!important}
+body#eoApp.eo-layout.theme-lions .sidebar .brand :is(h1,p){color:#fff!important}
+body#eoApp.eo-layout.theme-lions .sidebar .brand p{opacity:.75}
+body#eoApp.eo-layout.theme-lions .sidebar .brand .logo{background:#fff!important;border:0!important;border-radius:9px!important;box-shadow:none!important}
+body#eoApp.eo-layout.theme-lions .sidebar .nav>button{color:#dceaff!important;background:transparent!important;border-color:transparent!important}
+body#eoApp.eo-layout.theme-lions .sidebar .nav>button:is(.active,:hover){color:#074ca1!important;background:#fff!important;box-shadow:none!important}
+body#eoApp.eo-layout.theme-lions .sidebar .nav>button.active{font-weight:850!important}
+body#eoApp.eo-layout.theme-lions #desktopAccountActions :is(.desktop-account-email,.desktop-account-logout){color:#e0ecfc!important}
+body#eoApp.eo-layout.theme-lions #desktopAccountActions .desktop-account-logout{background:transparent!important;border-color:#ffffff55!important}
+body#eoApp.eo-layout.theme-lions .topbar h2{color:#003b7a!important}
+body#eoApp.eo-layout.theme-lions .topbar p{color:#60758e!important}
+body#eoApp.eo-layout.theme-lions .card{border-color:#d8e4f2!important;box-shadow:0 3px 16px #003b7a05!important}
+body#eoApp.eo-layout.theme-lions .card :is(h3,h4){color:#153e6b}
+body#eoApp.eo-layout.theme-lions .btn{background:#074ca1!important;color:#fff!important;border:1px solid #074ca1!important}
+body#eoApp.eo-layout.theme-lions .btn:hover{background:#003b7a!important}
+body#eoApp.eo-layout.theme-lions .btn.secondary{background:#fff!important;color:#074ca1!important;border-color:#bed2e9!important}
+body#eoApp.eo-layout.theme-lions .btn.secondary:hover{background:#edf5ff!important}
+body#eoApp.eo-layout.theme-lions .btn.green{background:#074ca1!important;color:#fff!important;border-color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions .btn.danger{background:#fff3f4!important;color:#a43d50!important;border-color:#efccd3!important}
+body#eoApp.eo-layout.theme-lions :is(input,select,textarea){accent-color:#074ca1}
+body#eoApp.eo-layout.theme-lions :is(button,input,select,textarea,a):focus-visible{outline-color:#2788de!important}
+body#eoApp.eo-layout.theme-lions :is(.input,select,textarea):focus{border-color:#5b95ce!important}
+body#eoApp.eo-layout.theme-lions th{background:#edf5ff!important;color:#315c89!important;border-bottom-color:#cddff2!important}
+body#eoApp.eo-layout.theme-lions tbody tr:hover{background:#f4f8fe}
+body#eoApp.eo-layout.theme-lions :is(.empty,.watch-item){background:#f9fbfe!important;border-color:#d8e4f2!important}
+body#eoApp.eo-layout.theme-lions .badge.W{background:#e4efff!important;color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions .badge.L{background:#fff0f2!important;color:#a43d50!important}
+body#eoApp.eo-layout.theme-lions .badge.D{background:#edf1f6!important;color:#586e88!important}
+body#eoApp.eo-layout.theme-lions .badge.SCHEDULED{background:#edf5ff!important;color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions #dashboard>.grid4>.metric .value{color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions #dashboard>.grid4>.metric:first-child{background:#074ca1!important;border-color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions #dashboard>.grid4>.metric:first-child :is(.value,.label){color:#fff!important}
+body#eoApp.eo-layout.theme-lions #dashboard>.grid4>.metric:first-child .sub{color:#c8ddf7!important}
+body#eoApp.eo-layout.theme-lions #eoDashboardRankRow #eoNextWatch{background:#edf5ff!important;border-color:#bdd3ed!important;color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions #dashboard .kbo-standings-table .samsung-row td{background:#e8f2ff!important;color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions #dashboard .kbo-standings-table .samsung-row td:first-child{box-shadow:inset 3px 0 #074ca1}
+body#eoApp.eo-layout.theme-lions .eo-overview-tabs button[aria-selected=true]{color:#074ca1;border-bottom-color:#074ca1}
+body#eoApp.eo-layout.theme-lions :is(.season-phase,.season-game-tag,.my-phase){background:#e5f0ff;color:#074ca1}
+body#eoApp.eo-layout.theme-lions .bracket-wordmark{color:#074ca1}
+body#eoApp.eo-layout.theme-lions .bracket-wordmark i{background:#4698d7}
+body#eoApp.eo-layout.theme-lions .bracket-round-title{background:#315c89}
+body#eoApp.eo-layout.theme-lions .round-2 .bracket-round-title{background:#286fba}
+body#eoApp.eo-layout.theme-lions .round-3 .bracket-round-title{background:#074ca1}
+body#eoApp.eo-layout.theme-lions .bracket-rails .rail-ks{stroke:#5f95ca}
+body#eoApp.eo-layout.theme-lions .round-3 .bracket-score .won,body#eoApp.eo-layout.theme-lions .round-3.is-decided .bracket-round-result{color:#074ca1}
+body#eoApp.eo-layout.theme-lions #schedule #calendar .day.today{background:#edf5ff!important;border-color:#91b8e3!important}
+body#eoApp.eo-layout.theme-lions #schedule #calendar .day.selected{outline-color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions #schedule #calendar .day.watch-attended{background:#edf5ff!important;border-color:#abc9ea!important}
+body#eoApp.eo-layout.theme-lions #schedule #calendar .game-chip.home-tag{background:#e4efff!important;color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions #schedule #calendar .game-chip.away-tag{background:#edf1f6!important;color:#4f6782!important}
+body#eoApp.eo-layout.theme-lions #schedule #calendar .game-chip.finished.win{background:#e4efff!important;color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions #schedule #calendar .game-chip.finished.loss{background:#fff0f2!important;color:#a43d50!important}
+body#eoApp.eo-layout.theme-lions #schedule .watch-chip{background:#dceaff!important;color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions #records .eo-record-main-tabs{background:#e9f1fb;border-color:#d1e1f3}
+body#eoApp.eo-layout.theme-lions #records .eo-record-main-tabs button.active{background:#074ca1;color:#fff}
+body#eoApp.eo-layout.theme-lions #records :is(.eo-leader.samsung,.eo-samsung-card){background:#edf5ff;border-color:#a9c9ed}
+body#eoApp.eo-layout.theme-lions #records .eo-record-table tr.samsung-row td{background:#edf5ff!important}
+body#eoApp.eo-layout.theme-lions #records .eo-merged-player-table tr.samsung-row td:first-child{background:#e5f0ff!important;color:#074ca1}
+body#eoApp.eo-layout.theme-lions #records th.eo-sort-active{background:#dbeaff!important;color:#074ca1!important}
+body#eoApp.eo-layout.theme-lions #records .eo-table-top-scroll{scrollbar-color:#6a9bce #e9f1fb}
+body#eoApp.eo-layout.theme-lions .my-metric.my-primary{background:#074ca1;border-color:#074ca1}
+body#eoApp.eo-layout.theme-lions .my-metric.my-primary :is(span,strong,small){color:#fff}
+body#eoApp.eo-layout.theme-lions .my-metric.my-primary small{color:#cfdef4}
+body#eoApp.eo-layout.theme-lions .my-month-bar .win,body#eoApp.eo-layout.theme-lions .my-dot.win{background:#074ca1}
+body#eoApp.eo-layout.theme-lions .my-result.W{background:#e4efff;color:#074ca1}
+body#eoApp.eo-layout.theme-lions .my-kicker{color:#396995}
+body#eoApp.eo-layout.theme-lions .eo-settings-nav button.active{background:#e4efff;color:#074ca1}
+/* The palette card is visible in every theme, before it is selected. */
+#settings .eo-theme-option[data-settings-theme="lions"]{grid-column:1/-1;display:grid;grid-template-columns:200px minmax(0,1fr);gap:22px;align-items:center;padding:20px}
+#settings .eo-theme-option[data-settings-theme="lions"] .eo-theme-swatch{margin:0;height:138px;background:#edf5ff;grid-template-columns:1fr;grid-template-rows:24px 1fr;border-radius:8px;border-color:#c2d5eb}
+#settings .eo-theme-option[data-settings-theme="lions"] .eo-theme-swatch i{background:#074ca1}
+#settings .eo-theme-option[data-settings-theme="lions"] .eo-theme-swatch>span{margin:15px;background:linear-gradient(90deg,#074ca1 0 30%,#fff 30%);border-color:#d1e1f3;border-radius:6px}
+.eo-lions-option-copy{display:block;min-width:0}.eo-lions-eyebrow{display:block;color:#47739d;font-size:9px;font-weight:800;letter-spacing:.15em;margin-bottom:5px}
+#settings .eo-theme-option[data-settings-theme="lions"] strong{font-size:18px;letter-spacing:-.04em;color:#074ca1}
+.eo-lions-palette{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.eo-lions-chip{display:flex;gap:5px;align-items:center;font-size:9px;color:#627c97;white-space:nowrap}
+.eo-lions-chip i{display:block;width:16px;height:16px;border:1px solid #d2dce9;border-radius:4px;background:var(--chip)}
+#settings .eo-theme-option[aria-pressed=true]{outline:2px solid #074ca1;outline-offset:2px}
+@media(max-width:900px){body#eoApp.eo-layout.theme-lions .sidebar{height:64px!important;min-height:64px!important;padding-top:0!important;padding-bottom:0!important}body#eoApp.eo-layout.theme-lions .sidebar .brand{height:61px!important;padding:0!important;margin:0!important}body#eoApp.eo-layout.theme-lions .mobile-menu-toggle{background:#ffffff16!important;border-color:#ffffff55!important}body#eoApp.eo-layout.theme-lions .mobile-menu-toggle span{background:#fff!important}body#eoApp.eo-layout.theme-lions .sidebar .nav{background:#074ca1!important}body#eoApp.eo-layout.theme-lions .mobile-drawer-user{color:#dceaff!important}body#eoApp.eo-layout.theme-lions .mobile-logout-btn{color:#fff!important;background:#ffffff15!important;border-color:#ffffff55!important}#settings .eo-theme-option[data-settings-theme="lions"]{grid-template-columns:1fr;gap:14px;padding:16px}#settings .eo-theme-option[data-settings-theme="lions"] .eo-theme-swatch{height:100px}}

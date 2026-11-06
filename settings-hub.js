@@ -125,11 +125,12 @@
             <article class="card eo-settings-card">
               <div class="eo-settings-card-head"><div><h3>테마 설정</h3><p>원하는 화면 분위기를 선택합니다. 이 브라우저에 자동으로 저장됩니다.</p></div></div>
               <div class="eo-theme-options">
+                <button type="button" class="eo-theme-option" data-settings-theme="lions"><span class="eo-theme-swatch"><i></i><span></span></span><span class="eo-lions-option-copy"><span class="eo-lions-eyebrow">BLUE &amp; WHITE · SAMSUNG LIONS</span><strong>삼성 라이온즈</strong><small>라이온즈 블루와 청백 컬러로 채운 나의 야구장</small><span class="eo-lions-palette"><span class="eo-lions-chip"><i style="--chip:#074ca1"></i>#074CA1</span><span class="eo-lions-chip"><i style="--chip:#003b7a"></i>#003B7A</span><span class="eo-lions-chip"><i style="--chip:#ffffff"></i>#FFFFFF</span><span class="eo-lions-chip"><i style="--chip:#edf5ff"></i>#EDF5FF</span><span class="eo-lions-chip"><i style="--chip:#c5ced8"></i>#C5CED8</span></span></span></button>
                 <button type="button" class="eo-theme-option" data-settings-theme="default"><span class="eo-theme-swatch"><i></i><span></span></span><strong>기본 대시보드</strong><small>어흥의 기본 파란색 카드형 화면</small></button>
                 <button type="button" class="eo-theme-option" data-settings-theme="groupware"><span class="eo-theme-swatch"><i></i><span></span></span><strong>그룹웨어</strong><small>사내 업무 시스템과 유사한 화면</small></button>
                 <button type="button" class="eo-theme-option" data-settings-theme="excel"><span class="eo-theme-swatch"><i></i><span></span></span><strong>엑셀 업무표</strong><small>표 중심의 간결한 녹색 화면</small></button>
               </div>
-              <select id="themeSelect" tabindex="-1" aria-hidden="true"><option value="default">기본</option><option value="groupware">그룹웨어</option><option value="excel">엑셀</option></select><div id="themePreview" aria-hidden="true"></div>
+              <select id="themeSelect" tabindex="-1" aria-hidden="true"><option value="lions">삼성 라이온즈</option><option value="default">기본</option><option value="groupware">그룹웨어</option><option value="excel">엑셀</option></select><div id="themePreview" aria-hidden="true"></div>
             </article>
           </div>
 
@@ -225,7 +226,7 @@
   function currentTheme(){return appState()?.theme||localStorage.getItem('eoheung_theme')||'default'}
   function syncTheme(){
     const theme=currentTheme();
-    $$('[data-settings-theme]').forEach(button=>button.classList.toggle('active',button.dataset.settingsTheme===theme));
+    $$('[data-settings-theme]').forEach(button=>{const active=button.dataset.settingsTheme===theme;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
     const legacy=$('#themeSelect');
     if(legacy)legacy.value=theme;
   }
@@ -235,6 +236,7 @@
       localStorage.setItem('eoheung_theme',theme);
       document.body.classList.toggle('theme-groupware',theme==='groupware');
       document.body.classList.toggle('theme-excel',theme==='excel');
+      document.body.classList.toggle('theme-lions',theme==='lions');
       if(appState())appState().theme=theme;
     }
     syncTheme();

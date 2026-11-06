@@ -46,16 +46,19 @@ body.theme-excel .toolbar{gap:6px}
   <script src="member-permission-control.js?v=2" defer></script>
   <script src="attendance-permission-guard.js" defer></script>
   <script src="attendance-role-guard.js?v=2" defer></script>
-  <script src="settings-hub.js?v=1" defer></script>
+  <script src="settings-hub.js?v=2" defer></script>
   <script src="kbo-record-utils.js?v=1" defer></script>
   <script src="game-result-auto-refresh.js?v=4" defer></script>
   <script src="eoheung-fans.js?v=2" defer></script>
   <script src="eoheung-dashboard.js?v=2" defer></script>
   <link rel="stylesheet" href="eoheung-layout.css?v=1" />
   <script src="eoheung-layout.js?v=1" defer></script>
-  <link rel="stylesheet" href="records-ui.css?v=1" />
-  <script src="my-records-model.js?v=1" defer></script>
-  <script src="my-records.js?v=1" defer></script>
+  <link rel="stylesheet" href="records-ui.css?v=2" />
+  <script src="my-records-model.js?v=2" defer></script>
+  <script src="my-records-details.js?v=1" defer></script>
+  <script src="my-records.js?v=2" defer></script>
+  <script src="my-records-share.js?v=1" defer></script>
+  <link rel="stylesheet" href="lions-theme.css?v=1" />
 </head>
 <body id="eoApp" class="eo-layout">
   <div id="authView" class="auth-wrap"><div class="card auth-card"><div class="brand" style="color:var(--text);margin-bottom:14px"><div class="logo" style="background:var(--blue);color:#fff">SL</div><div><h1>Samsung Lions Watch Party Manager</h1><p>Supabase 연동 버전</p></div></div><p>이메일과 비밀번호만 입력해 로그인하시면 됩니다.</p><div class="form-grid"><input id="loginEmail" class="input" placeholder="이메일" type="email" /><input id="loginPassword" class="input" placeholder="비밀번호" type="password" /></div><div class="toolbar" style="margin-top:14px"><button class="btn green" id="signInBtn">로그인</button><button class="btn secondary" id="signUpBtn">회원가입</button></div><p class="note">회원가입이 막혀 있으면 Supabase Dashboard &gt; Authentication에서 사용자를 먼저 생성해 주세요.</p></div></div>
@@ -72,7 +75,7 @@ body.theme-excel .toolbar{gap:6px}
       <section id="records" class="section"><div class="grid4 rank-grid"><div class="card pad rank-card"><h3>직관 횟수 순</h3><ul id="recordAttendRank" class="rank-list"></ul></div><div class="card pad rank-card"><h3>승리요정 횟수 순</h3><ul id="recordWinRank" class="rank-list"></ul></div><div class="card pad rank-card"><h3>승률 순</h3><ul id="recordRateRank" class="rank-list"></ul></div><div class="card pad"><h3>전체 기록</h3><div class="table-wrap"><table><thead><tr><th>회원</th><th>직관</th><th>승</th><th>패</th><th>무</th><th>승률</th></tr></thead><tbody id="recordRows"></tbody></table></div></div></div></section>
 
       <section id="links" class="section"><div class="toolbar"><button class="btn" id="openLinkModalBtn">링크 추가</button></div><div id="linkList" class="dashboard-grid"></div></section>
-      <section id="settings" class="section"><div class="settings-grid"><div class="card"><h3>데이터 관리</h3><button class="btn secondary" id="exportBtn">JSON 백업 내보내기</button><p class="note">Supabase 데이터가 기준이며, 백업용 JSON을 내려받습니다.</p></div><div class="card"><h3>테마</h3><p class="note">화면 분위기를 선택합니다. 선택값은 브라우저에 저장됩니다.</p><div class="theme-setting-box"><select id="themeSelect" class="input"><option value="default">기본 대시보드</option><option value="groupware">그룹웨어 느낌</option><option value="excel">엑셀 업무표 느낌</option></select><div id="themePreview" class="theme-preview"></div></div></div></div></section>
+      <section id="settings" class="section"><div class="settings-grid"><div class="card"><h3>데이터 관리</h3><button class="btn secondary" id="exportBtn">JSON 백업 내보내기</button><p class="note">Supabase 데이터가 기준이며, 백업용 JSON을 내려받습니다.</p></div><div class="card"><h3>테마</h3><p class="note">화면 분위기를 선택합니다. 선택값은 브라우저에 저장됩니다.</p><div class="theme-setting-box"><select id="themeSelect" class="input"><option value="lions">삼성 라이온즈</option><option value="default">기본 대시보드</option><option value="groupware">그룹웨어 느낌</option><option value="excel">엑셀 업무표 느낌</option></select><div id="themePreview" class="theme-preview"></div></div></div></div></section>
     </main></div>
 
   <div id="toast" class="toast"></div>
@@ -110,7 +113,7 @@ body.theme-excel .toolbar{gap:6px}
     function isPlannedWatchGame(g){return g&&g.status!=='FINISHED'}
     function watchInfoForDate(ymd){const games=gamesOnDate(ymd);const ids=games.map(g=>g.id);const entries=state.gameMembers.filter(e=>ids.includes(e.game_id)&&e.attended);return{games,attended:entries}}
     function watchCountText(attended,planned){return planned>0?`${attended}(${planned})`:`${attended}`}
-    function applyTheme(theme){state.theme=theme;localStorage.setItem('eoheung_theme',theme);document.body.classList.toggle('theme-groupware',theme==='groupware');document.body.classList.toggle('theme-excel',theme==='excel');renderThemePreview()}
+    function applyTheme(theme){state.theme=theme;localStorage.setItem('eoheung_theme',theme);document.body.classList.toggle('theme-groupware',theme==='groupware');document.body.classList.toggle('theme-excel',theme==='excel');document.body.classList.toggle('theme-lions',theme==='lions');renderThemePreview()}
     function renderThemePreview(){const el=qs('themePreview');if(!el)return;if(state.theme==='excel')el.innerHTML='<div class="excel-ribbon">Excel Style</div><table><tr><td class="head">회원</td><td class="head">기록</td></tr><tr><td>문경섭</td><td>3회</td></tr></table>';else el.innerHTML='<div class="bar"></div><div class="line"></div><div class="line short"></div>'}
     async function init(){state.client=window.eoheungClient||supabase.createClient(SUPABASE_URL,SUPABASE_KEY);window.eoheungClient=state.client;applyTheme(state.theme);bindEvents();const {data:{session}}=await state.client.auth.getSession();if(session?.user){state.user=session.user;if(isPasswordRecoveryRoute())showPasswordRecovery();else{showApp();await loadAll()}}else if(isPasswordRecoveryRoute())showPasswordRecovery();else showAuth();state.client.auth.onAuthStateChange(async(evt,session)=>{if(evt==='PASSWORD_RECOVERY'){state.user=session?.user||null;window.eoPasswordRecoveryActive=true;showPasswordRecovery();return}if(session?.user){state.user=session.user;if(isPasswordRecoveryRoute())showPasswordRecovery();else{showApp();await loadAll()}}else{state.user=null;if(isPasswordRecoveryRoute()&&evt!=='SIGNED_OUT')showPasswordRecovery();else showAuth({rememberRoute:evt!=='SIGNED_OUT'})}})}
     function showAuth({rememberRoute=true,route=LOGIN_PATH}={}){if(rememberRoute&&route===LOGIN_PATH)rememberLoginReturnPath();qs('authView').classList.remove('hide');qs('appView').classList.add('hide');document.title=route===RESET_PASSWORD_PATH?'새 비밀번호 설정 | 어흥':'로그인 | 어흥';if(window.location.pathname!==route){const suffix=route===RESET_PASSWORD_PATH?window.location.search+window.location.hash:'';window.history.replaceState({auth:true},'',route+suffix)}}

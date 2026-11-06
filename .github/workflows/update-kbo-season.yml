@@ -31,7 +31,7 @@ jobs:
           node-version: '22'
       - name: Verify season rules and parsers
         run: |
-          node --test tests/kbo-season.test.cjs
+          node --test tests/kbo-season.test.cjs tests/records.test.cjs
           python -m unittest discover -s tests -p 'test_*.py'
       - name: Sync official season archive
         env:
@@ -39,14 +39,16 @@ jobs:
         run: |
           if [ -n "$SEASON_YEAR" ]; then
             python scripts/sync_kbo_season.py --year "$SEASON_YEAR"
+            python scripts/sync_kbo_game_details.py --year "$SEASON_YEAR"
           else
             python scripts/sync_kbo_season.py
+            python scripts/sync_kbo_game_details.py
           fi
       - name: Save verified archive
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/kbo-seasons/
+          git add data/kbo-seasons/ data/kbo-game-details/
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'Update official KBO season archive'
           git pull --rebase origin main
