@@ -14,7 +14,7 @@
     if(document.getElementById('eoKboRecordsModule'))return;
     const s=document.createElement('script');
     s.id='eoKboRecordsModule';
-    s.src='kbo-records.js?v=20260827-2';
+    s.src='kbo-records.js?v=20261106-1';
     s.defer=true;
     document.head.appendChild(s);
   }
@@ -23,7 +23,7 @@
     if(document.getElementById('eoKboRecordsSortable'))return;
     const s=document.createElement('script');
     s.id='eoKboRecordsSortable';
-    s.src='kbo-records-table-enhancement.js?v=20260827-2';
+    s.src='kbo-records-table-enhancement.js?v=20261106-1';
     s.defer=true;
     document.head.appendChild(s);
   }

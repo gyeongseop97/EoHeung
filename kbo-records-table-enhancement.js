@@ -20,6 +20,7 @@
   const PITCHER_QUALIFIED_KEYS=new Set(['ERA','WHIP','FIP','ERA-','FIP-','BABIP','K/9','BB/9','K/BB','K%','BB%','HR/9','H/9','LOB%']);
   const TEAM_NAMES=new Set(['삼성','LG','KT','SSG','KIA','두산','한화','롯데','키움','NC']);
   let observer=null,scheduled=false;
+  const scrollBindings=new Map();
 
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const normTeam=name=>{const raw=String(name||'').trim();const map={'SAMSUNG':'삼성','LIONS':'삼성','삼성':'삼성','LG':'LG','엘지':'LG','KT':'KT','SSG':'SSG','KIA':'KIA','기아':'KIA','두산':'두산','DOOSAN':'두산','한화':'한화','HANWHA':'한화','롯데':'롯데','LOTTE':'롯데','키움':'키움','KIWOOM':'키움','HEROES':'키움','NC':'NC'};return map[raw]||map[raw.toUpperCase()]||raw};
@@ -46,15 +47,7 @@
   }
 
   function parseInnings(text){
-    const s=String(text||'').trim();
-    let m=s.match(/^(\d+)\s+(1|2)\/3$/);
-    if(m)return Number(m[1])+Number(m[2])/3;
-    m=s.match(/^(\d+)\.(1|2)$/);
-    if(m)return Number(m[1])+Number(m[2])/3;
-    m=s.match(/^(\d+)\s*([⅓⅔])$/);
-    if(m)return Number(m[1])+(m[2]==='⅓'?1/3:2/3);
-    if(/^\d+(?:\.\d+)?$/.test(s))return Number(s);
-    return null;
+    return EoKboRecordUtils.innings(text);
   }
 
   function sortableValue(text,header){
@@ -66,7 +59,9 @@
       const innings=parseInnings(s);if(innings!=null)return {type:'number',value:innings};
     }
     const cleaned=s.replace(/,/g,'').replace(/위$/,'').replace(/^\+/,'').replace(/%$/,'');
-    if(cleaned!==''&&/^[-+]?\d+(?:\.\d+)?$/.test(cleaned))return {type:'number',value:Number(cleaned)};
+    const numeric=EoKboRecordUtils.number(cleaned);
+    if(numeric!=null)return {type:'number',value:numeric};
+    if(!s||/^(?:-|—|–|N\/A)$/i.test(s))return {type:'number',value:null};
     return {type:'text',value:s.toLocaleLowerCase('ko-KR')};
   }
 
@@ -87,17 +82,7 @@
   }
 
   function teamGameCounts(){
-    const counts=Object.fromEntries([...TEAM_NAMES].map(t=>[t,0]));
-    if(typeof state==='undefined'||!Array.isArray(state.allGames))return counts;
-    const year=String(new Date().getFullYear());
-    state.allGames.forEach(g=>{
-      if(!String(g?.game_date||'').startsWith(`${year}-`))return;
-      if(String(g?.status||'').toUpperCase()!=='FINISHED')return;
-      const away=normTeam(g?.away_team),home=normTeam(g?.home_team);
-      if(TEAM_NAMES.has(away))counts[away]++;
-      if(TEAM_NAMES.has(home))counts[home]++;
-    });
-    return counts;
+    return EoKboRecordUtils.teamGames(window.EoKboRecordsData,typeof state==='undefined'?[]:state.allGames,EoSeason.isRegular);
   }
 
   function headerIndex(table,key){
@@ -117,13 +102,15 @@
       const games=Number(counts[team]||0);
       if(!games||valueIdx<0){delete row.dataset.eoQualified;return}
       if(type==='hitter'){
-        const pa=Number(String(row.cells[valueIdx]?.textContent||'').replace(/,/g,''));
-        if(!Number.isFinite(pa)){delete row.dataset.eoQualified;return}
-        row.dataset.eoQualified=pa>=games*3.1?'1':'0';
+        const pa=EoKboRecordUtils.number(row.cells[valueIdx]?.textContent);
+        if(pa==null){delete row.dataset.eoQualified;return}
+        row.dataset.eoQualified=EoKboRecordUtils.qualification(pa,games,type)?'1':'0';
+        row.cells[valueIdx].title=`${team} 정규시즌 ${games}경기 · 규정 ${Math.round(games*3.1)}타석 · ${pa}타석 (${row.dataset.eoQualified==='1'?'충족':'미달'})`;
       }else{
         const ip=parseInnings(row.cells[valueIdx]?.textContent||'');
         if(ip==null){delete row.dataset.eoQualified;return}
-        row.dataset.eoQualified=ip+1e-9>=games?'1':'0';
+        row.dataset.eoQualified=EoKboRecordUtils.qualification(ip,games,type)?'1':'0';
+        row.cells[valueIdx].title=`${team} 정규시즌 ${games}경기 · 규정 ${games}이닝 (${row.dataset.eoQualified==='1'?'충족':'미달'})`;
       }
     });
   }
@@ -156,27 +143,24 @@
         if(a.qualified==='0')return -1;
         if(b.qualified==='0')return 1;
       }
-      let result=0;
-      if(a.sort.type==='number'&&b.sort.type==='number')result=a.sort.value-b.sort.value;
-      else result=String(a.sort.value).localeCompare(String(b.sort.value),'ko-KR',{numeric:true,sensitivity:'base'});
-      if(result===0)result=String(a.name).localeCompare(String(b.name),'ko-KR');
-      return dir==='asc'?result:-result;
+      return EoKboRecordUtils.compare(a.sort.value,b.sort.value,dir)||String(a.name).localeCompare(String(b.name),'ko-KR');
     });
     const frag=document.createDocumentFragment();
     rows.forEach(item=>frag.appendChild(item.row));
     tbody.appendChild(frag);
-    table.dataset.sortCol=String(col);table.dataset.sortDir=dir;
+    table.dataset.sortCol=String(col);table.dataset.sortKey=metricKey(th);table.dataset.sortDir=dir;
     updateArrows(table,col,dir);
   }
 
   function sortTable(table,col,header){
-    const prevCol=Number(table.dataset.sortCol),prevDir=table.dataset.sortDir;
+    const prevDir=table.dataset.sortDir;
     const th=table.tHead?.querySelectorAll('th')?.[col];
     const lowerByColumn=th?.dataset?.lowerIsBetter==='1';
     let dir;
-    if(prevCol===col)dir=prevDir==='asc'?'desc':'asc';
+    if(table.dataset.sortKey===metricKey(th))dir=prevDir==='asc'?'desc':'asc';
     else dir=lowerByColumn||LOWER_IS_BETTER.has(header)||header==='팀'||header==='선수'?'asc':'desc';
     sortRows(table,col,header,dir);
+    refreshLeaderStrip(table,col);
   }
 
   function refreshLeaderStrip(table,col){
@@ -230,7 +214,8 @@
       if(th.dataset.sortBound!=='1'){
         th.dataset.sortBound='1';
         th.tabIndex=0;
-        const action=()=>sortTable(table,index,th.dataset.sortLabel||label);
+        // Detail columns can be inserted before WAR after this listener binds.
+        const action=()=>sortTable(table,th.cellIndex,th.dataset.sortLabel||label);
         th.addEventListener('click',action);
         th.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();action()}});
       }
@@ -238,6 +223,7 @@
     });
     markQualifications(table);
     applySelectedQualificationSort(table);
+    ensureTopScroll(table);
   }
 
   function updateQualificationNote(root){
@@ -246,7 +232,7 @@
     const notes=[...body.querySelectorAll('.eo-record-note')];
     const note=notes.find(n=>String(n.textContent||'').includes('선수 기록'))||notes[0];
     if(note&&!String(note.textContent||'').includes('규정타석')){
-      note.textContent=`${String(note.textContent||'').trim()} 비율지표 정렬은 규정타석(팀 경기×3.1)·규정이닝(팀 경기×1) 충족 선수를 우선 표시합니다.`;
+      note.textContent=`${String(note.textContent||'').trim()} 비율지표는 정규시즌 팀 경기 수 기준 규정타석(×3.1, 반올림)·규정이닝(×1) 충족 선수를 우선 표시합니다. 시범·포스트시즌은 제외합니다.`;
     }
   }
 
@@ -254,6 +240,49 @@
     translateMetricOptions(root);
     root.querySelectorAll('.eo-record-table').forEach(enhanceTable);
     updateQualificationNote(root);
+  }
+
+  function ensureTopScroll(table){
+    const wrap=table.closest('.eo-record-table-wrap');if(!wrap)return;
+    let entry=scrollBindings.get(table);
+    if(!entry){
+      const tools=document.createElement('div');tools.className='eo-table-tools';
+      tools.innerHTML='<div class="eo-table-tools-row"><span>가려진 지표 보기</span><button type="button" data-pan="-1" aria-label="표 왼쪽 지표 보기">←</button><button type="button" data-pan="1" aria-label="표 오른쪽 지표 보기">→</button><label>지표 이동 <select aria-label="이동할 지표"></select></label></div><p class="eo-qualification-info"></p><div class="eo-table-top-scroll" tabindex="0" role="region" aria-label="기록표 가로 스크롤"><div></div></div>';
+      wrap.before(tools);wrap.tabIndex=0;wrap.setAttribute('aria-label','좌우로 이동할 수 있는 기록표');
+      const rail=tools.querySelector('.eo-table-top-scroll'),select=tools.querySelector('select');
+      rail.addEventListener('scroll',()=>{if(Math.abs(wrap.scrollLeft-rail.scrollLeft)>1)wrap.scrollLeft=rail.scrollLeft;});
+      wrap.addEventListener('scroll',()=>{if(Math.abs(rail.scrollLeft-wrap.scrollLeft)>1)rail.scrollLeft=wrap.scrollLeft;});
+      tools.addEventListener('click',event=>{const button=event.target.closest('[data-pan]');if(button)wrap.scrollLeft+=Number(button.dataset.pan)*Math.max(180,wrap.clientWidth*.7);});
+      select.addEventListener('change',()=>{
+        const th=Array.from(table.tHead.rows[0].cells).find(h=>metricKey(h)===select.value);
+        if(th)wrap.scrollLeft=Math.max(0,th.offsetLeft-(table.rows[0].cells[0]?.offsetWidth||0));
+      });
+      const update=()=>{
+        tools.style.top=(document.querySelector('.sidebar')?.getBoundingClientRect().height||64)+'px';
+        tools.hidden=table.scrollWidth<=wrap.clientWidth+1;
+        rail.firstElementChild.style.width=table.scrollWidth+'px';
+        if(Math.abs(rail.scrollLeft-wrap.scrollLeft)>1)rail.scrollLeft=wrap.scrollLeft;
+      };
+      const resize=new ResizeObserver(update);resize.observe(table);resize.observe(wrap);
+      entry={tools,select,update,resize};scrollBindings.set(table,entry);
+    }
+    const headers=Array.from(table.tHead.rows[0].cells);
+    const type=playerTypeForTable(table),info=entry.tools.querySelector('.eo-qualification-info');
+    info.hidden=!type;
+    if(type){
+      const counts=Array.from(new Set(Object.values(teamGameCounts()).filter(n=>n>0))),games=counts.length===1?counts[0]:null;
+      const standard=type==='hitter'?(games?`규정타석 ${Math.round(games*3.1)}타석 · 정규시즌 ${games}경기 기준`:'규정타석: 팀 정규시즌 경기 × 3.1, 반올림'):(games?`규정이닝 ${games}이닝 · 정규시즌 ${games}경기 기준`:'규정이닝: 팀 정규시즌 경기 × 1');
+      const text=standard+' · 비율 지표는 규정 충족 선수 우선';if(info.textContent!==text)info.textContent=text;
+    }
+    const key=headers.map(metricKey).join('|');
+    if(entry.tools.dataset.headers!==key){
+      const selected=entry.select.value;
+      entry.select.innerHTML=headers.map(th=>`<option value="${esc(metricKey(th))}">${esc(th.dataset.sortLabel||th.textContent.replace(/[▲▼]/g,'').trim())}</option>`).join('');
+      if(headers.some(th=>metricKey(th)===selected))entry.select.value=selected;
+      entry.tools.dataset.headers=key;
+    }
+    entry.update();
+    for(const [old,binding] of scrollBindings)if(!old.isConnected){binding.resize.disconnect();binding.tools.remove();scrollBindings.delete(old);}
   }
 
   function installStyle(){
@@ -293,6 +322,7 @@
 
   function install(){
     installStyle();apply();
+    document.addEventListener('eo:kbo-records-loaded',scheduleApply);
     const records=document.getElementById('records');
     if(records&&typeof MutationObserver!=='undefined'){
       observer=new MutationObserver(mutations=>{if(isMeaningfulMutation(mutations))scheduleApply()});
