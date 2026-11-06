@@ -32,7 +32,7 @@
   function getHist(){try{return JSON.parse(localStorage.getItem(LS_HISTORY)||'[]')}catch(e){return[]}}
   function setHist(rows){try{localStorage.setItem(LS_HISTORY,JSON.stringify(rows.slice(0,200)))}catch(e){}}
   async function recordChange(action,detail,target_type='',target_id=''){
-    const actor=(typeof state!=='undefined'&&state.user?.email)||window.currentUserEmail||'';
+    const actor=currentMember()?.name||'회원';
     const row={actor,action,detail,target_type,target_id:String(target_id||'')};
     if(typeof state==='undefined'||!state.client){
       toast?.('서버 연결 후 변경이력이 기록됩니다.');
@@ -81,7 +81,7 @@
   async function applyLogo(){const logo=await loadLogo();$$('.brand').forEach(brand=>{const box=brand.querySelector('.logo'),h1=brand.querySelector('h1'),p=brand.querySelector('p');if(box&&logo){box.classList.add('eoheung-logo-box');box.innerHTML=`<img class="eoheung-main-logo" src="${logo}" alt="어흥 로고">`}if(h1)h1.textContent='어흥';if(p)p.textContent='삼성 라이온즈 직관 모임'});document.title='어흥 - 삼성 라이온즈 직관 모임'}
 
   function ensureMemberForm(){const name=$('#memberName');if(!name)return;if(!$('#memberPosition')){const input=document.createElement('input');input.id='memberPosition';input.className='input';input.placeholder='직책';name.parentNode.insertBefore(input,name)}$('#memberFavorite')?.remove();$('#memberStatus')?.remove()}
-  function renderMembersPatched(){const root=$('#memberRows');if(!root||typeof state==='undefined')return;const head=$('#members thead tr');if(head)head.innerHTML='<th>직책</th><th>이름</th><th>부서</th><th>연락처</th><th>메모</th><th></th>';root.innerHTML=state.members.length?state.members.map(m=>{const ex=splitMemberMemo(m);return `<tr><td><span class="member-position-badge">${esc(ex.position||'-')}</span></td><td><b>${esc(m.name)}</b></td><td>${esc(m.department||'')}</td><td>${esc(m.phone||'')}</td><td class="member-memo-cell">${esc(ex.memo||'')}</td><td><button class="btn secondary" data-edit-member="${m.id}">수정</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">등록된 회원이 없습니다.</td></tr>'}
+  function renderMembersPatched(){const root=$('#memberRows');if(!root||typeof state==='undefined')return;if(!window.EoAccess?.isAdmin()){if(root.children.length)root.replaceChildren();return;}const head=$('#members thead tr');if(head)head.innerHTML='<th>직책</th><th>이름</th><th>부서</th><th>연락처</th><th>메모</th><th></th>';root.innerHTML=state.members.length?state.members.map(m=>{const ex=splitMemberMemo(m);return `<tr><td><span class="member-position-badge">${esc(ex.position||'-')}</span></td><td><b>${esc(m.name)}</b></td><td>${esc(m.department||'')}</td><td>${esc(m.phone||'')}</td><td class="member-memo-cell">${esc(ex.memo||'')}</td><td><button class="btn secondary" data-edit-member="${m.id}">수정</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">등록된 회원이 없습니다.</td></tr>'}
   function clearMemberFormPatched(){ensureMemberForm();['memberId','memberPosition','memberName','memberDepartment','memberPhone','memberMemo'].forEach(id=>{const el=$('#'+id);if(el)el.value=''});const t=$('#memberModalTitle');if(t)t.textContent='회원 추가'}
   function editMemberPatched(id){ensureMemberForm();const m=state.members.find(x=>String(x.id)===String(id));if(!m)return;const ex=splitMemberMemo(m);$('#memberModalTitle').textContent='회원 수정';$('#memberId').value=m.id;$('#memberPosition').value=ex.position||'';$('#memberName').value=m.name||'';$('#memberDepartment').value=m.department||'';$('#memberPhone').value=m.phone||'';$('#memberMemo').value=ex.memo||'';if(typeof openModal==='function')openModal('memberModal')}
   async function saveMemberPatched(){ensureMemberForm();const id=$('#memberId').value;const old=state.members.find(x=>String(x.id)===String(id));const payload={name:$('#memberName').value.trim(),department:$('#memberDepartment').value.trim(),phone:$('#memberPhone').value.trim(),favorite_player:'',status:old?.status||'active',memo:mergeMemberMemo($('#memberPosition').value,$('#memberMemo').value)};if(!payload.name){toast?.('이름을 입력해 주세요.');return}const res=id?await state.client.from('members').update(payload).eq('id',id):await state.client.from('members').insert(payload);if(res.error){toast?.('회원 저장 오류: '+res.error.message);return}await recordChange(id?'회원 수정':'회원 추가',`${payload.name} / ${$('#memberPosition').value||'-'}`,'member',id||payload.name);closeModal?.('memberModal');await loadAll?.()}
@@ -134,7 +134,8 @@ function plannedWatchGames(){
   async function renderHistoryPanel(){
     ensureHistoryPanel();
     const list=$('#eoHistoryList');
-    if(!list)return;
+    const allowed=window.EoAccess?.isAdmin()===true;const card=$('#eoHistoryPanel');if(card)card.hidden=!allowed;
+    if(!list)return;if(!allowed){if(list.children.length)list.replaceChildren();return;}
     if(typeof state==='undefined'||!state.client){list.innerHTML='<div class="empty">서버 연결 후 변경이력을 불러옵니다.</div>';return}
     list.innerHTML='<div class="empty">서버 변경이력을 불러오는 중입니다...</div>';
     const {data,error}=await state.client.from('change_logs').select('*').order('created_at',{ascending:false}).limit(80);

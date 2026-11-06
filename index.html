@@ -6,6 +6,7 @@
   <title>Samsung Lions Watch Party Manager</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="kbo-season.js?v=1"></script>
+  <script src="member-access.js?v=1"></script>
   <link rel="stylesheet" href="kbo-season.css?v=2" />
   <link rel="stylesheet" href="kbo-standings-homeaway.css" />
   <link rel="stylesheet" href="kbo-standings-fix.css" />
@@ -36,22 +37,22 @@ body.theme-excel .toolbar{gap:6px}
 
     @media(max-width:1200px){.dashboard-grid{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.grid4,.rank-grid{grid-template-columns:repeat(2,1fr)}.schedule-layout{grid-template-columns:1fr}.main{padding:20px}}@media(max-width:720px){.grid4,.rank-grid,.form-grid{grid-template-columns:1fr}.topbar{display:block}.calendar{gap:5px}.day{min-height:104px;padding:7px}.app{display:block}}
   </style>
-  <script src="mobile-drawer-menu.js?v=2" defer></script>
-  <script src="eoheung-member-logo-patch.js" defer></script>
+  <script src="mobile-drawer-menu.js?v=4" defer></script>
+  <script src="eoheung-member-logo-patch.js?v=4" defer></script>
   <script src="eoheung-commandments.js" defer></script>
   <script src="kbo-standings-fix.js" defer></script>
   <script src="kbo-recent-badges.js?v=3" defer></script>
   <script src="kbo-season-center.js?v=2" defer></script>
   <script src="ticketlink-clock-fix.js" defer></script>
-  <script src="member-permission-control.js?v=2" defer></script>
+  <script src="member-permission-control.js?v=4" defer></script>
   <script src="attendance-permission-guard.js" defer></script>
-  <script src="attendance-role-guard.js?v=2" defer></script>
-  <script src="settings-hub.js?v=2" defer></script>
+  <script src="attendance-role-guard.js?v=4" defer></script>
+  <script src="settings-hub.js?v=4" defer></script>
   <script src="kbo-record-utils.js?v=1" defer></script>
   <script src="game-result-auto-refresh.js?v=4" defer></script>
   <script src="eoheung-fans.js?v=2" defer></script>
   <script src="eoheung-dashboard.js?v=2" defer></script>
-  <link rel="stylesheet" href="eoheung-layout.css?v=1" />
+  <link rel="stylesheet" href="eoheung-layout.css?v=4" />
   <script src="eoheung-layout.js?v=1" defer></script>
   <link rel="stylesheet" href="records-ui.css?v=2" />
   <script src="my-records-model.js?v=2" defer></script>
@@ -92,7 +93,7 @@ body.theme-excel .toolbar{gap:6px}
     const TEAM_LOGOS={삼성:'logo/samsung.png',LG:'logo/lg.png',KT:'logo/kt.png',SSG:'logo/ssg.png',KIA:'logo/kia.png',두산:'logo/doosan.png',한화:'logo/hanwha.png',롯데:'logo/lotte.png',키움:'logo/kiwoom.png',NC:'logo/nc.png'};
     const STADIUM_COORDS={'대구 삼성 라이온즈 파크':[35.841,128.681],'잠실':[37.512,127.071],'고척스카이돔':[37.498,126.867],'문학':[37.436,126.693],'수원':[37.299,127.009],'사직':[35.194,129.061],'창원':[35.222,128.582],'대전':[36.317,127.429],'광주':[35.168,126.889]};
     const WEATHER_CODES={0:'맑음',1:'대체로 맑음',2:'구름 조금',3:'흐림',45:'안개',48:'안개',51:'이슬비',53:'이슬비',55:'이슬비',61:'비',63:'비',65:'강한 비',71:'눈',73:'눈',75:'강한 눈',80:'소나기',81:'소나기',82:'강한 소나기',95:'뇌우'};
-    const state={client:null,user:null,members:[],games:[],gameMembers:[],links:[],weatherCache:{},year:2026,month:5,selectedDate:'2026-05-22',theme:localStorage.getItem('eoheung_theme')||'default',allGames:[]};
+    const state={client:null,user:null,memberAccessLoaded:false,members:[],games:[],gameMembers:[],links:[],weatherCache:{},year:2026,month:5,selectedDate:'2026-05-22',theme:localStorage.getItem('eoheung_theme')||'default',allGames:[]};
     const qs=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     function toast(msg){const d=document.createElement('div');d.textContent=msg;qs('toast').appendChild(d);setTimeout(()=>d.remove(),3200)}
     function toYmd(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
@@ -116,11 +117,11 @@ body.theme-excel .toolbar{gap:6px}
     function applyTheme(theme){state.theme=theme;localStorage.setItem('eoheung_theme',theme);document.body.classList.toggle('theme-groupware',theme==='groupware');document.body.classList.toggle('theme-excel',theme==='excel');document.body.classList.toggle('theme-lions',theme==='lions');renderThemePreview()}
     function renderThemePreview(){const el=qs('themePreview');if(!el)return;if(state.theme==='excel')el.innerHTML='<div class="excel-ribbon">Excel Style</div><table><tr><td class="head">회원</td><td class="head">기록</td></tr><tr><td>문경섭</td><td>3회</td></tr></table>';else el.innerHTML='<div class="bar"></div><div class="line"></div><div class="line short"></div>'}
     async function init(){state.client=window.eoheungClient||supabase.createClient(SUPABASE_URL,SUPABASE_KEY);window.eoheungClient=state.client;applyTheme(state.theme);bindEvents();const {data:{session}}=await state.client.auth.getSession();if(session?.user){state.user=session.user;if(isPasswordRecoveryRoute())showPasswordRecovery();else{showApp();await loadAll()}}else if(isPasswordRecoveryRoute())showPasswordRecovery();else showAuth();state.client.auth.onAuthStateChange(async(evt,session)=>{if(evt==='PASSWORD_RECOVERY'){state.user=session?.user||null;window.eoPasswordRecoveryActive=true;showPasswordRecovery();return}if(session?.user){state.user=session.user;if(isPasswordRecoveryRoute())showPasswordRecovery();else{showApp();await loadAll()}}else{state.user=null;if(isPasswordRecoveryRoute()&&evt!=='SIGNED_OUT')showPasswordRecovery();else showAuth({rememberRoute:evt!=='SIGNED_OUT'})}})}
-    function showAuth({rememberRoute=true,route=LOGIN_PATH}={}){if(rememberRoute&&route===LOGIN_PATH)rememberLoginReturnPath();qs('authView').classList.remove('hide');qs('appView').classList.add('hide');document.title=route===RESET_PASSWORD_PATH?'새 비밀번호 설정 | 어흥':'로그인 | 어흥';if(window.location.pathname!==route){const suffix=route===RESET_PASSWORD_PATH?window.location.search+window.location.hash:'';window.history.replaceState({auth:true},'',route+suffix)}}
+    function showAuth({rememberRoute=true,route=LOGIN_PATH}={}){state.members=[];state.memberAccessLoaded=false;EoAccess.applyUI();if(rememberRoute&&route===LOGIN_PATH)rememberLoginReturnPath();qs('authView').classList.remove('hide');qs('appView').classList.add('hide');document.title=route===RESET_PASSWORD_PATH?'새 비밀번호 설정 | 어흥':'로그인 | 어흥';if(window.location.pathname!==route){const suffix=route===RESET_PASSWORD_PATH?window.location.search+window.location.hash:'';window.history.replaceState({auth:true},'',route+suffix)}}
     function showPasswordRecovery(){window.eoPasswordRecoveryActive=true;showAuth({rememberRoute:false,route:RESET_PASSWORD_PATH});setTimeout(()=>window.eoOpenPasswordReset?.(),0)}
     function showApp(){if(isPasswordRecoveryRoute()){showPasswordRecovery();return}qs('authView').classList.add('hide');qs('appView').classList.remove('hide');let targetPath=window.location.pathname;if(targetPath===LOGIN_PATH){targetPath=sessionStorage.getItem(LOGIN_RETURN_KEY)||ROUTE_PATHS.dashboard;sessionStorage.removeItem(LOGIN_RETURN_KEY)}const page=pageFromPath(targetPath),canonicalPath=ROUTE_PATHS[page];if(window.location.pathname!==canonicalPath)window.history.replaceState({page},'',canonicalPath);activatePage(page)}
     window.eoShowAuthRoute=showAuth;
-    async function loadAll(){qs('dbStatus').textContent='데이터 불러오는 중...';const [m,g,gm,l,ag]=await Promise.all([state.client.from('members').select('*').order('name'),EoSeason.loadTable(state.client,'games'),EoSeason.loadTable(state.client,'game_members'),state.client.from('quick_links').select('*').order('created_at'),EoSeason.loadTable(state.client,'kbo_all_games')]);if(m.error||g.error||gm.error){qs('dbStatus').textContent='오류 발생';toast('데이터 로딩 오류');return}state.members=m.data||[];state.games=g.data||[];state.gameMembers=gm.data||[];state.links=l.data||[];state.allGames=ag.data||[];qs('dbStatus').textContent='연결됨';renderAll();renderWeatherForUpcoming()}
+    async function loadAll(){qs('dbStatus').textContent='데이터 불러오는 중...';const [m,g,gm,l,ag]=await Promise.all([EoAccess.loadMembers(state.client,state.user),EoSeason.loadTable(state.client,'games'),EoSeason.loadTable(state.client,'game_members'),state.client.from('quick_links').select('*').order('created_at'),EoSeason.loadTable(state.client,'kbo_all_games')]);if(m.error||g.error||gm.error){qs('dbStatus').textContent='오류 발생';toast('데이터 로딩 오류');return}state.members=m.data||[];state.games=g.data||[];state.gameMembers=gm.data||[];state.links=l.data||[];state.allGames=ag.data||[];qs('dbStatus').textContent='연결됨';renderAll();EoAccess.applyUI();renderWeatherForUpcoming()}
     function renderAll(){renderDashboard();renderCalendar();renderWatchList();renderDateDetail();renderMembers();renderRecords();renderLinks();renderSettings();window.renderSeasonCenter?.();window.renderMyRecords?.()}
     function renderDashboard(){qs('dashMembers').textContent=state.members.filter(m=>m.status!=='dormant').length;const ranks=buildRankings();const total=ranks.rows.reduce((a,b)=>a+b.attended,0);const planned=ranks.rows.reduce((a,b)=>a+b.planned,0);qs('dashGames').textContent=watchCountText(total,planned);const wins=state.gameMembers.filter(e=>e.attended).reduce((acc,e)=>{const g=state.games.find(x=>x.id===e.game_id);return acc+(isActualWatchGame(g)&&g.result==='W'?1:0)},0);const losses=state.gameMembers.filter(e=>e.attended).reduce((acc,e)=>{const g=state.games.find(x=>x.id===e.game_id);return acc+(isActualWatchGame(g)&&g.result==='L'?1:0)},0);qs('dashRate').textContent=(wins+losses)?`${Math.round(wins/(wins+losses)*100)}%`:'-';const upcoming=state.games.filter(g=>g.game_date>=toYmd(new Date())&&g.status!=='FINISHED').sort((a,b)=>(a.game_date+(a.game_time||'')).localeCompare(b.game_date+(b.game_time||'')))[0];qs('dashNext').innerHTML=upcoming?`${upcoming.game_time?.slice(0,5)||''} ${upcoming.home_away==='HOME'?'vs':'@'} ${esc(upcoming.opponent)} ${teamLogo(upcoming.opponent,'team-logo')}`:'-';renderRank('dashAttendRank',ranks.byAttend,'attendanceText','');
   renderRank('dashWinRank',ranks.byWins,'wins','회');
@@ -162,7 +163,7 @@ function renderCalendar(){qs('calendarTitle').textContent=`${state.year}년 ${st
 function renderWatchList(){const root=qs('gameList');const monthGames=gamesInMonth();const withWatch=monthGames.filter(g=>gameEntries(g.id).some(e=>e.attended));if(!withWatch.length){root.innerHTML='<div class="empty">이 달에 체크된 직관 기록이 없습니다.<br>오른쪽 달력에서 날짜를 클릭해 회원을 체크해 주세요.</div>';return}root.innerHTML=withWatch.map(g=>{const attended=gameEntries(g.id).filter(e=>e.attended).map(e=>memberName(e.member_id));return`<div class="watch-item"><h4>${esc(g.game_date)} · ${gameLabelHtml(g,'team-logo sm')} ${resultBadge(g)}</h4><div class="watch-members"><b>직관</b>: ${attended.length?esc(attended.join(', ')):'-'}</div></div>`}).join('')}
 function renderDateDetail(){const root=qs('dateDetail');const games=gamesOnDate(state.selectedDate);if(!games.length){root.innerHTML=`<div class="empty"><b>${state.selectedDate}</b><br>등록된 경기가 없습니다.</div>`;return}if(!state.members.length){root.innerHTML=`<div class="empty"><b>${state.selectedDate}</b><br>회원 관리에서 회원을 먼저 등록해 주세요.</div>`;return}const activeMembers=state.members.filter(m=>m.status!=='dormant');root.innerHTML=games.map(g=>{const entries=gameEntries(g.id);const rows=activeMembers.map(m=>{const e=entries.find(x=>x.member_id===m.id);return`<div class="check-row"><label>${esc(m.name)}</label><input type="checkbox" data-game="${g.id}" data-member="${m.id}" ${e?.attended?'checked':''}></div>`}).join('');return`<div class="card pad" style="margin-bottom:12px"><div class="toolbar" style="justify-content:space-between"><div><h3 style="margin:0">${gameLabelHtml(g,'team-logo')} ${resultBadge(g)}</h3><p class="note" style="margin:6px 0 0">${esc(state.selectedDate)} · ${homeAwayText(g.home_away)} · ${esc(g.stadium||'-')}</p></div><button class="btn secondary" data-edit-game="${g.id}">경기 수정</button></div><h4>직관 회원</h4><div class="member-checks">${rows}</div></div>`}).join('')}
 async function saveAttendance(gameId,memberId,checked){const old=state.gameMembers.find(x=>x.game_id===gameId&&x.member_id===memberId);if(!checked&&old){const {error}=await state.client.from('game_members').delete().eq('id',old.id);if(error)return toast('삭제 오류: '+error.message);state.gameMembers=state.gameMembers.filter(x=>x.id!==old.id)}else if(checked){const payload={game_id:gameId,member_id:memberId,planned:true,attended:true};const {data,error}=await state.client.from('game_members').upsert(payload,{onConflict:'game_id,member_id'}).select().single();if(error)return toast('저장 오류: '+error.message);if(old)state.gameMembers=state.gameMembers.map(x=>x.id===old.id?data:x);else state.gameMembers.push(data)}renderDashboard();renderCalendar();renderWatchList();renderDateDetail();renderRecords();renderWeatherForUpcoming()}
-function renderMembers(){const root=qs('memberRows');root.innerHTML=state.members.length?state.members.map(m=>`<tr><td><b>${esc(m.name)}</b></td><td>${esc(m.department||'')}</td><td>${esc(m.phone||'')}</td><td>${esc(m.favorite_player||'')}</td><td>${m.status==='active'?'활동':'휴면'}</td><td><button class="btn secondary" data-edit-member="${m.id}">수정</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">등록된 회원이 없습니다.</td></tr>'}
+function renderMembers(){const root=qs('memberRows');if(!EoAccess.isAdmin()){if(root.children.length)root.replaceChildren();return;}root.innerHTML=state.members.length?state.members.map(m=>`<tr><td><b>${esc(m.name)}</b></td><td>${esc(m.department||'')}</td><td>${esc(m.phone||'')}</td><td>${esc(m.favorite_player||'')}</td><td>${m.status==='active'?'활동':'휴면'}</td><td><button class="btn secondary" data-edit-member="${m.id}">수정</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">등록된 회원이 없습니다.</td></tr>'}
 function renderRecords(){const ranks=buildRankings();renderRank('recordAttendRank',ranks.byAttend,'attendanceText','');renderRank('recordWinRank',ranks.byWins,'wins','회');renderRank('recordRateRank',ranks.byRate,'rateText','');qs('recordRows').innerHTML=ranks.rows.map(r=>`<tr><td><b>${esc(r.name)}</b></td><td>${r.attendanceText}</td><td>${r.wins}</td><td>${r.losses}</td><td>${r.draws}</td><td>${r.rateText}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">기록 없음</td></tr>'}
 function renderLinks(){const links=state.links.length?state.links:DEFAULT_LINKS;qs('linkList').innerHTML=links.map(l=>`<a class="card pad" href="${esc(l.url)}" target="_blank"><h3 style="margin-top:0">${esc(l.title)}</h3><p class="note">${esc(l.description||l.url)}</p></a>`).join('')}
 function openModal(id){qs(id).classList.add('show')}function closeModal(id){qs(id).classList.remove('show')}
@@ -206,7 +207,8 @@ function rememberLoginReturnPath(){
   if(isKnownRoute)sessionStorage.setItem(LOGIN_RETURN_KEY,ROUTE_PATHS[page]);
 }
 function activatePage(page,{updateUrl=false,replaceUrl=false}={}){
-  const target=ROUTE_PATHS[page]?page:'dashboard';
+  let target=ROUTE_PATHS[page]?page:'dashboard';
+  if(target==='members'&&!EoAccess.isAdmin()){if(state.memberAccessLoaded){target='dashboard';updateUrl=true;replaceUrl=true;}else return;}
   document.querySelectorAll('.nav button[data-page]').forEach(button=>{
     const active=button.dataset.page===target;
     button.classList.toggle('active',active);
