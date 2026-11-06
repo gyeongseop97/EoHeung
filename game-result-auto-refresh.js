@@ -144,6 +144,7 @@
   }
 
   function fixRankTrendPosition(){
+    if(typeof window.placeSeasonBracket==='function'){window.placeSeasonBracket();return;}
     ensureRankTrendPositionStyle();
     const grid=document.querySelector('#dashboard .dashboard-grid');
     const standings=document.getElementById('kboStandings')?.closest('.kbo-standings-card,.card');
