@@ -12,11 +12,15 @@
     ctx.fillStyle=color;ctx.fillText(s,x,y);
   }
   function line(ctx,y){ctx.beginPath();ctx.moveTo(112,y);ctx.lineTo(968,y);ctx.strokeStyle='#dfe9f4';ctx.lineWidth=2;ctx.stroke();}
-  function period(filters){return [filters.year==='ALL'?'전체 시즌':filters.year+' 시즌',filters.month==='ALL'?'전체 월':filters.month+'월',({ALL:'전체 경기',REGULAR:'정규시즌',POSTSEASON:'포스트시즌',PRESEASON:'시범경기'})[filters.season]].filter(Boolean).join(' · ');}
+  function period(filters){return [filters.year==='ALL'?'':filters.year+'년',filters.month==='ALL'?'':filters.month+'월',({REGULAR:'정규시즌',POSTSEASON:'포스트시즌',PRESEASON:'시범경기'})[filters.season]].filter(Boolean).join(' · ');}
   async function render({member,rows,filters}){
     await document.fonts.ready;
     const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1920;
     const c=canvas.getContext('2d');const s=EoMyRecords.summary(rows);
+    const completed=rows.filter(g=>g.finished);
+    const homeCount=completed.filter(g=>g.home_away==='HOME').length;
+    const awayCount=completed.filter(g=>g.home_away==='AWAY').length;
+    const stadiums=new Set(completed.map(g=>String(g.stadium||'').trim()).filter(Boolean)).size;
     c.fillStyle=ICE;c.fillRect(0,0,1080,1920);
     rounded(c,60,60,960,1800,36,'#fff');
     c.save();c.beginPath();c.roundRect(60,60,960,1800,36);c.clip();c.fillStyle=BLUE;c.fillRect(60,60,960,385);c.restore();
@@ -29,8 +33,10 @@
       rounded(c,876,102,94,94,20,'#fff');c.drawImage(logo,884,110,78,78);
     }catch(error){text(c,'LIONS',855,147,27,'#fff',900);}
     text(c,'완료한 직관',112,510,27,MUTED,700);text(c,'내 직관 승률',574,510,27,MUTED,700);
+    text(c,`홈 ${homeCount}경기`,320,565,30,MUTED,750,208);
+    text(c,`원정 ${awayCount}경기`,320,612,30,MUTED,750,208);
     text(c,s.games,112,625,104,INK,900,390);text(c,s.rate==null?'—':(s.rate*100).toFixed(1)+'%',574,625,92,BLUE,900,395);
-    text(c,'경기',115,674,26,MUTED);text(c,'무승부 제외',577,674,23,MUTED);
+    text(c,'경기',115,674,26,MUTED);text(c,`방문 구장 ${stadiums}곳`,320,674,23,BLUE,750,208);
     line(c,711);
     const results=[['승리',s.wins,BLUE],['무승부',s.draws,'#7c91a8'],['패배',s.losses,'#a65065']];
     results.forEach(([label,n,color],i)=>{const x=112+i*304;text(c,label,x,768,24,MUTED);text(c,n+'회',x,826,43,color,850);});
@@ -43,8 +49,7 @@
     line(c,1190);text(c,'기억에 남는 기록',112,1249,28,INK,800);
     const moments=[['홈런',s.events?.homeRuns,'개'],['탈삼진',s.events?.strikeouts,'개'],['끝내기 승리',s.events?.walkoffWins,'회'],['최다 득점',s.highRs?.value,'점'],['최다 실점',s.highRa?.value,'점'],['최장 연승',s.winStreak,'경기']];
     moments.forEach(([label,n,unit],i)=>{const x=112+(i%3)*304,y=1300+Math.floor(i/3)*102;text(c,label,x,y,21,MUTED);text(c,n==null?'—':n+unit,x,y+51,37,INK,800);});
-    const coverage=s.events?`홈런·삼진 ${s.events.coverage}/${s.games} · 끝내기 ${s.events.walkoffCoverage}/${s.games}경기 확인`:'홈런·삼진·끝내기: 세부 기록 확인 중';
-    text(c,coverage,112,1493,18,MUTED,500,850);line(c,1516);
+    line(c,1516);
     text(c,'구단별 상대 전적',112,1561,25,INK,800);
     const opponents=new Map(EoMyRecords.group(rows,g=>g.opponent).map(record=>[record.label,record]));
     ['LG','KT','SSG','KIA','두산','한화','롯데','키움','NC'].forEach((team,i)=>{
