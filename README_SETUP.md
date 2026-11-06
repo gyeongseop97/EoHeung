@@ -88,7 +88,7 @@ supabase secrets set SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 
 공식 자료는 `scripts/sync_kbo_season.py`가 `data/kbo-seasons/<연도>.json`에 보관합니다. KBO 영문 공식 페이지의 TYPE 셀과 rowspan을 읽으므로 `Playoff final game5`, `Korean Series game1`도 누락하지 않습니다. 종료 시즌은 정규시즌 720경기 결과와 공식 순위표를 검산합니다. 과거 연도 선택에도 현재 순위가 반환되는 경우에는 완전한 720경기 결과로 다시 집계하며, 동률로 공식 순위 판단이 필요하면 잘못된 자료를 덮어쓰지 않고 실패로 보고합니다.
 
-공식 자료는 Actions의 **Update KBO season and postseason → Run workflow → year**에서 갱신합니다. 연도를 비우면 현재 한국 날짜의 시즌, 연도를 입력하면 과거 시즌 자료를 저장합니다. 이 워크플로는 수동 실행만 활성화되어 있으며 반복 자동 실행은 별도 승인 후 설정합니다. 공개 공식 자료만 읽으므로 Supabase 비밀키는 필요 없습니다. 브라우저는 5분 간격으로 저장된 새 자료를 확인하며 수집 실패 시 마지막 검증 자료를 유지합니다. 기존 Vercel `/data/` GitHub 원본 연결을 그대로 사용하므로 자료만 갱신할 때 사이트를 재빌드할 필요가 없습니다. 기존 Supabase 일정·결과 동기화 주기는 유지되며 DB에 반영된 포스트시즌 결과도 화면에 적용됩니다.
+공식 자료는 30분마다 자동 갱신됩니다(GitHub Actions 실행 지연 가능). 수동 갱신은 Actions의 **Update KBO season and postseason → Run workflow → year**에서 실행합니다. 연도를 비우면 현재 한국 날짜의 시즌, 연도를 입력하면 과거 시즌 자료를 저장합니다. 반복 실행은 저장소의 Actions에서 관리합니다. 공개 공식 자료만 읽으므로 Supabase 비밀키는 필요 없습니다. 브라우저는 5분 간격으로 저장된 새 자료를 확인하며 수집 실패 시 마지막 검증 자료를 유지합니다. 기존 Vercel `/data/` GitHub 원본 연결을 그대로 사용하므로 자료만 갱신할 때 사이트를 재빌드할 필요가 없습니다. 기존 Supabase 일정·결과 동기화 주기는 유지되며 DB에 반영된 포스트시즌 결과도 화면에 적용됩니다.
 
 기존 Supabase에는 `supabase/sql/season_postseason.sql`을 한 번 실행하면 경기 구분·라운드·차전 필드가 추가됩니다. 마이그레이션 전에도 공식 시즌 화면은 동작하고, 일정 동기화 및 수동 저장은 기존 source 필드에 구분 정보를 보존해 호환됩니다. 새 설치는 갱신된 `supabase_schema.sql`을 사용합니다.
 
