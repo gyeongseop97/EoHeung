@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updated_at": "2026-11-08T15:26:33+09:00",
+  "updated_at": "2026-11-08T22:44:32+09:00",
   "source": "KBO 공식",
   "standings_url": "https://eng.koreabaseball.com/Standings/TeamStandings.aspx",
   "schedule_url": "https://eng.koreabaseball.com/Schedule/DailySchedule.aspx",
@@ -9,17 +9,6 @@
   "standings": [
     {
       "rank": 1,
-      "team": "KT",
-      "g": 144,
-      "w": 90,
-      "l": 49,
-      "d": 5,
-      "pct": 0.647,
-      "gb": 0.0,
-      "streak": "0승"
-    },
-    {
-      "rank": 2,
       "team": "삼성",
       "g": 144,
       "w": 83,
@@ -28,6 +17,17 @@
       "pct": 0.589,
       "gb": 8.0,
       "streak": "4패"
+    },
+    {
+      "rank": 2,
+      "team": "KT",
+      "g": 144,
+      "w": 90,
+      "l": 49,
+      "d": 5,
+      "pct": 0.647,
+      "gb": 0.0,
+      "streak": "0승"
     },
     {
       "rank": 3,
@@ -335,43 +335,13 @@
       "game_time": "14:00:00",
       "away_team": "KT",
       "home_team": "삼성",
-      "away_score": null,
-      "home_score": null,
-      "status": "SCHEDULED",
+      "away_score": 1,
+      "home_score": 12,
+      "status": "FINISHED",
       "stadium": "대구 삼성 라이온즈 파크",
       "season_type": "POSTSEASON",
       "postseason_round": "KS",
       "game_number": 5,
-      "source": "kbo-english-official"
-    },
-    {
-      "source_key": "kbo-all-2026-11-10-SAMSUNG-KT-1",
-      "game_date": "2026-11-10",
-      "game_time": "18:30:00",
-      "away_team": "삼성",
-      "home_team": "KT",
-      "away_score": null,
-      "home_score": null,
-      "status": "SCHEDULED",
-      "stadium": "수원",
-      "season_type": "POSTSEASON",
-      "postseason_round": "KS",
-      "game_number": 6,
-      "source": "kbo-english-official"
-    },
-    {
-      "source_key": "kbo-all-2026-11-11-SAMSUNG-KT-1",
-      "game_date": "2026-11-11",
-      "game_time": "18:30:00",
-      "away_team": "삼성",
-      "home_team": "KT",
-      "away_score": null,
-      "home_score": null,
-      "status": "SCHEDULED",
-      "stadium": "수원",
-      "season_type": "POSTSEASON",
-      "postseason_round": "KS",
-      "game_number": 7,
       "source": "kbo-english-official"
     }
   ]
